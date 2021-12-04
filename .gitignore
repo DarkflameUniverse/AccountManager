@@ -1,0 +1,6 @@
+credentials.py
+resources.py
+.idea/
+__pycache__/
+venv/
+static/policy/
