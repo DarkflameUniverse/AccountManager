@@ -37,3 +37,9 @@ flask run --port 5000
 # or simply
 python app.py
 ```
+
+## Available Endpoints
+
+There are several available endpoints that are useful to users.
+- `/login`: Login as an Admin and create CD keys.
+- `/activate`: Create a new account as a non-admin user. You will require a CD key (which is provided by the admin).
