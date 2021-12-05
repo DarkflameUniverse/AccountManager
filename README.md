@@ -1,6 +1,6 @@
 # Darkflame Universe Account Manager
 
-This is a quick and simple web application intended for account creation and management for a [DLU](https://github.com/DarkflameUniverse/DLUv3) instance created by Wincent.
+This is a quick and simple web application intended for account creation and management for a [DLU](https://github.com/DarkflameUniverse/DarkflameServer) instance created by Wincent.
 
 Logo by BlasterBuilder.
 
