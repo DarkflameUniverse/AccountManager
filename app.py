@@ -516,6 +516,34 @@ def dashboard():
 
     return render_template('private/dashboard.html', current_user=current_user, resources=resources)
 
+# Name approval dashboard
+@app.route('/approve_names', methods=['GET', 'POST'])
+@login_required
+def approve_names():
+    message = ''
+    connection = db.engine
+    if current_user.gm_level != 9:
+        abort(403)
+        return
+    
+    if request.method == 'POST':
+
+        char_id = request.form['char_id']
+        pending_name = request.form['pending_name']
+        approved = int(request.form['approved'])
+
+        if approved > 0:
+            query = "UPDATE charinfo SET name = %s, pending_name = '' WHERE id = %s"
+            connection.execute(query, (pending_name, char_id))
+            message = 'Name approved'
+        else:
+            query = "UPDATE charinfo SET needs_rename = true WHERE id = %s"
+            connection.execute(query, (char_id))
+            message = 'Name marked for rename'
+
+    query = "SELECT id, account_id, name, pending_name FROM charinfo WHERE pending_name <> '' AND needs_rename = false"
+    result = connection.execute(query).all()
+    return render_template('private/approve_names.html', message=message, names=result, current_user=current_user, resources=resources)
 
 """
 App configuration

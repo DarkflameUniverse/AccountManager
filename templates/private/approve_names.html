@@ -1,0 +1,121 @@
+{% extends "bootstrap/base.html" %}
+{% block title %}Name Approval{% endblock %}
+
+{% block navbar %}
+<nav class="navbar navbar-default">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Dashboard</a>
+    </div>
+    <ul class="nav navbar-nav">
+    </ul>
+    <ul class="nav navbar-nav" style="float: right">
+      <li class="active"><a href="#">Welcome {{ current_user.username }}!</a></li>
+      <li><a href="{{ url_for('logout') }}">Logout</a></li>
+    </ul>
+  </div>
+</nav>
+{% endblock navbar %}}
+
+{% block content %}
+{# LOGO #}
+<div class="container" style="margin-top: 50px">
+
+    {# Display logo #}
+    <div style="margin-bottom: 50px">
+        <img
+                src="{{ url_for('static', filename=resources.LOGO) }}"
+                class="center-block img-responsive mx-auto d-block"
+                alt="Logo"
+                width="100"
+                height="100"
+        >
+    </div>
+
+</div>
+
+{# Key creation #}
+<div class="container">
+    <div class="text-center">
+        <h3>Name Approval</h3>
+    </div>
+
+    <div class="col-lg-3">
+    </div>
+    <div class="col-lg-6">
+
+    {# If the error value is set, display the error in red text #}
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {# If the message value is set, display the message in green text #}
+    {% if message %}
+        <div class="alert alert-success">
+            {{ message }}
+        </div>
+    {% endif %}
+
+    {# If the keys value is set, create a list for each key in keys #}
+    {% if names %}
+    <table class="table table-striped">
+        <tr>
+            <th>Character ID</th>
+            <th>Account ID</th>
+            <th>Current Name</th>
+            <th>Custom Name</th>
+            <th>Approve?</th>
+            <th>Reject?</th>
+        </tr>
+        {% for name in names %}
+        <tr>
+            <td>{{ name.id }}</td>
+            <td>{{ name.account_id }}</td>
+            <td>{{ name.name }}</td>
+            <td>{{ name.pending_name }}</td>
+            <td><button class="btn btn-primary approvalButton" data-id="{{ name.id }}" data-pending_name="{{ name.pending_name }}">Approve</button></td>
+            <td><button class="btn btn-warning rejectButton" data-id="{{ name.id }}" data-pending_name="{{ name.pending_name }}">Reject</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
+    </div>
+    <div class="col-lg-3">
+    </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+
+const approvalButtons = document.querySelectorAll('.approvalButton');
+
+for (const button of approvalButtons) {
+    button.addEventListener('click', (event) => {
+        $("html").load("{{ url_for('approve_names') }}", {
+            char_id: parseInt(event.target.dataset.id),
+            pending_name: event.target.dataset.pending_name,
+            approved: 1,
+        });
+    });
+}
+
+const rejectButtons = document.querySelectorAll('.rejectButton');
+
+for (const button of rejectButtons) {
+    button.addEventListener('click', (event) => {
+        $("body").load("{{ url_for('approve_names') }}", {
+            char_id: parseInt(event.target.dataset.id),
+            pending_name: event.target.dataset.pending_name,
+            approved: 0,
+        });
+    });
+}
+
+</script>
+
+{% endblock %}
