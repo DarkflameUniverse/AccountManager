@@ -1,0 +1,14 @@
+---
+version: '3'
+services:
+  dlu-website:
+    container_name: DLU-Website
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - 777:5000 #change the 777 to your port of choice.
+    restart: unless-stopped
+    #this is optional it's just my habit.
+    security_opt:
+      - no-new-privileges:true
