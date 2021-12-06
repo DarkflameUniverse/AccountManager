@@ -38,6 +38,18 @@ flask run --port 5000
 python app.py
 ```
 
+## Run as Container in Docker using docker-compose
+Make sure you have python3 and python3-pip installed
+
+* Edit `credentials.py`
+* Edit `resources.py`
+
+And then just run the Container with:
+```sh
+docker-compose up --build
+```
+This will build and then deploy the container automatically and will then be accessible at the port you specified in the `docker-compose.yml`.
+
 ## Available Endpoints
 
 There are several available endpoints that are useful to users.
