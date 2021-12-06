@@ -96,7 +96,7 @@ const approvalButtons = document.querySelectorAll('.approvalButton');
 
 for (const button of approvalButtons) {
     button.addEventListener('click', (event) => {
-        $("html").load("{{ url_for('approve_names') }}", {
+        $("body").load("{{ url_for('approve_names') }}", {
             char_id: parseInt(event.target.dataset.id),
             pending_name: event.target.dataset.pending_name,
             approved: 1,
