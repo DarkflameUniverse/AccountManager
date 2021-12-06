@@ -99,7 +99,7 @@ class CharacterLog():
             if activity.start >= start and activity.end <= end and activity.map_id == map_id:
                 total_time += activity.end - activity.start
         return total_time
-        
+
 
     def __repr__(self):
         return '<CharacterLog %r>' % self.character_id
@@ -113,7 +113,7 @@ class Dataset():
         self.borderWidth = borderWidth
 
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
 
@@ -122,9 +122,9 @@ class ActivityData():
         self.labels = labels
         self.title = title
         self.datasets = datasets
-    
+
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__, 
+        return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
 
 activitie_data = {}
@@ -194,7 +194,7 @@ def load_activities():
     for i in range(7):
         labels.append(time.strftime("%a", time.localtime(epoch_time - (i * 24 * 60 * 60))))
         data.append(0)
-    
+
     for character in characters:
         character_data = characters[character]
         for activity in character_data.activity_log:
@@ -223,7 +223,7 @@ def load_activities():
             end = begin + (24 * 60 * 60)
             play_time = character_data.get_play_time_during(begin, end) / (60 * 60)
             data[i] += play_time
-    
+
     # Flip labels and data
     labels.reverse()
     data.reverse()
@@ -262,7 +262,7 @@ def load_activities():
                 character_data = characters[character]
                 play_time = character_data.get_play_time_during_in_map(begin, end, map_id) / (60 * 60)
                 maps[map_id][6 - i] += play_time
-    
+
     # Flip labels and data
     labels.reverse()
 
@@ -298,14 +298,14 @@ def activity_data(name):
     # }
     # Cannot use jsonify because it doesn't support the Dataset class
     return activitie_data[name].toJSON()
-    
+
 
 
 # User loader
 @login_manager.user_loader
 def load_user(user_id):
     connection = db.engine
-    
+
     query = "SELECT name, gm_level FROM accounts WHERE id = %s;"
 
     account_result = connection.execute(query, (user_id)).fetchone()
@@ -331,11 +331,11 @@ def account_creation(key):
 
         # If the user didn't agree to the terms, return an error.
         if not agree:
-            return render_template('public/account_creation.html', error="You must agree to the Privacy Policy and Terms of Service to continue.", resources=resources)
+            return render_template('public/account_creation.html.j2', error="You must agree to the Privacy Policy and Terms of Service to continue.", resources=resources)
 
         # If the passwords don't match, return an error.
         if account_password != account_repeat_password:
-            return render_template('public/account_creation.html', error="Passwords don't match!", resources=resources)
+            return render_template('public/account_creation.html.j2', error="Passwords don't match!", resources=resources)
 
         connection = db.engine
 
@@ -346,16 +346,16 @@ def account_creation(key):
 
         # If the play key is not active, or keyUses is 0, return an error.
         if not key_result or key_result['active'] == False or key_result['key_uses'] == 0:
-            return render_template('public/account_creation.html', error="Invalid play key!", resources=resources)
+            return render_template('public/account_creation.html.j2', error="Invalid play key!", resources=resources)
 
         # Check if the username only contains alphanumeric characters, no spaces, or special characters.
         if not re.match("^[A-Za-z0-9_-]*$", account_name):
-            return render_template('public/account_creation.html', error="Username contains invalid characters!", resources=resources)
+            return render_template('public/account_creation.html.j2', error="Username contains invalid characters!", resources=resources)
 
         # Check if the username is no more than 32 characters long.
         if len(account_name) > 32:
-            return render_template('public/account_creation.html', error="Username is too long!", resources=resources)
-        
+            return render_template('public/account_creation.html.j2', error="Username is too long!", resources=resources)
+
         # Check if the username is already taken.
         query = "SELECT COUNT(*) FROM accounts WHERE name = %s;"
 
@@ -363,7 +363,7 @@ def account_creation(key):
 
         # If the username is taken, return an error.
         if username_taken.fetchone()[0] > 0:
-            return render_template('public/account_creation.html', error="Username already taken!", resources=resources)
+            return render_template('public/account_creation.html.j2', error="Username already taken!", resources=resources)
 
         # Decrement keyUses from the play_keys table by id.
         query = 'UPDATE play_keys SET key_uses = ' + str(key_result['key_uses'] - 1) + ' WHERE id = ' + str(key_result['id']) + ';'
@@ -373,17 +373,17 @@ def account_creation(key):
         # Hash the password.
         password_hash = hashpw(account_password.encode('utf-8'), gensalt(prefix=b"2a"))
 
-        # Insert the new account into the database. 
+        # Insert the new account into the database.
         query = 'INSERT INTO accounts (name, password, play_key_id) VALUES (%s, %s, ' + str(key_result['id']) + ');'
 
         connection.execute(query, (account_name, password_hash))
 
         # Notify the user of the successful account creation.
-        return render_template('public/account_creation.html', message="Successfully created account '{}'!".format(account_name), resources=resources)
+        return render_template('public/account_creation.html.j2', message="Successfully created account '{}'!".format(account_name), resources=resources)
 
     key = key if key else ""
 
-    return render_template('public/account_creation.html', key=key, resources=resources)
+    return render_template('public/account_creation.html.j2', key=key, resources=resources)
 
 
 @login_manager.unauthorized_handler
@@ -402,7 +402,7 @@ def logout():
 def login():
     if current_user.is_authenticated:
         if current_user.gm_level == 9:
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('admin.dashboard'))
         else:
             return redirect(url_for('data_download'))
 
@@ -413,14 +413,14 @@ def login():
 
         # Check if the username is valid.
         connection = db.engine
-        
+
         query = "SELECT id, password, gm_level FROM accounts WHERE name = %s;"
 
         account_result = connection.execute(query, (username)).fetchone()
 
         # If the username is not valid, return an error.
         if not account_result:
-            return render_template('private/login.html', error="Incorrect username or password!", resources=resources)
+            return render_template('main/login.html.j2', error="Incorrect username or password!", resources=resources)
 
         password_hash = account_result['password']
         gm_level = account_result['gm_level']
@@ -431,20 +431,20 @@ def login():
         try:
             # If the password doesn't match the account name, return an error.
             if old_password != password_hash and not checkpw(password.encode('utf-8'), password_hash.encode('utf-8')):
-                return render_template('private/login.html', error="Incorrect username or password!", resources=resources)
+                return render_template('main/login.html.j2', error="Incorrect username or password!", resources=resources)
         except:
-            return render_template('private/login.html', error="Incorrect username or password!", resources=resources)
+            return render_template('main/login.html.j2', error="Incorrect username or password!", resources=resources)
 
         # Login user
         login_user(UserModel(account_result['id'], username, gm_level), remember=remember_me)
-    
+
         # Redirect to the dashboard.
         if gm_level == 9:
-            return redirect(url_for('dashboard'))
+            return redirect(url_for('admin.dashboard'))
         else:
             return redirect(url_for('data_download'))
-    
-    return render_template('private/login.html', resources=resources)
+
+    return render_template('main/login.html.j2', resources=resources)
 
 
 # Data download page
@@ -464,98 +464,20 @@ def data_download():
 
         # If the character doesn't exist, return an error.
         if not character_result:
-            return render_template('private/data_download.html', error="Character '{}' does not exist!".format(character_name), resources=resources)
+            return render_template('private/data_download.html.j2', error="Character '{}' does not exist!".format(character_name), resources=resources)
 
         # Get the character's data.
         query = "SELECT xml_data FROM charxml WHERE id = %s;"
-    
+
         xml_data = connection.execute(query, (character_result['id'])).fetchone()
 
         # If the character doesn't have any data, return an error.
         if not xml_data:
-            return render_template('private/data_download.html', error="Character '{}' does not have any data!".format(character_name), resources=resources)
+            return render_template('private/data_download.html.j2', error="Character '{}' does not have any data!".format(character_name), resources=resources)
 
         # Return the character's data.
         return Response(xml_data['xml_data'], mimetype='text/xml', headers={"Content-disposition": "attachment; filename=" + character_name + ".xml"})
 
-    return render_template('private/data_download.html', resources=resources)
+    return render_template('private/data_download.html.j2', resources=resources)
 
 
-# Key creation page
-@app.route('/dashboard', methods=['GET', 'POST'])
-@login_required
-def dashboard():
-    if current_user.gm_level != 9:
-        return redirect(url_for('data_download'))
-
-    if request.method == 'POST':
-        connection = db.engine
-
-        key_count = request.form['key_count']
-
-        # Generate keys in the format AAAA-AAAA-AAAA-AAAA. 4 segments of uppercase letters and numbers.
-        key_list = []
-        for i in range(int(key_count)):
-            key = ""
-
-            for j in range(4):
-                key += ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4)) + '-'
-
-            # Remove last dash
-            key = key[:-1]
-
-            key_list.append(key)
-
-        # Insert the keys into the database.
-        for key in key_list:
-            query = "INSERT INTO play_keys (key_string, active) VALUES (%s, 1);"
-            connection.execute(query, (key))
-
-        # Notify the user of the successful key creation.
-        return render_template('private/dashboard.html', message="Successfully created {} keys!".format(key_count), keys=key_list, resources=resources)
-
-    return render_template('private/dashboard.html', current_user=current_user, resources=resources)
-
-
-"""
-App configuration
-
-Some properties are in env variables.
-"""
-
-from os import getenv
-
-
-def run_app():
-
-    secret_key = getenv('SECRET_KEY')
-    db_url = getenv('DB_URL')
-
-    # If either of the env variables are not set, attempt to read them from credentials.py.
-    if not secret_key or not db_url:
-        from credentials import SECRET_KEY, DB_URL
-
-        secret_key = SECRET_KEY
-        db_url = DB_URL
-
-    app.config['DEBUG'] = True
-    app.config['SECRET_KEY'] = secret_key
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url
-    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-    app.config['SQLALCHEMY_ECHO'] = False
-    app.config['WTF_CSRF_ENABLED'] = False
-
-    # Setup SQL
-    db.init_app(app)
-
-    # Setup Login
-    login_manager.init_app(app)
-
-    # Setup Bootstrap
-    Bootstrap(app)
-
-    app.run(host='0.0.0.0', port=5000)
-
-
-if __name__ == '__main__':
-    run_app()
