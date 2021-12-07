@@ -1,21 +1,5 @@
-{% extends "bootstrap/base.html" %}
+{% extends "private/admin_base.html" %}
 {% block title %}Key Creation{% endblock %}
-
-{% block navbar %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Dashboard</a>
-    </div>
-    <ul class="nav navbar-nav">
-    </ul>
-    <ul class="nav navbar-nav" style="float: right">
-      <li class="active"><a href="#">Welcome {{ current_user.username }}!</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
-  </div>
-</nav>
-{% endblock navbar %}}
 
 {% block content %}
 {# LOGO #}

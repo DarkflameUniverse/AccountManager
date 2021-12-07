@@ -521,6 +521,7 @@ def dashboard():
 @login_required
 def approve_names():
     message = ''
+    error = ''
     connection = db.engine
     if current_user.gm_level != 9:
         abort(403)
@@ -528,22 +529,57 @@ def approve_names():
     
     if request.method == 'POST':
 
-        char_id = request.form['char_id']
         pending_name = request.form['pending_name']
         approved = int(request.form['approved'])
 
-        if approved > 0:
-            query = "UPDATE charinfo SET name = %s, pending_name = '' WHERE id = %s"
-            connection.execute(query, (pending_name, char_id))
-            message = 'Name approved'
+        # Character name approvals
+        if "char_id" in request.form and "pet_id" not in request.form:
+            char_id = request.form['char_id']
+            if approved > 0:
+                query = "UPDATE charinfo SET name = %s, pending_name = '' WHERE id = %s"
+                try:
+                    connection.execute(query, (pending_name, char_id))
+                except BaseException as error:
+                    error = "Error running query. Message: {}".format(error)
+                else:
+                    message = 'Character name {} approved'.format(pending_name)
+            else:
+                query = "UPDATE charinfo SET needs_rename = true WHERE id = %s"
+                try:
+                    connection.execute(query, (char_id))
+                except BaseException as error:
+                    error = "Error running query. Message: {}".format(error)
+                else:
+                    message = 'Character {} marked for rename'.format(pending_name)
+        # Pet name approvals
+        elif "pet_id" in request.form and "char_id" not in request.form:
+            pet_id = request.form['pet_id']
+            print(pet_id)
+            print(approved)
+            if approved > 0:
+                query = "UPDATE pet_names SET approved = 2 WHERE id = %s"
+                try:
+                    connection.execute(query, (pet_id))
+                except BaseException as error:
+                    error = "Error running query. Message: {}".format(error)
+                else:
+                    message = 'Pet name {} approved'.format(pending_name)
+            else:
+                query = "UPDATE pet_names SET approved = 0 WHERE id = %s"
+                try:
+                    connection.execute(query, (pet_id))
+                except BaseException as error:
+                    error = "Error running query. Message: {}".format(error)
+                else:
+                    message = 'Pet name {} marked for rename'.format(pending_name)
         else:
-            query = "UPDATE charinfo SET needs_rename = true WHERE id = %s"
-            connection.execute(query, (char_id))
-            message = 'Name marked for rename'
+            error = 'Internal error: Both pet ID and character ID provided'
 
     query = "SELECT id, account_id, name, pending_name FROM charinfo WHERE pending_name <> '' AND needs_rename = false"
     result = connection.execute(query).all()
-    return render_template('private/approve_names.html', message=message, names=result, current_user=current_user, resources=resources)
+    query = "SELECT id, pet_name FROM pet_names WHERE approved = 1"
+    pet_result = connection.execute(query).all()
+    return render_template('private/approve_names.html', message=message, error=error, names=result, pet_names=pet_result, current_user=current_user, resources=resources)
 
 """
 App configuration

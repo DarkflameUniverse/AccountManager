@@ -1,21 +1,5 @@
-{% extends "bootstrap/base.html" %}
+{% extends "private/admin_base.html" %}
 {% block title %}Name Approval{% endblock %}
-
-{% block navbar %}
-<nav class="navbar navbar-default">
-  <div class="container-fluid">
-    <div class="navbar-header">
-      <a class="navbar-brand" href="{{ url_for('dashboard') }}">Dashboard</a>
-    </div>
-    <ul class="nav navbar-nav">
-    </ul>
-    <ul class="nav navbar-nav" style="float: right">
-      <li class="active"><a href="#">Welcome {{ current_user.username }}!</a></li>
-      <li><a href="{{ url_for('logout') }}">Logout</a></li>
-    </ul>
-  </div>
-</nav>
-{% endblock navbar %}}
 
 {% block content %}
 {# LOGO #}
@@ -58,8 +42,8 @@
         </div>
     {% endif %}
 
-    {# If the keys value is set, create a list for each key in keys #}
     {% if names %}
+    <h3>Character Names</h3>
     <table class="table table-striped">
         <tr>
             <th>Character ID</th>
@@ -81,6 +65,25 @@
         {% endfor %}
     </table>
     {% endif %}
+    {% if pet_names %}
+    <h3>Pet Names</h3>
+    <table class="table table-striped">
+        <tr>
+            <th>Pet ID</th>
+            <th>Current Name</th>
+            <th>Approve?</th>
+            <th>Reject?</th>
+        </tr>
+        {% for name in pet_names %}
+        <tr>
+            <td>{{ name.id }}</td>
+            <td>{{ name.pet_name }}</td>
+            <td><button class="btn btn-primary approvalPetButton" data-id="{{ name.id }}" data-pending_name="{{ name.pet_name }}">Approve</button></td>
+            <td><button class="btn btn-warning rejectPetButton" data-id="{{ name.id }}" data-pending_name="{{ name.pet_name }}">Reject</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% endif %}
     </div>
     <div class="col-lg-3">
     </div>
@@ -92,24 +95,40 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
 
-const approvalButtons = document.querySelectorAll('.approvalButton');
-
-for (const button of approvalButtons) {
+for (const button of document.querySelectorAll('.approvalButton')) {
     button.addEventListener('click', (event) => {
         $("body").load("{{ url_for('approve_names') }}", {
-            char_id: parseInt(event.target.dataset.id),
+            char_id: event.target.dataset.id,
             pending_name: event.target.dataset.pending_name,
             approved: 1,
         });
     });
 }
 
-const rejectButtons = document.querySelectorAll('.rejectButton');
-
-for (const button of rejectButtons) {
+for (const button of document.querySelectorAll('.rejectButton')) {
     button.addEventListener('click', (event) => {
         $("body").load("{{ url_for('approve_names') }}", {
-            char_id: parseInt(event.target.dataset.id),
+            char_id: event.target.dataset.id,
+            pending_name: event.target.dataset.pending_name,
+            approved: 0,
+        });
+    });
+}
+
+for (const button of document.querySelectorAll('.approvalPetButton')) {
+    button.addEventListener('click', (event) => {
+        $("body").load("{{ url_for('approve_names') }}", {
+            pet_id: event.target.dataset.id,
+            pending_name: event.target.dataset.pending_name,
+            approved: 1,
+        });
+    });
+}
+
+for (const button of document.querySelectorAll('.rejectPetButton')) {
+    button.addEventListener('click', (event) => {
+        $("body").load("{{ url_for('approve_names') }}", {
+            pet_id: event.target.dataset.id,
             pending_name: event.target.dataset.pending_name,
             approved: 0,
         });
