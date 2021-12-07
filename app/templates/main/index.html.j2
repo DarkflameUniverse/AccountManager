@@ -1,0 +1,30 @@
+{% extends 'base.html.j2' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content_before %}
+  {% if current_user.is_authenticated %}
+    Welcome Explorer!
+  {% else %}
+    Welcome back {{ current_user.name }}!
+  {% endif %}
+  Welcome Explorer!
+{% endblock %}
+
+{% block content %}
+  <div class="row">
+    <div class="col text-right">
+      <a role="button" class="btn btn-primary btn-lg btn-block"
+        href='{{ url_for('user.login') }}'>
+        Login
+      </a>
+    </div>
+    <div class="col">
+      <a role="button" class="btn btn-primary btn-lg btn-block"
+        href='{{ url_for('user.register') }}'>
+        Register
+      </a>
+    </div>
+  </div>
+
+{% endblock content %}

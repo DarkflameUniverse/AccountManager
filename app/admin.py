@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint, redirect, url_for
-from flask_user import login_required, roles_required
-from app.models import User, UserInvitation, UsersRoles
+from flask_user import login_required
+from app.models import Account, AccountInvitation
 
 admin_blueprint = Blueprint('admin', __name__)
 

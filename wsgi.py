@@ -1,7 +1,7 @@
 
-from app import run_app
+from app import create_app
 
-app = run_app()
+app = create_app()
 
 
 @app.shell_context_processor

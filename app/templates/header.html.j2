@@ -1,0 +1,57 @@
+{# Navigation brand, nav toggle bar #}
+<nav class='navbar navbar-expand-sm navbar-dark bg-primary flex-row pb-3'>
+  <div class='container md-0 flex-nowrap'>
+
+    <nav class="navbar">
+      <a class="navbar-brand" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='logo/logo.png') }}" width="30" height="30" class="d-inline-block align-top" alt="">
+        DLU Account manager
+      </a>
+    </nav>
+
+
+    {# Visible only on large devices #}
+    <nav class='navbar-nav'>
+      <div class='collapse navbar-collapse'>
+        {% if current_user.is_authenticated %}
+          <a class='btn-nav-dashboard mr-2' href='{{ url_for('user.invite_user') }}'><i
+            class='fas fa-user mr-1'></i>Invite</a>
+        {% endif %}
+        {# <a class='btn-nav-dashboard mr-2' href='{{ url_for('user.profile') }}'><i
+          class='fas fa-user mr-1'></i>Profile</a> #}
+        {% if current_user.is_authenticated %}
+          <a class='btn-nav-dashboard' href='{{ url_for('user.logout') }}'><i
+            class='fas fa-sign-out-alt mr-1'></i>Logout</a>
+        {% endif %}
+      </div>
+    </nav>
+
+    <button class='navbar-toggler' type='button' data-toggle='collapse' data-target='#navbarSupportedContent'
+            aria-controls='navbarSupportedContent' aria-expanded='false' aria-label='Toggle navigation'>
+      <span class='navbar-toggler-icon'></span>
+    </button>
+
+  </div>
+</nav>
+
+{# Navigation menu / links bar #}
+<nav class='navbar navbar-expand-sm navbar-dark bg-primary p-sm-0 py-0 {% if navbar_shadow %}shadow-sm{% endif %}'>
+  <div class='container mt-0 pt-0'>
+    <div class='collapse navbar-collapse' id='navbarSupportedContent' style='margin-top: -16px;'>
+      <nav class='navbar-nav mr-auto'>
+        <a id='main-index' class='nav-link' href='{{ url_for('main.index') }}'>Home</a>
+
+        {% if current_user.is_authenticated %}
+          {# For hiding nav items from unauthed users #}
+        {% endif %}
+        {# About always right most #}
+        <a id='main-about' class='nav-link' href='{{ url_for('main.about') }}'>About</a>
+
+        {% if current_user.is_authenticated %}
+          <a class='nav-link d-sm-none' href='{{ url_for('user.logout') }}'><i
+            class='fas fa-sign-out-alt mr-1'></i>Logout</a>
+        {% endif %}
+      </nav>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,60 @@
+
+$theme-colors: (
+        "primary": #005ac2,
+        "secondary": #ffd100,
+        "white": #FFFFFF
+);
+
+$link-color: #005ac2;
+
+@import "../bootswatch-master/sandstone/variables";
+@import "../bootstrap-4.2.1/scss/bootstrap";
+@import "../bootswatch-master/sandstone/bootswatch";
+@import "../datatables/datatables";
+
+// colors <3
+.bg-primary {
+  background-color: map_get($theme-colors, "primary") !important;
+}
+
+// responsive font
+@include media-breakpoint-down(sm) {
+  html {
+    font-size: 14px;
+  }
+}
+
+// theming
+.sandstone {
+  font-size: 12px;
+}
+
+// nav link padding
+.nav-link {
+  @extend .p-sm-3;
+}
+
+// latex style formatting
+.latex sub {
+  vertical-align: -0.1ex;
+  margin-left: -0.1667em;
+  margin-right: -0.025em;
+}
+
+.latex sub, .latex sup {
+  font-size: 0.9em;
+  text-transform:uppercase;
+
+}
+.latex sup {
+  font-size: 0.85em;
+  vertical-align: -0.2em;
+  margin-left: -0.26em;
+  margin-right: -0.05em;
+}
+
+.btn-nav-dashboard {
+  @extend .btn, .btn-outline-white, .p-2, .px-3, .ml-auto;
+  color: rgba(255, 255, 255, 0.5);
+  border-color: rgba(255, 255, 255, 0.5);
+}

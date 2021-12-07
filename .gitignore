@@ -4,3 +4,4 @@ resources.py
 __pycache__/
 venv/
 static/policy/
+app/static/site.css
