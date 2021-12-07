@@ -1,8 +1,8 @@
 """initial_migration
 
-Revision ID: 5282d81e444f
+Revision ID: c96e78646fd6
 Revises:
-Create Date: 2021-12-06 22:47:31.033215
+Create Date: 2021-12-06 23:42:25.623270
 
 """
 from alembic import op
@@ -10,11 +10,10 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = '5282d81e444f'
+revision = 'c96e78646fd6'
 down_revision = None
 branch_labels = None
 depends_on = None
-
 
 property_clone_id_seq = sa.Sequence('property_clone_id_seq') # represents the sequence
 
@@ -46,7 +45,7 @@ def upgrade():
     )
     op.create_table('play_keys',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('key_string', mysql.CHAR(), nullable=False),
+    sa.Column('key_string', mysql.CHAR(length=19), nullable=False),
     sa.Column('key_uses', mysql.INTEGER(), server_default='1', nullable=False),
     sa.Column('created_at', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
@@ -66,9 +65,11 @@ def upgrade():
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('name', sa.Text(length=35), nullable=False),
     sa.Column('email', sa.Unicode(length=255), server_default='', nullable=False),
+    sa.Column('email_confirmed_at', sa.DateTime(), nullable=True),
     sa.Column('password', sa.Text(), server_default='', nullable=False),
     sa.Column('gm_level', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
     sa.Column('locked', sa.BOOLEAN(), server_default='0', nullable=False),
+    sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
     sa.Column('banned', sa.BOOLEAN(), server_default='0', nullable=False),
     sa.Column('play_key_id', sa.Integer(), nullable=False),
     sa.Column('created_at', sa.DateTime(), nullable=True),
@@ -81,9 +82,9 @@ def upgrade():
     op.create_table('account_invites',
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
-    sa.Column('invited_by_account_id', sa.Integer(), nullable=True),
+    sa.Column('invited_by_user_id', sa.Integer(), nullable=True),
     sa.Column('token', sa.String(length=100), server_default='', nullable=False),
-    sa.ForeignKeyConstraint(['invited_by_account_id'], ['accounts.id'], ondelete='CASCADE'),
+    sa.ForeignKeyConstraint(['invited_by_user_id'], ['accounts.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.execute(sa.schema.CreateSequence(property_clone_id_seq))
@@ -93,9 +94,9 @@ def upgrade():
     sa.Column('name', sa.Text(length=35), nullable=False),
     sa.Column('pending_name', sa.Text(length=35), nullable=False),
     sa.Column('needs_rename', sa.BOOLEAN(), server_default='0', nullable=False),
-    sa.Column('prop_clone_id', mysql.BIGINT(unsigned=True), autoincrement=True, nullable=False, server_default=property_clone_id_seq.next_value()),
+    sa.Column('prop_clone_id', mysql.BIGINT(unsigned=True), server_default='0', autoincrement=True, nullable=False),
     sa.Column('last_login', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
-    sa.Column('permission_map', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
+    sa.Column('permission_map', mysql.BIGINT(unsigned=True),  server_default=property_clone_id_seq.next_value(), nullable=False),
     sa.ForeignKeyConstraint(['account_id'], ['accounts.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('name'),

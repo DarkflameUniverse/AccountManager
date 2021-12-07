@@ -7,7 +7,7 @@ from app.models import db, migrate
 from app.schemas import ma
 from flask_wtf.csrf import CSRFProtect
 
-from app.commands import init_db, init_users
+from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
 from flask_user import user_registered, UserManager
 
@@ -44,6 +44,10 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
     app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME')
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL')
+
+    # add the commands to flask cli
+    app.cli.add_command(init_db)
+    app.cli.add_command(init_accounts)
 
     register_extensions(app)
     register_blueprints(app)

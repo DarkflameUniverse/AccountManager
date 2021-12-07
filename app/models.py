@@ -51,7 +51,7 @@ class PlayKey(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     key_string = db.Column(
-        mysql.CHAR,
+        mysql.CHAR(19),
         nullable=False,
         unique=True
     )
@@ -91,6 +91,7 @@ class Account(db.Model, UserMixin):
         server_default=u'',
         unique=True
     )
+    email_confirmed_at = db.Column(db.DateTime())
 
     password = db.Column(
         db.Text(),
@@ -108,6 +109,12 @@ class Account(db.Model, UserMixin):
         mysql.BOOLEAN,
         nullable=False,
         server_default='0'
+    )
+
+    active = db.Column(
+        mysql.BOOLEAN,
+        nullable=False,
+        server_default='1'
     )
 
     banned = db.Column(
@@ -156,7 +163,7 @@ class AccountInvitation(db.Model):
     email = db.Column(db.String(255), nullable=False)
 
     # save the user of the invitee
-    invited_by_account_id = db.Column(
+    invited_by_user_id = db.Column(
         db.Integer,
         db.ForeignKey(Account.id, ondelete='CASCADE')
     )
