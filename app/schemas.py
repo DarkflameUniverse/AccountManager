@@ -9,6 +9,13 @@ class PlayKeySchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
 
+class CharacterInfoSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CharacterInfo
+        include_relationships = False
+        load_instance = True
+        include_fk = True
+
 class AccountSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Account
@@ -17,7 +24,7 @@ class AccountSchema(ma.SQLAlchemyAutoSchema):
         include_fk = True
 
     play_key = ma.Nested(PlayKeySchema)
-
+    characters = ma.Nested(CharacterInfoSchema)
 
 class AccountInvitationSchema(ma.SQLAlchemyAutoSchema): #  noqa
     class Meta:

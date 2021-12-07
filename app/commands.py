@@ -60,7 +60,9 @@ def find_or_create_account(name, email, password, gm_level=9):
                     name=name,
                     password=current_app.user_manager.password_manager.hash_password(password),
                     play_key_id=play_key.id,
-                    email_confirmed_at=datetime.datetime.utcnow())
+                    email_confirmed_at=datetime.datetime.utcnow(),
+                    gm_level=gm_level
+                )
         play_key.key_uses = 0
         db.session.add(account)
         db.session.add(play_key)

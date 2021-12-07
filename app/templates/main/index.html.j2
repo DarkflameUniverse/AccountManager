@@ -12,6 +12,8 @@
 
 {% block content %}
   {% if current_user.is_authenticated %}
+    {% include 'main/_user_profile.html.j2' %}
+    {{account_data}}
   {% else %}
     <div class="row">
       <div class="col text-right">
