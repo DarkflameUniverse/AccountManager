@@ -18,6 +18,7 @@ def index():
                 Account.query.filter(Account.id == current_user.id).first()
             ).data
         )
+        del account_data["password"]
         return render_template('main/index.html.j2', account_data=account_data)
     else:
         return render_template('main/index.html.j2')
