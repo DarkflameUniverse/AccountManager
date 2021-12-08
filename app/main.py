@@ -19,6 +19,9 @@ def index():
             ).data
         )
         del account_data["password"]
+        if account_data["gm_level"] <= 3:
+            del account_data["play_key"]
+            del account_data["play_key_id"]
         return render_template('main/index.html.j2', account_data=account_data)
     else:
         return render_template('main/index.html.j2')

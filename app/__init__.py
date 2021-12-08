@@ -3,13 +3,14 @@ from flask import Flask, url_for
 from flask_assets import Environment
 from webassets import Bundle
 
-from app.models import db, migrate
+from app.models import db, migrate, PlayKey
 from app.schemas import ma
+from app.forms import CustomUserManager
+from flask_user import user_registered
 from flask_wtf.csrf import CSRFProtect
 
 from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
-from flask_user import user_registered, UserManager
 
 # Instantiate Flask extensions
 csrf_protect = CSRFProtect()
@@ -45,6 +46,15 @@ def create_app():
     app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME')
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL')
 
+    # decrement usus on a play eky after a successful registration
+    @user_registered.connect_via(app)
+    def after_register_hook(sender, user, **extra):
+
+        play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
+        play_key_used.key_uses = play_key_used.key_uses - 1
+        db.session.add(play_key_used)
+        db.session.commit()
+
     # add the commands to flask cli
     app.cli.add_command(init_db)
     app.cli.add_command(init_accounts)
@@ -65,7 +75,7 @@ def register_extensions(app):
     migrate.init_app(app, db)
     csrf_protect.init_app(app)
     ma.init_app(app)
-    user_manager = UserManager(
+    user_manager = CustomUserManager(
         app, db, Account, UserInvitationClass=AccountInvitation
     )
 
@@ -84,5 +94,5 @@ def register_blueprints(app):
 
     from .main import main_blueprint
     app.register_blueprint(main_blueprint)
-    from .admin import admin_blueprint
-    app.register_blueprint(admin_blueprint, url_prefix='/admin')
+    from .play_keys import play_keys_blueprint
+    app.register_blueprint(play_keys_blueprint, url_prefix='/play_keys')

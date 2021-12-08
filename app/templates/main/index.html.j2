@@ -4,7 +4,7 @@
 
 {% block content_before %}
   {% if current_user.is_authenticated %}
-    Welcome back {{ current_user.name }}!
+    Welcome back {{ current_user.username }}!
   {% else %}
     Welcome Explorer!
   {% endif %}

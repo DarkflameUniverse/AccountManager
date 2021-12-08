@@ -5,3 +5,4 @@ __pycache__/
 venv/
 static/policy/
 app/static/site.css
+app/static/.webassets-cache/**/*

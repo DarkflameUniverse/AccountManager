@@ -1,4 +1,4 @@
-{% extends "bootstrap/base.html" %}
+{% extends "base.html.j2" %}
 {% block title %}Account Creation{% endblock %}
 
 {% block content %}
@@ -7,7 +7,7 @@
     {# Display DLU.png #}
     <div style="margin-bottom: 50px">
         <img
-                src="{{ url_for('static', filename=resources.LOGO) }}"
+                src="{{ url_for('static', filename=logo/logo.png) }}"
                 class="center-block img-responsive mx-auto d-block"
                 alt="DLU Logo"
         >
@@ -53,7 +53,7 @@
             <input type="password" class="form-control" name="account_password" placeholder="Enter password...">
             <small class="form-text text-muted"></small>
         </div>
-        
+
         {# Account Repeat Password input #}
         <div class="form-group">
             <label for="account_repeat_password">Repeat Password</label>
@@ -68,7 +68,7 @@
                 I agree to the <a href="{{ url_for('static', filename=resources.PRIVACY_POLICY) }}" target="_blank">Privacy Policy</a> and <a href="{{ url_for('static', filename=resources.TERMS_OF_USE) }}" target="_blank">Terms of Service</a>
             </label>
         </div>
-        
+
         {# Submit button #}
         <div class="form-group">
             <button type="submit" class="btn btn-primary">Create Account</button>

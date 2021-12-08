@@ -1,12 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_user import UserMixin
+from wtforms import ValidationError
 
 import logging
 from flask_sqlalchemy import BaseQuery
 from sqlalchemy.dialects import mysql
 from sqlalchemy.exc import OperationalError, StatementError
 from time import sleep
+import random
+import string
 
 # retrying query to work around python trash collector
 # killing connections of other gunicorn workers
@@ -72,6 +75,42 @@ class PlayKey(db.Model):
         server_default='1'
     )
 
+    @staticmethod
+    def key_is_valid(*, key_string=None):
+        key = PlayKey.query.filter(PlayKey.key_string == key_string).first()
+        if not (key and key.active and key.key_uses > 0):
+            raise ValidationError(
+                'Not a valid Play Key'
+            )
+        else:
+            return key.id
+
+    @staticmethod
+    def create(*, count=1, uses=1):
+        for i in range(count):
+            key = ""
+            for j in range(4):
+                key += ''.join(random.choice(string.ascii_uppercase + string.digits) for _ in range(4)) + '-'
+            # Remove last dash
+            key = key[:-1]
+
+            new_key = PlayKey(
+                key_string=key,
+                key_uses=uses
+            )
+            db.session.add(new_key)
+            db.session.commit()
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+
 class Account(db.Model, UserMixin):
     __tablename__ = 'accounts'
     id = db.Column(
@@ -79,7 +118,8 @@ class Account(db.Model, UserMixin):
         primary_key=True
     )
 
-    name = db.Column(
+    username = db.Column(
+        'name',
         db.Text(35),
         nullable=False,
         unique=True
@@ -88,7 +128,7 @@ class Account(db.Model, UserMixin):
     email = db.Column(
         db.Unicode(255),
         nullable=False,
-        server_default=u'',
+        server_default='',
         unique=True
     )
     email_confirmed_at = db.Column(db.DateTime())
