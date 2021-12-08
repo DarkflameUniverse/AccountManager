@@ -96,3 +96,5 @@ def register_blueprints(app):
     app.register_blueprint(main_blueprint)
     from .play_keys import play_keys_blueprint
     app.register_blueprint(play_keys_blueprint, url_prefix='/play_keys')
+    from .accounts import accounts_blueprint
+    app.register_blueprint(accounts_blueprint, url_prefix='/accounts')

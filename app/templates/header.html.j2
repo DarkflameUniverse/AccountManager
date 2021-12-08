@@ -37,10 +37,14 @@
       <nav class='navbar-nav mr-auto'>
         <a id='main-index' class='nav-link' href='{{ url_for('main.index') }}'>Home</a>
 
-        {% if current_user.is_authenticated and current_user.gm_level == 9%}
-          {# For hiding nav items from unauthed users #}
+        {% if current_user.is_authenticated and current_user.gm_level >= 3 %}
+          <a id='main-about' class='nav-link' href='{{ url_for('accounts.index') }}'>Accounts</a>
+        {% endif %}
+
+        {% if current_user.is_authenticated and current_user.gm_level == 9 %}
           <a id='main-about' class='nav-link' href='{{ url_for('play_keys.index') }}'>Play Keys</a>
         {% endif %}
+
         {# About always right most #}
         <a id='main-about' class='nav-link' href='{{ url_for('main.about') }}'>About</a>
 

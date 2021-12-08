@@ -1,0 +1,17 @@
+{% extends 'base.html.j2' %}
+
+{% block title %}
+  Viewing {{ account_data.username }}
+{% endblock %}
+
+{% block content_before %}
+  Viewing {{ account_data.username }}
+  {% if current_user.id == account_data.id %}
+    <br/>
+     Hey, this is you!
+  {% endif %}
+{% endblock %}
+
+{% block content %}
+  {% include '_user_profile.html.j2' %}
+{% endblock content %}

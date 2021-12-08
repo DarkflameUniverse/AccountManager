@@ -94,7 +94,6 @@ def get():
         return
     columns = [
         ColumnDT(PlayKey.id),
-        ColumnDT(PlayKey.id),
         ColumnDT(PlayKey.key_string),
         ColumnDT(PlayKey.key_uses),
         ColumnDT(PlayKey.created_at),
@@ -108,9 +107,7 @@ def get():
     rowTable = DataTables(params, query, columns)
 
     data = rowTable.output_result()
-    print(data)
     for play_key in data["data"]:
-        print(play_key)
         play_key["0"] = f"""
             <a role="button" class="btn btn-primary btn btn-block"
             href='{url_for('play_keys.view', id=play_key["0"])}'>
@@ -125,5 +122,9 @@ def get():
             Delete
             </a>
         """
-    print(data)
+        if play_key["4"]:
+            play_key["4"] = '''<h1 class="far fa-check-square text-success"></h1>'''
+        else:
+            play_key["4"] = '''<h1 class="far fa-times-circle text-danger"></h1>'''
+
     return data

@@ -12,7 +12,7 @@
 
 {% block content %}
   {% if current_user.is_authenticated %}
-    {% include 'main/_user_profile.html.j2' %}
+    {% include '_user_profile.html.j2' %}
   {% else %}
     <div class="row">
       <div class="col text-right">
