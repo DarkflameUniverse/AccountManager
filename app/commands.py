@@ -57,7 +57,7 @@ def find_or_create_account(name, email, password, gm_level=9):
 
         play_key = PlayKey.query.filter(PlayKey.key_string == key).first()
         account = Account(email=email,
-                    name=name,
+                    username=name,
                     password=current_app.user_manager.password_manager.hash_password(password),
                     play_key_id=play_key.id,
                     email_confirmed_at=datetime.datetime.utcnow(),
