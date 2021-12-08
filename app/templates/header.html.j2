@@ -14,8 +14,7 @@
     <nav class='navbar-nav'>
       <div class='collapse navbar-collapse'>
         {% if current_user.is_authenticated %}
-          <a class='btn-nav-dashboard mr-2' href='{{ url_for('user.invite_user') }}'><i
-            class='fas fa-user mr-1'></i>Invite</a>
+          <a class='btn-nav-dashboard mr-2' href='{{ url_for('user.invite_user') }}'>Invite</a>
           <a class='btn-nav-dashboard' href='{{ url_for('user.logout') }}'><i
             class='fas fa-sign-out-alt mr-1'></i>Logout</a>
         {% endif %}
