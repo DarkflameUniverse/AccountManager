@@ -477,7 +477,7 @@ class ObjectIDTracker(db.Model):
 class PetNames(db.Model):
     __tablename__ = 'pet_names'
     id = db.Column(mysql.BIGINT, primary_key=True)
-    per_name = db.Column(
+    pet_name = db.Column(
         mysql.TEXT,
         nullable=False
     )
