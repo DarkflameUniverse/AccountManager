@@ -1,8 +1,8 @@
-from flask import render_template, Blueprint, redirect, url_for, request
+from flask import render_template, Blueprint, redirect, url_for, request, abort
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
-
+import datetime
 from app.models import Account, AccountInvitation, db
 from app.schemas import AccountSchema
 
@@ -18,6 +18,7 @@ def index():
         return
     return render_template('accounts/index.html.j2')
 
+
 @accounts_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
 def view(id):
@@ -31,6 +32,50 @@ def view(id):
     )
     del account_data["password"]
     return render_template('accounts/view.html.j2', account_data=account_data)
+
+
+@accounts_blueprint.route('/lock/<id>', methods=['GET'])
+@login_required
+def lock(id):
+    if current_user.gm_level < 3:
+        abort(403)
+        return
+
+    account = Account.query.filter(Account.id == id).first()
+    account.locked = not account.locked
+    account.save()
+    return redirect(url_for('accounts.view', id=id))
+
+
+@accounts_blueprint.route('/ban/<id>', methods=['GET'])
+@login_required
+def ban(id):
+    if current_user.gm_level < 3:
+        abort(403)
+        return
+
+    account = Account.query.filter(Account.id == id).first()
+    account.banned = not account.banned
+    account.save()
+    return redirect(url_for('accounts.view', id=id))
+
+@accounts_blueprint.route('/muted/<id>/<days>', methods=['GET'])
+@login_required
+def mute(id, days=0):
+    if current_user.gm_level < 3:
+        abort(403)
+        return
+
+    account = Account.query.filter(Account.id == id).first()
+
+    if days == "0":
+        account.mute_expire = 0
+    else:
+        muted_intil = datetime.datetime.now() + datetime.timedelta(days=int(days))
+        account.mute_expire = muted_intil.timestamp()
+
+    account.save()
+    return redirect(url_for('accounts.view', id=id))
 
 
 @accounts_blueprint.route('/get', methods=['GET'])

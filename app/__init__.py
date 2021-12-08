@@ -2,7 +2,7 @@ import os
 from flask import Flask, url_for
 from flask_assets import Environment
 from webassets import Bundle
-
+import time
 from app.models import db, migrate, PlayKey
 from app.schemas import ma
 from app.forms import CustomUserManager
@@ -54,6 +54,10 @@ def create_app():
         play_key_used.key_uses = play_key_used.key_uses - 1
         db.session.add(play_key_used)
         db.session.commit()
+
+    @app.template_filter('ctime')
+    def timectime(s):
+        return time.ctime(s) # datetime.datetime.fromtimestamp(s)
 
     # add the commands to flask cli
     app.cli.add_command(init_db)
