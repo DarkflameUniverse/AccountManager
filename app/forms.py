@@ -28,6 +28,7 @@ def validate_play_key(form, field):
     Returns:
         None, raises ValidationError if failed
     """
+    # jank to get the fireign key that we need back into the field
     field.data = PlayKey.key_is_valid(key_string=field.data)
     return
 
