@@ -23,7 +23,7 @@ USER_ENABLE_USERNAME = True  # Register and Login with username
 USER_ENABLE_EMAIL = True  # Register with Email
 USER_ENABLE_CONFIRM_EMAIL = True  # Force users to confirm their email
 USER_ENABLE_INVITE_USER = True  # Allow users to be invited
-USER_REQUIRE_INVITATION = True  # Only invited users may register
+USER_REQUIRE_INVITATION = False  # Only invited users may register
 USER_ENABLE_FORGOT_PASSWORD = True  # Allow users to reset their passwords
 
 # Password hashing settings
