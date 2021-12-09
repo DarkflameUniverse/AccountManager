@@ -127,10 +127,11 @@ class Account(db.Model, UserMixin):
 
     email = db.Column(
         db.Unicode(255),
-        nullable=False,
+        nullable=True,
         server_default='',
         unique=True
     )
+
     email_confirmed_at = db.Column(db.DateTime())
 
     password = db.Column(
@@ -175,7 +176,11 @@ class Account(db.Model, UserMixin):
         passive_deletes=True
     )
 
-    created_at = db.Column(db.DateTime())
+    created_at = db.Column(
+        mysql.TIMESTAMP,
+        nullable=False,
+        server_default=db.func.now()
+    )
 
     mute_expire = db.Column(
         mysql.BIGINT(unsigned=True),
@@ -248,15 +253,13 @@ class CharacterInfo(db.Model):
     )
 
     name = db.Column(
-        db.Text(35),
+        mysql.VARCHAR(35),
         nullable=False,
-        unique=True
     )
 
     pending_name = db.Column(
-        db.Text(35),
+        mysql.VARCHAR(35),
         nullable=False,
-        unique=True
     )
 
     needs_rename = db.Column(
@@ -267,10 +270,8 @@ class CharacterInfo(db.Model):
 
     prop_clone_id = db.Column(
         mysql.BIGINT(unsigned=True),
-        nullable=False,
-        server_default='0',
+        nullable=True,
         unique=True,
-        autoincrement=True
     )
 
     last_login = db.Column(
@@ -490,6 +491,7 @@ class PetNames(db.Model):
 class Property(db.Model):
     __tablename__ = 'properties'
     id = db.Column(mysql.BIGINT, primary_key=True)
+
     owner_id  = db.Column(
         mysql.BIGINT,
         db.ForeignKey(CharacterInfo.id, ondelete='CASCADE'),
@@ -512,7 +514,6 @@ class Property(db.Model):
     clone_id  = db.Column(
         mysql.BIGINT(unsigned=True),
         db.ForeignKey(CharacterInfo.prop_clone_id, ondelete='CASCADE'),
-        nullable=False
     )
 
     clone = db.relationship(
@@ -754,6 +755,28 @@ class BugReports(db.Model):
         mysql.TIMESTAMP,
         nullable=False,
         server_default=db.func.now()
+    )
+
+    resolved_time = db.Column(
+        mysql.TIMESTAMP,
+        nullable=True,
+    )
+
+    resoleved_by_id = db.Column(
+        db.Integer(),
+        db.ForeignKey(Account.id, ondelete='CASCADE'),
+        nullable=True
+    )
+
+    resoleved_by = db.relationship(
+        'Account',
+        backref="bugreports",
+        passive_deletes=True
+    )
+
+    resolution = db.Column(
+        mysql.TEXT,
+        nullable=True
     )
 
 class servers(db.Model):

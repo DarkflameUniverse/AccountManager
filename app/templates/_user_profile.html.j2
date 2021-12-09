@@ -27,15 +27,17 @@
         {{ account_data.username}}
       </div>
     </div>
-    <div class="row">
-      <div class="col text-right">
-        E-mail:
+    {% if config.USER_ENABLE_EMAIL %}
+      <div class="row">
+        <div class="col text-right">
+          E-mail:
+        </div>
+        <br/>
+        <div class="col">
+          {{ account_data.email }}
+        </div>
       </div>
-      <br/>
-      <div class="col">
-        {{ account_data.email }}
-      </div>
-    </div>
+    {% endif %}
     <div class="row">
       <div class="col text-right">
         Role:

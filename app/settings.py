@@ -15,14 +15,16 @@ WTF_CSRF_TIME_LIMIT = 86400
 USER_APP_NAME = APP_NAME
 USER_ENABLE_CHANGE_PASSWORD = True  # Allow users to change their password
 USER_ENABLE_CHANGE_USERNAME = True  # Allow users to change their username
-USER_ENABLE_CONFIRM_EMAIL = True  # Force users to confirm their email
-USER_ENABLE_FORGOT_PASSWORD = True  # Allow users to reset their passwords
-USER_ENABLE_EMAIL = True  # Register with Email
 USER_ENABLE_REGISTRATION = True  # Allow new users to register
-USER_ENABLE_INVITE_USER = True  # Allow users to be invited
-USER_REQUIRE_INVITATION = False  # Only invited users may register
 USER_REQUIRE_RETYPE_PASSWORD = True  # Prompt for `retype password` in:
 USER_ENABLE_USERNAME = True  # Register and Login with username
+
+# Set to True to enable support
+USER_ENABLE_EMAIL = True  # Register with Email
+USER_ENABLE_CONFIRM_EMAIL = True  # Force users to confirm their email
+USER_ENABLE_INVITE_USER = True  # Allow users to be invited
+USER_REQUIRE_INVITATION = True  # Only invited users may register
+USER_ENABLE_FORGOT_PASSWORD = True  # Allow users to reset their passwords
 
 # Password hashing settings
 USER_PASSLIB_CRYPTCONTEXT_SCHEMES = ['bcrypt']  # bcrypt for password hashing
