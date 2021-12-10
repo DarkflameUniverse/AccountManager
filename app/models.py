@@ -74,6 +74,10 @@ class PlayKey(db.Model):
         nullable=False,
         server_default='1'
     )
+    notes = db.Column(
+        mysql.TEXT,
+        nullable=True,
+    )
 
     @staticmethod
     def key_is_valid(*, key_string=None):
@@ -120,7 +124,7 @@ class Account(db.Model, UserMixin):
 
     username = db.Column(
         'name',
-        db.Text(35),
+        db.VARCHAR(35),
         nullable=False,
         unique=True
     )
@@ -141,7 +145,7 @@ class Account(db.Model, UserMixin):
     )
 
     gm_level = db.Column(
-        mysql.BIGINT(unsigned=True),
+        mysql.INTEGER(unsigned=True),
         nullable=False,
         server_default='0'
     )
@@ -165,7 +169,7 @@ class Account(db.Model, UserMixin):
     )
 
     play_key_id = db.Column(
-        db.Integer(),
+        mysql.INTEGER,
         db.ForeignKey(PlayKey.id, ondelete='CASCADE'),
         nullable=False
     )
@@ -237,9 +241,15 @@ class AccountInvitation(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+
+# This table is cursed, see prop_clone_id
 class CharacterInfo(db.Model):
     __tablename__ = 'charinfo'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.BIGINT,
+        primary_key=True,
+        autoincrement=False
+    )
 
     account_id = db.Column(
         db.Integer(),
@@ -267,10 +277,19 @@ class CharacterInfo(db.Model):
         nullable=False,
         server_default='0'
     )
-
+    # Cursed column
+    # So what this has to be in an autoincrementing entry for a foreign key
+    # and so to achieve that with sqlalchemy, we have to make it a primary key
+    # if you look at the initil migration, it the drops this as a primary key,
+    # cause it's not supposed to be a primary key
+    # but why does it have to be a primary key?
+    # sqlalchemy ignores the autoincrement variable for non-primary keys
+    # thanks for reading this
     prop_clone_id = db.Column(
         mysql.BIGINT(unsigned=True),
-        nullable=True,
+        nullable=False,
+        primary_key=True,
+        autoincrement=True,
         unique=True,
     )
 
@@ -356,7 +375,7 @@ class Leaderboard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
 
     game_id = db.Column(
-        mysql.INTEGER(),
+        mysql.INTEGER(unsigned=True),
         nullable=False,
         server_default='0'
     )
@@ -393,9 +412,13 @@ class Leaderboard(db.Model):
 
 class Mail(db.Model):
     __tablename__ = 'mail'
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(
+        mysql.INTEGER,
+        primary_key=True
+    )
+
     sender_id = db.Column(
-        mysql.BIGINT,
+        mysql.INTEGER,
         nullable=False
     )
 
@@ -490,7 +513,11 @@ class PetNames(db.Model):
 
 class Property(db.Model):
     __tablename__ = 'properties'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.BIGINT,
+        primary_key=True,
+        autoincrement=False
+    )
 
     owner_id  = db.Column(
         mysql.BIGINT,
@@ -508,7 +535,6 @@ class Property(db.Model):
     template_id = db.Column(
         mysql.INTEGER(unsigned=True),
         nullable=False,
-        server_default='0'
     )
 
     clone_id  = db.Column(
@@ -581,7 +607,10 @@ class Property(db.Model):
 
 class UGC(db.Model):
     __tablename__ = 'ugc'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.INTEGER,
+        primary_key=True
+    )
     account_id = db.Column(
         db.Integer(),
         db.ForeignKey(Account.id, ondelete='CASCADE'),
@@ -631,7 +660,11 @@ class UGC(db.Model):
 
 class PropertyContent(db.Model):
     __tablename__ = 'properties_contents'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.BIGINT,
+        primary_key=True,
+        autoincrement=False
+    )
     property_id = db.Column(
         db.BIGINT,
         db.ForeignKey(Property.id, ondelete='CASCADE'),
@@ -645,7 +678,7 @@ class PropertyContent(db.Model):
     )
 
     ugc_id = db.Column(
-        db.BIGINT,
+        db.INT,
         db.ForeignKey(UGC.id, ondelete='CASCADE'),
         nullable=False
     )
@@ -698,7 +731,7 @@ class PropertyContent(db.Model):
 
 class ActivityLog(db.Model):
     __tablename__ = 'activity_log'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(mysql.INTEGER, primary_key=True)
 
     character_id = db.Column(
         mysql.BIGINT,
@@ -729,7 +762,7 @@ class ActivityLog(db.Model):
 
 class BugReports(db.Model):
     __tablename__ = 'bug_reports'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(mysql.INTEGER, primary_key=True)
 
     body = db.Column(
         mysql.TEXT,
@@ -781,7 +814,10 @@ class BugReports(db.Model):
 
 class servers(db.Model):
     __tablename__ = 'servers'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.INTEGER,
+        primary_key=True
+    )
     name = db.Column(
         mysql.TEXT,
         nullable=False

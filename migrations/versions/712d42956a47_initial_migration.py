@@ -1,8 +1,8 @@
 """initial migration
 
-Revision ID: c88f2ae9375d
-Revises: 
-Create Date: 2021-12-08 20:45:30.635469
+Revision ID: 712d42956a47
+Revises:
+Create Date: 2021-12-10 12:00:00.848561
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import mysql
 
 # revision identifiers, used by Alembic.
-revision = 'c88f2ae9375d'
+revision = '712d42956a47'
 down_revision = None
 branch_labels = None
 depends_on = None
@@ -39,11 +39,12 @@ def upgrade():
     sa.Column('key_uses', mysql.INTEGER(), server_default='1', nullable=False),
     sa.Column('created_at', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
+    sa.Column('notes', mysql.TEXT(), nullable=True),
     sa.PrimaryKeyConstraint('id'),
     sa.UniqueConstraint('key_string')
     )
     op.create_table('servers',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.INTEGER(), nullable=False),
     sa.Column('name', mysql.TEXT(), nullable=False),
     sa.Column('ip', mysql.TEXT(), nullable=False),
     sa.Column('port', mysql.INTEGER(), nullable=False),
@@ -53,15 +54,15 @@ def upgrade():
     )
     op.create_table('accounts',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('name', sa.Text(length=35), nullable=False),
+    sa.Column('name', sa.VARCHAR(length=35), nullable=False),
     sa.Column('email', sa.Unicode(length=255), server_default='', nullable=True),
     sa.Column('email_confirmed_at', sa.DateTime(), nullable=True),
     sa.Column('password', sa.Text(), server_default='', nullable=False),
-    sa.Column('gm_level', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
+    sa.Column('gm_level', mysql.INTEGER(unsigned=True), server_default='0', nullable=False),
     sa.Column('locked', sa.BOOLEAN(), server_default='0', nullable=False),
     sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
     sa.Column('banned', sa.BOOLEAN(), server_default='0', nullable=False),
-    sa.Column('play_key_id', sa.Integer(), nullable=False),
+    sa.Column('play_key_id', mysql.INTEGER(), nullable=False),
     sa.Column('created_at', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('mute_expire', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
     sa.ForeignKeyConstraint(['play_key_id'], ['play_keys.id'], ondelete='CASCADE'),
@@ -78,7 +79,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('bug_reports',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.INTEGER(), nullable=False),
     sa.Column('body', mysql.TEXT(), nullable=False),
     sa.Column('client_version', mysql.TEXT(), nullable=False),
     sa.Column('other_player_id', mysql.TEXT(), nullable=False),
@@ -91,20 +92,25 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('charinfo',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.BIGINT(), autoincrement=False, nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
     sa.Column('name', mysql.VARCHAR(length=35), nullable=False),
     sa.Column('pending_name', mysql.VARCHAR(length=35), nullable=False),
     sa.Column('needs_rename', sa.BOOLEAN(), server_default='0', nullable=False),
-    sa.Column('prop_clone_id', mysql.BIGINT(unsigned=True), nullable=True),
+    sa.Column('prop_clone_id', mysql.BIGINT(unsigned=True), autoincrement=True, nullable=False),
     sa.Column('last_login', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
     sa.Column('permission_map', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
     sa.ForeignKeyConstraint(['account_id'], ['accounts.id'], ondelete='CASCADE'),
-    sa.PrimaryKeyConstraint('id'),
+    sa.PrimaryKeyConstraint('id', 'prop_clone_id'),
     sa.UniqueConstraint('prop_clone_id')
     )
+
+    # drop the primary key contstrain on prop_clone_id
+    # see the model for an explanation
+    op.execute('ALTER TABLE `charinfo` DROP PRIMARY KEY, ADD PRIMARY KEY (`id`) USING BTREE; ')
+
     op.create_table('activity_log',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.INTEGER(), nullable=False),
     sa.Column('character_id', mysql.BIGINT(), nullable=False),
     sa.Column('activity', mysql.INTEGER(), nullable=False),
     sa.Column('time', mysql.BIGINT(unsigned=True), nullable=False),
@@ -129,7 +135,7 @@ def upgrade():
     )
     op.create_table('leaderboard',
     sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('game_id', mysql.INTEGER(), server_default='0', nullable=False),
+    sa.Column('game_id', mysql.INTEGER(unsigned=True), server_default='0', nullable=False),
     sa.Column('last_played', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('character_id', mysql.BIGINT(), nullable=False),
     sa.Column('time', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
@@ -138,8 +144,8 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('mail',
-    sa.Column('id', sa.Integer(), nullable=False),
-    sa.Column('sender_id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.INTEGER(), nullable=False),
+    sa.Column('sender_id', mysql.INTEGER(), nullable=False),
     sa.Column('sender_name', mysql.VARCHAR(length=35), nullable=False),
     sa.Column('receiver_id', mysql.BIGINT(), nullable=False),
     sa.Column('receiver_name', mysql.VARCHAR(length=35), nullable=False),
@@ -155,9 +161,9 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('properties',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.BIGINT(), autoincrement=False, nullable=False),
     sa.Column('owner_id', mysql.BIGINT(), nullable=False),
-    sa.Column('template_id', mysql.INTEGER(unsigned=True), server_default='0', nullable=False),
+    sa.Column('template_id', mysql.INTEGER(unsigned=True), nullable=False),
     sa.Column('clone_id', mysql.BIGINT(unsigned=True), nullable=True),
     sa.Column('name', mysql.TEXT(), nullable=False),
     sa.Column('description', mysql.TEXT(), nullable=False),
@@ -175,7 +181,7 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('ugc',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.INTEGER(), nullable=False),
     sa.Column('account_id', sa.Integer(), nullable=False),
     sa.Column('character_id', mysql.BIGINT(), nullable=False),
     sa.Column('is_optimized', sa.BOOLEAN(), server_default='0', nullable=False),
@@ -187,9 +193,9 @@ def upgrade():
     sa.PrimaryKeyConstraint('id')
     )
     op.create_table('properties_contents',
-    sa.Column('id', mysql.BIGINT(), nullable=False),
+    sa.Column('id', mysql.BIGINT(), autoincrement=False, nullable=False),
     sa.Column('property_id', sa.BIGINT(), nullable=False),
-    sa.Column('ugc_id', sa.BIGINT(), nullable=False),
+    sa.Column('ugc_id', sa.INTEGER(), nullable=False),
     sa.Column('lot', mysql.INTEGER(), nullable=False),
     sa.Column('x', mysql.FLOAT(), nullable=False),
     sa.Column('y', mysql.FLOAT(), nullable=False),
