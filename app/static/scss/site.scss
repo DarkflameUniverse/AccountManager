@@ -24,6 +24,15 @@ $link-color: #005ac2;
   }
 }
 
+.card-columns {
+  @include media-breakpoint-only(lg) {
+    column-count: 4;
+  }
+  @include media-breakpoint-only(xl) {
+    column-count: 4;
+  }
+}
+
 // theming
 .sandstone {
   font-size: 12px;

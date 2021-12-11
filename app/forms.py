@@ -6,6 +6,7 @@ from flask_user.forms import (
     unique_username_validator
 )
 from flask_user import UserManager
+from wtforms.widgets import TextArea
 from wtforms import (
     StringField,
     HiddenField,
@@ -13,7 +14,8 @@ from wtforms import (
     BooleanField,
     SubmitField,
     validators,
-    IntegerField
+    IntegerField,
+    StringField
 )
 
 from wtforms.validators import DataRequired
@@ -101,6 +103,11 @@ class EditPlayKeyForm(FlaskForm):
 
     uses = IntegerField(
         'Play Key Uses'
+    )
+
+    notes = StringField(
+        'Notes',
+        widget=TextArea()
     )
 
     submit = SubmitField('Submit')

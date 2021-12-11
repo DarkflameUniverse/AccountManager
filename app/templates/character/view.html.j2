@@ -1,0 +1,15 @@
+{% extends 'base.html.j2' %}
+
+{% block title %}
+  Viewing {{ character_data.name }}
+{% endblock %}
+
+{% block content_before %}
+  Viewing {{ character_data.name }}
+{% endblock %}
+
+{% block content_after %}
+    {% with character=character_data%}
+      {% include 'partials/_character.html.j2' %}
+    {% endwith %}
+{% endblock content_after %}

@@ -101,31 +101,31 @@ def get():
     rowTable = DataTables(params, query, columns)
 
     data = rowTable.output_result()
-    for play_key in data["data"]:
-        play_key["0"] = f"""
+    for account in data["data"]:
+        account["0"] = f"""
             <a role="button" class="btn btn-primary btn btn-block"
-            href='{url_for('accounts.view', id=play_key["0"])}'>
+            href='{url_for('accounts.view', id=account["0"])}'>
             View
             </a>
         """
             #        <a role="button" class="btn btn-danger btn btn-block"
-            # href='{url_for('acounts.delete', id=play_key["0"])}'>
+            # href='{url_for('acounts.delete', id=account["0"])}'>
             # Delete
             # </a>
-        if play_key["4"]:
-            play_key["4"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+        if account["4"]:
+            account["4"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
         else:
-            play_key["4"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["4"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
 
-        if play_key["5"]:
-            play_key["5"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+        if account["5"]:
+            account["5"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
         else:
-            play_key["5"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["5"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
 
-        if play_key["6"]:
-            play_key["6"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+        if account["6"]:
+            account["6"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
         else:
-            play_key["6"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["6"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
 
 
     return data

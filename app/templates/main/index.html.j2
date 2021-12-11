@@ -12,7 +12,7 @@
 
 {% block content %}
   {% if current_user.is_authenticated %}
-    {% include '_user_profile.html.j2' %}
+    {% include 'partials/_account.html.j2' %}
   {% else %}
     <div class="row">
       <div class="col text-right">
@@ -29,5 +29,17 @@
       </div>
     </div>
   {% endif %}
-
 {% endblock content %}
+
+{% block content_after %}
+  <br/>
+  <br/>
+  <h3 class="text-center">Characters</h3>
+  <hr/>
+  <div class="card-columns">
+    {% for character in account_data.charinfo %}
+      {% include 'partials/_character.html.j2' %}
+    {% endfor %}
+  </div>
+{% endblock content_after %}
+

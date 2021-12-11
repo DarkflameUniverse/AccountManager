@@ -52,12 +52,13 @@ def create_app():
 
         play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
         play_key_used.key_uses = play_key_used.key_uses - 1
+        play_key_used.key_uses = play_key_used.times_used + 1
         db.session.add(play_key_used)
         db.session.commit()
 
     @app.template_filter('ctime')
     def timectime(s):
-        return time.ctime(s) # datetime.datetime.fromtimestamp(s)
+        return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
 
     # add the commands to flask cli
     app.cli.add_command(init_db)
@@ -102,3 +103,5 @@ def register_blueprints(app):
     app.register_blueprint(play_keys_blueprint, url_prefix='/play_keys')
     from .accounts import accounts_blueprint
     app.register_blueprint(accounts_blueprint, url_prefix='/accounts')
+    from .characters import character_blueprint
+    app.register_blueprint(character_blueprint, url_prefix='/characters')

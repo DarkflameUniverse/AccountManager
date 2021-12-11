@@ -195,7 +195,7 @@ def upgrade():
     op.create_table('properties_contents',
     sa.Column('id', mysql.BIGINT(), autoincrement=False, nullable=False),
     sa.Column('property_id', sa.BIGINT(), nullable=False),
-    sa.Column('ugc_id', sa.INTEGER(), nullable=False),
+    sa.Column('ugc_id', sa.INTEGER(), nullable=True),
     sa.Column('lot', mysql.INTEGER(), nullable=False),
     sa.Column('x', mysql.FLOAT(), nullable=False),
     sa.Column('y', mysql.FLOAT(), nullable=False),

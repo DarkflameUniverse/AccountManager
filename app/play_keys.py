@@ -66,11 +66,13 @@ def edit(id):
     if form.validate_on_submit():
         key.key_uses = form.uses.data
         key.active = form.active.data
+        key.notes = form.notes.data
         key.save()
         return redirect(url_for('play_keys.index'))
 
     form.uses.data = key.key_uses
     form.active.data = key.active
+    form.notes.data = key.notes
 
     return render_template('play_keys/edit.html.j2', form=form, key=key)
 
@@ -96,6 +98,7 @@ def get():
         ColumnDT(PlayKey.id),
         ColumnDT(PlayKey.key_string),
         ColumnDT(PlayKey.key_uses),
+        ColumnDT(PlayKey.times_used),
         ColumnDT(PlayKey.created_at),
         ColumnDT(PlayKey.active),
     ]
@@ -122,9 +125,9 @@ def get():
             Delete
             </a>
         """
-        if play_key["4"]:
-            play_key["4"] = '''<h1 class="far fa-check-square text-success"></h1>'''
+        if play_key["5"]:
+            play_key["5"] = '''<h1 class="far fa-check-square text-success"></h1>'''
         else:
-            play_key["4"] = '''<h1 class="far fa-times-circle text-danger"></h1>'''
+            play_key["5"] = '''<h1 class="far fa-times-circle text-danger"></h1>'''
 
     return data

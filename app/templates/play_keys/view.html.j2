@@ -28,6 +28,15 @@
       </div>
       <div class="row">
         <div class="col text-right">
+          Uses Left:
+        </div>
+        <br/>
+        <div class="col">
+          {{ key.key_uses}}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col text-right">
           Created:
         </div>
         <br/>
@@ -45,6 +54,15 @@
           {% else %}
             <h5 class="far fa-times-circle text-danger"></h5>
           {% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div class="col text-right">
+          Notes:
+        </div>
+        <br/>
+        <div class="col">
+          {{ key.notes }}
         </div>
       </div>
       <hr/>
@@ -70,7 +88,7 @@
           </div>
         {% endfor %}
       {% else %}
-        No accounts are using ths PLay Key
+        No accounts are using ths Play Key
       {% endif %}
       <br/>
     </div>

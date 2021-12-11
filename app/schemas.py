@@ -9,22 +9,43 @@ class PlayKeySchema(ma.SQLAlchemyAutoSchema):
         load_instance = True
         include_fk = True
 
+class PropertySchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = Property
+        include_relationships = False
+        load_instance = True
+        include_fk = False
+
+
+class CharacterXMLSchema(ma.SQLAlchemyAutoSchema):
+    class Meta:
+        model = CharacterXML
+        include_relationships = False
+        load_instance = True
+        include_fk = False
+
+
 class CharacterInfoSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = CharacterInfo
         include_relationships = False
         load_instance = True
-        include_fk = True
+        include_fk = False
+
+    charxml = ma.Nested(CharacterXMLSchema)
+    properties = ma.Nested(PropertySchema, many=True)
+
 
 class AccountSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = Account
         include_relationships = False
         load_instance = True
-        include_fk = True
+        include_fk = False
 
     play_key = ma.Nested(PlayKeySchema)
-    characters = ma.Nested(CharacterInfoSchema)
+    charinfo = ma.Nested(CharacterInfoSchema, many=True)
+
 
 class AccountInvitationSchema(ma.SQLAlchemyAutoSchema): #  noqa
     class Meta:

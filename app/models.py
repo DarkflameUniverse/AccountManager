@@ -74,9 +74,16 @@ class PlayKey(db.Model):
         nullable=False,
         server_default='1'
     )
+
     notes = db.Column(
         mysql.TEXT,
         nullable=True,
+    )
+
+    times_used = db.Column(
+        mysql.INTEGER,
+        nullable=False,
+        server_default='0'
     )
 
     @staticmethod
@@ -256,6 +263,7 @@ class CharacterInfo(db.Model):
         db.ForeignKey(Account.id, ondelete='CASCADE'),
         nullable=False
     )
+
     account = db.relationship(
         'Account',
         backref="charinfo",
@@ -304,6 +312,11 @@ class CharacterInfo(db.Model):
         nullable=False,
         server_default='0'
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
 
 class CharacterXML(db.Model):
     __tablename__ = 'charxml'
@@ -680,7 +693,7 @@ class PropertyContent(db.Model):
     ugc_id = db.Column(
         db.INT,
         db.ForeignKey(UGC.id, ondelete='CASCADE'),
-        nullable=False
+        nullable=True
     )
 
     ugc = db.relationship(
