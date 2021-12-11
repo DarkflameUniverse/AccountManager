@@ -32,12 +32,13 @@ def approve_name(id, action):
         if character.pending_name:
             character.name = character.pending_name
             character.pending_name = ""
+        character.needs_rename = False
     elif action == "rename":
         character.needs_rename = True
 
     character.save()
 
-    return render_template('character/index.html.j2')
+    return redirect(url_for("characters.index"))
 
 @character_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
@@ -101,7 +102,7 @@ def get():
             </a>
         """
 
-        if character["3"] and not character["4"]:
+        if character["3"] or character["4"]:
             character["0"] += f"""
             <a role="button" class="btn btn-success btn btn-block"
                 href='{url_for('characters.approve_name', id=id, action="approve")}'>
