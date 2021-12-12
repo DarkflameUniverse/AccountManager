@@ -45,7 +45,6 @@ class RetryingQuery(BaseQuery):
                     raise
                 self.session.rollback()
 
-
 db = SQLAlchemy(query_class=RetryingQuery)
 migrate = Migrate()
 
@@ -120,7 +119,6 @@ class PlayKey(db.Model):
         db.session.add(self)
         db.session.commit()
         db.session.refresh(self)
-
 
 class Account(db.Model, UserMixin):
     __tablename__ = 'accounts'
@@ -212,7 +210,6 @@ class Account(db.Model, UserMixin):
         db.session.delete(self)
         db.session.commit()
 
-
 class AccountInvitation(db.Model):
     __tablename__ = 'account_invites'
     id = db.Column(db.Integer, primary_key=True)
@@ -247,7 +244,6 @@ class AccountInvitation(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
-
 
 # This table is cursed, see prop_clone_id
 class CharacterInfo(db.Model):
@@ -524,6 +520,20 @@ class PetNames(db.Model):
         server_default='0'
     )
 
+class Zone(db.Model):
+    __tablename__ = 'zones'
+
+    id = db.Column(
+        mysql.INTEGER,
+        primary_key=True,
+        autoincrement=False
+    )
+
+    name = db.Column(
+        db.String(75),
+        nullable=False
+    )
+
 class Property(db.Model):
     __tablename__ = 'properties'
     id = db.Column(
@@ -615,8 +625,11 @@ class Property(db.Model):
 
     zone_id = db.Column(
         mysql.INTEGER,
+        db.ForeignKey(Zone.id),
         nullable=False,
     )
+
+    zone = db.relationship('Zone')
 
 class UGC(db.Model):
     __tablename__ = 'ugc'
@@ -773,7 +786,7 @@ class ActivityLog(db.Model):
         nullable=False,
     )
 
-class BugReports(db.Model):
+class BugReport(db.Model):
     __tablename__ = 'bug_reports'
     id = db.Column(mysql.INTEGER, primary_key=True)
 
@@ -825,7 +838,7 @@ class BugReports(db.Model):
         nullable=True
     )
 
-class servers(db.Model):
+class Server(db.Model):
     __tablename__ = 'servers'
     id = db.Column(
         mysql.INTEGER,

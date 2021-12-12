@@ -44,7 +44,7 @@ def lock(id):
     account = Account.query.filter(Account.id == id).first()
     account.locked = not account.locked
     account.save()
-    return redirect(url_for('accounts.view', id=id))
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
 @accounts_blueprint.route('/ban/<id>', methods=['GET'])
@@ -57,7 +57,8 @@ def ban(id):
     account = Account.query.filter(Account.id == id).first()
     account.banned = not account.banned
     account.save()
-    return redirect(url_for('accounts.view', id=id))
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
+
 
 @accounts_blueprint.route('/muted/<id>/<days>', methods=['GET'])
 @login_required
@@ -75,7 +76,7 @@ def mute(id, days=0):
         account.mute_expire = muted_intil.timestamp()
 
     account.save()
-    return redirect(url_for('accounts.view', id=id))
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
 @accounts_blueprint.route('/get', methods=['GET'])

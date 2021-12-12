@@ -1,11 +1,11 @@
 {% extends 'base.html.j2' %}
 
 {% block title %}
-  Account Management
+  Property Management
 {% endblock title %}
 
 {% block content_before %}
-  Account Management
+  Property Management
 {% endblock content_before %}
 
 {% block content %}
@@ -17,16 +17,22 @@
     </div>
     <br/>
   {% endif %}
-  <table class="table" id="characters_table">
+  <table class="table" id="properties_table">
     <thead>
         <tr>
             <th>Actions</th>
-            <th>Account</th>
+            <th>Owner</th>
+            <th>Template_id</th>
+            <th>Clone_id</th>
             <th>Name</th>
-            <th>Pending Name</th>
-            <th>Needs Rename</th>
-            <th>Last Login</th>
-            <th>Permission Map</th>
+            <th>Description</th>
+            <th>Privacy</th>
+            <th>Approved</th>
+            <th>last_updated</th>
+            <th>time_claimed</th>
+            <th>rejection_reason</th>
+            <th>reputation</th>
+            <th>zone.name</th>
         </tr>
     </thead>
     <tbody></tbody>
@@ -38,10 +44,10 @@
   {{ super () }}
   <script>
     $(document).ready(function(){
-        let characters_table = $('#characters_table').DataTable({
+        let properties_table = $('#properties_table').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ url_for('characters.get') }}",
+            "ajax": "{{ url_for('properties.get') }}",
           });
         });
   </script>

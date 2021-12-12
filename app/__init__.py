@@ -9,7 +9,7 @@ from app.forms import CustomUserManager
 from flask_user import user_registered
 from flask_wtf.csrf import CSRFProtect
 
-from app.commands import init_db, init_accounts
+from app.commands import init_db, init_accounts, init_data
 from app.models import Account, AccountInvitation
 
 # Instantiate Flask extensions
@@ -46,7 +46,8 @@ def create_app():
     app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME')
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL')
 
-    # decrement usus on a play eky after a successful registration
+    # decrement uses on a play eky after a successful registration
+    # and increment the times it has been used
     @user_registered.connect_via(app)
     def after_register_hook(sender, user, **extra):
 
@@ -63,6 +64,7 @@ def create_app():
     # add the commands to flask cli
     app.cli.add_command(init_db)
     app.cli.add_command(init_accounts)
+    app.cli.add_command(init_data)
 
     register_extensions(app)
     register_blueprints(app)
@@ -105,3 +107,5 @@ def register_blueprints(app):
     app.register_blueprint(accounts_blueprint, url_prefix='/accounts')
     from .characters import character_blueprint
     app.register_blueprint(character_blueprint, url_prefix='/characters')
+    from .properties import property_blueprint
+    app.register_blueprint(property_blueprint, url_prefix='/properties')

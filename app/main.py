@@ -15,15 +15,7 @@ def index():
     """Home/Index Page"""
     if current_user.is_authenticated:
 
-        account_data = json.loads(
-            account_schema.jsonify(
-                Account.query.filter(Account.id == current_user.id).first()
-            ).data
-        )
-
-        del account_data["password"]
-        if account_data["gm_level"] <= 3:
-            del account_data["play_key"]
+        account_data = Account.query.filter(Account.id == current_user.id).first()
 
         return render_template(
             'main/index.html.j2',

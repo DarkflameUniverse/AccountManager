@@ -37,21 +37,17 @@ def approve_name(id, action):
         character.needs_rename = True
 
     character.save()
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
 
-    return redirect(url_for("characters.index"))
 
 @character_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
 def view(id):
 
-    character_data = json.loads(
-        character_schema.jsonify(
-            CharacterInfo.query.filter(CharacterInfo.id == id).first()
-        ).data
-    )
+    character_data = CharacterInfo.query.filter(CharacterInfo.id == id).first()
 
     if current_user.gm_level < 3:
-        if character_data.has_key("account_id") and character_data["account_id"] != currennt_user.id:
+        if character_data.account_id and character_data.account_id != current_user.id:
             abort(403)
             return
 

@@ -32,16 +32,18 @@
         {% endif %}
       </div>
     </div>
-    <div class="row">
-      <div class="col text-right">
-        Permission Level:
+    {% if current_user.gm_level > 3 %}
+      <div class="row">
+        <div class="col text-right">
+          Permission Level:
+        </div>
+        <div class="col">
+          {% with gm_level=character.permission_map%}
+            {% include 'partials/_gm_level.html.j2' %}
+          {% endwith %}
+        </div>
       </div>
-      <div class="col">
-        {% with gm_level=character.permission_map%}
-          {% include 'partials/_gm_level.html.j2' %}
-        {% endwith %}
-      </div>
-    </div>
+    {% endif %}
     <div class="row">
       <div class="col text-right">
         Last Login:
@@ -51,6 +53,7 @@
       </div>
     </div>
     {% if request.endpoint != "characters.view" %}
+    <br/>
     <div class="row">
       <div class="col text-center">
           <a role="button" class="btn btn-primary btn-block"

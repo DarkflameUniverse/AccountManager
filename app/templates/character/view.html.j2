@@ -8,8 +8,20 @@
   Viewing {{ character_data.name }}
 {% endblock %}
 
-{% block content_after %}
+{% block content %}
     {% with character=character_data%}
       {% include 'partials/_character.html.j2' %}
     {% endwith %}
+{% endblock content %}
+
+{% block content_after %}
+  <br/>
+  <br/>
+  <h3 class="text-center">Properties</h3>
+  <hr/>
+  <div class="card-columns">
+    {% for property in character_data.properties_owner %}
+      {% include 'partials/_property.html.j2' %}
+    {% endfor %}
+  </div>
 {% endblock content_after %}
