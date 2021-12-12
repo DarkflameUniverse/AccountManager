@@ -129,10 +129,10 @@ def get():
 def view_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
-    if current_user.gm_level < 3:
-        if current_user.id != ugc_data.account_id:
-            abort(403)
-            return
+    # if current_user.gm_level < 3:
+    #     if current_user.id != ugc_data.account_id:
+    #         abort(403)
+    #         return
 
     return render_template('ldd/ldd.html.j2', id=id)
 
@@ -142,10 +142,10 @@ def get_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
 
-    if current_user.gm_level < 3:
-        if current_user.id != ugc_data.account_id:
-            abort(403)
-            return
+    # if current_user.gm_level < 3:
+    #     if current_user.id != ugc_data.account_id:
+    #         abort(403)
+    #         return
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
     response = make_response(uncompressed_lxfml)
     response.headers.set('Content-Type', 'text/xml')
@@ -158,10 +158,10 @@ def get_ugc(id):
 def download_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
-    if current_user.gm_level < 3:
-        if current_user.id != ugc_data.account_id:
-            abort(403)
-            return
+    # if current_user.gm_level < 3:
+    #     if current_user.id != ugc_data.account_id:
+    #         abort(403)
+    #         return
 
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
 
