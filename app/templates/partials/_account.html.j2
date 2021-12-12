@@ -92,7 +92,7 @@
       </div>
     {% endif %}
 
-    {% if account_data.play_key %}
+    {% if account_data.play_key and current_user.gm_level > 3 %}
       <hr/>
       <div class="row">
         <div class="col text-center">

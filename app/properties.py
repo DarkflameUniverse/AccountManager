@@ -124,10 +124,21 @@ def get():
     return data
 
 
-
 @property_blueprint.route('/view_ugc/<id>', methods=['GET'])
 @login_required
 def view_ugc(id):
+    ugc_data = UGC.query.filter(UGC.id==id).first()
+
+    if current_user.gm_level < 3:
+        if current_user.id != ugc_data.account_id:
+            abort(403)
+            return
+
+    return render_template('ldd/ldd.html.j2', id=id)
+
+@property_blueprint.route('/get_ugc/<id>', methods=['GET'])
+@login_required
+def get_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
 
@@ -136,7 +147,10 @@ def view_ugc(id):
             abort(403)
             return
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
-    return jsonify(xmltodict.parse(uncompressed_lxfml))
+    response = make_response(uncompressed_lxfml)
+    response.headers.set('Content-Type', 'text/xml')
+    return response
+    # return jsonify(xmltodict.parse(uncompressed_lxfml))
 
 
 @property_blueprint.route('/download_ugc/<id>', methods=['GET'])
