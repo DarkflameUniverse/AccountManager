@@ -125,7 +125,7 @@ def get():
 
 
 @property_blueprint.route('/view_ugc/<id>', methods=['GET'])
-@login_required
+# @login_required
 def view_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
@@ -137,7 +137,7 @@ def view_ugc(id):
     return render_template('ldd/ldd.html.j2', id=id)
 
 @property_blueprint.route('/get_ugc/<id>', methods=['GET'])
-@login_required
+# @login_required
 def get_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
@@ -154,7 +154,7 @@ def get_ugc(id):
 
 
 @property_blueprint.route('/download_ugc/<id>', methods=['GET'])
-@login_required
+# @login_required
 def download_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
