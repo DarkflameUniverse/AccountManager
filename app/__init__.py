@@ -53,7 +53,7 @@ def create_app():
 
         play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
         play_key_used.key_uses = play_key_used.key_uses - 1
-        play_key_used.key_uses = play_key_used.times_used + 1
+        play_key_used.times_used = play_key_used.times_used + 1
         db.session.add(play_key_used)
         db.session.commit()
 
