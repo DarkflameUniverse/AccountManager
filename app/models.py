@@ -629,6 +629,11 @@ class Property(db.Model):
         nullable=False,
     )
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
     zone = db.relationship('Zone')
 
 class UGC(db.Model):

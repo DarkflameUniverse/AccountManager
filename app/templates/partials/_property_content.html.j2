@@ -4,15 +4,15 @@
       <div class="col text-center">
         <h4>
           {% if not item.ugc_id %}
-            {{ item.lot }}
+            Model: {{ item.lot }}
           {% else %}
-            {{ item.ugc_id }}
+            UGC: {{ item.ugc_id }}
           {% endif %}
         </h4>
       </div>
     </div>
     <br/>
-    <div class="row">
+    {# <div class="row">
       <div class="col text-right">
         ID:
       </div>
@@ -20,7 +20,18 @@
       <div class="col">
         {{ item.id }}
       </div>
-    </div>
+    </div> #}
+    {% if item.lot != 14 %}
+      <div class="row">
+        <div class="col text-right">
+          LOT:
+        </div>
+        <br/>
+        <div class="col">
+          {{ item.lot }}
+        </div>
+      </div>
+    {% endif %}
     {% if item.ugc_id %}
       <br/>
       <div class="row">

@@ -33,7 +33,7 @@
 //Three.js stuff
 const scene = new THREE.Scene();
 var cammatr = new THREE.Matrix4();
-
+var brick_pos = new THREE.Vector3();
 
 class Matrix3D{
 	//done
@@ -252,90 +252,17 @@ class Brick{
 }
 
 
-class SceneCamera{
-	//done
-	constructor(node){
-		this.refID = node.getAttribute('refID')
-		let [a, b, c, d, e, f, g, h, i, x, y, z] = node.getAttribute('transformation').split(',').map(parseFloat);
-		this.matrix = new Matrix3D(a,b,c,0,d,e,f,0,g,h,i,0,x,y,z,1);
-		this.fieldOfView = parseFloat(node.getAttribute('fieldOfView'));
-		this.distance = parseFloat(node.getAttribute('distance'));
-	}
-}
-
-
-class InstructionStep{
-	//done
-	constructor(camera, name, parts){
-	this.camera = camera
-	this.name = name
-	this.allStepParts = parts.split(',');
-	}
-}
-
-
-class SceneBuildingInstruction{
-	//still has bugs ? Maybe ?
-	constructor(node){
-		this.name = node.getAttribute('name')
-		this.steps =[]
-
-		var childnodes = node.childNodes
-		var parts = []
-		this.parseStep(node, parts)
-	}
-
-	parseStep(node, StepParts){
-		var self = this;
-		var allStepParts =[]
-		var currentStepCamera
-		var childnodes = node.childNodes
-		var currentStepName = node.getAttribute('name')
-		//console.log(new XMLSerializer().serializeToString(node))
-
-
-		for (var j = 0; j < childnodes.length ;j++) {
-			var childnode = childnodes[j]
-
-			if (childnode.nodeName == 'Camera'){
-				currentStepCamera = childnode.getAttribute('cameraRef')
-			}
-			else if (childnode.nodeName == 'Step'){
-				currentStepName = childnode.getAttribute('name')
-				var subchildnodes = childnode.childNodes
-				for (var k = 0; k < subchildnodes.length ;k++) {
-					var subchildnode = subchildnodes[k]
-					if (subchildnode.nodeName == 'Camera'){
-						currentStepCamera = subchildnode.getAttribute('cameraRef')
-					}
-					else if (subchildnode.nodeName == 'PartRef'){
-						allStepParts.push(subchildnode.getAttribute('partRef'))
-					}
-					else if (subchildnode.nodeName == 'Step'){
-						var subStepParts = self.parseStep(subchildnode, allStepParts)
-						var allStepParts = allStepParts.concat(subStepParts).join(',')
-						allStepParts = allStepParts.split(',');
-					}
-				}
-				self.steps.push(new InstructionStep(currentStepCamera, currentStepName, allStepParts.join(',')))
-			}
-			else if (childnode.nodeName == 'PartRef'){
-				allStepParts.push(childnode.getAttribute('partRef'))
-			}
-		}
-		return allStepParts
-	}
-}
-
-
 class Scene{
 	//partially done - need zip file handling
-	constructor(file){
+	constructor(){
 		this.Bricks = []
 		this.Scenecamera = []
 		this.Groups = []
 		this.SceneBuildingInstructions = []
 		this.xmldata = ''
+  }
+
+  AddScene(file){
     var lxfmlfile = new DBURLFile(file,file)
     this.xmldata = lxfmlfile.read()
 
@@ -345,18 +272,6 @@ class Scene{
 
 		var parser = new DOMParser();
 		var xml = parser.parseFromString(this.xmldata, "text/xml");
-    {# let camerasNode = document.createElement("Cameras")
-    let cameraNode = document.createElement("Camera")
-    cameraNode.setAttribute("refID", "0")
-    cameraNode.setAttribute("fieldOfView", "80")
-    cameraNode.setAttribute("distance", "-30")
-    let bone_transform = xml.firstChild.getElementsByTagName("Bone")[0]
-    console.log(bone_transform)
-
-    cameraNode.setAttribute("transformation", bone_transform.attributes["transformation"].value)
-
-    camerasNode.appendChild(cameraNode)
-    xml.firstChild.appendChild(camerasNode) #}
 
 		var nodes = xml.firstChild.childNodes;
 		for (var i = 0; i < nodes.length ;i++) {
@@ -367,15 +282,6 @@ class Scene{
 					var childnode = childnodes[j]
 					if (childnode.nodeName == 'BrickSet'){
 						this.Version = childnode.getAttribute('version')
-					}
-				}
-			}
-			else if (node.nodeName == 'Cameras'){
-				var childnodes = node.childNodes
-				for (var j = 0; j < childnodes.length ;j++) {
-					var childnode = childnodes[j]
-					if (childnode.nodeName == 'Camera'){
-						this.Scenecamera.push(new SceneCamera(childnode))
 					}
 				}
 			}
@@ -403,18 +309,8 @@ class Scene{
 					}
 				}
 			}
-			else if (node.nodeName == 'BuildingInstructions'){
-				var childnodes = node.childNodes
-				for (var j = 0; j < childnodes.length ;j++) {
-					var childnode = childnodes[j]
-					if (childnode.nodeName == 'BuildingInstruction'){
-						this.SceneBuildingInstructions.push(new SceneBuildingInstruction(childnode))
-					}
-				}
-			}
-
 		}
-
+    console.log(this)
 		for (const [i, m] of this.Groups.entries()) {
 			for (const brick of this.Bricks){
 				for (const part of brick.Parts){
@@ -613,6 +509,7 @@ class Converter {
 
 	constructor(){
 		this.allMaterials = ''
+    this.scene = new Scene()
 	}
 
 	LoadDBURL(dbURLlocation){
@@ -625,7 +522,7 @@ class Converter {
 
 	LoadScene(filename){
 		if(this.database.initok){
-			this.scene = new Scene(filename)
+      this.scene.AddScene(filename)
 		}
 	}
 
@@ -805,6 +702,7 @@ class Converter {
 					var mesh = new THREE.Mesh(geometry, materials);
 					mesh.matrixAutoUpdate = false
 					mesh.matrix = m
+          brick_pos.getPositionFromMatrix( m );
 					scene.add(mesh);
 					// var vnh = new VertexNormalsHelper( mesh, 5 );
 					// scene.add( vnh );
@@ -1030,57 +928,6 @@ function FindDBURL(){
 }
 
 
-function generateScenefromStep(InstructionStep){
-	var sceneXML = String(converter.scene.xmldata)
-	var stepName = InstructionStep.name
-	var sceneName =  converter.scene.Name
-
-	parser = new DOMParser();
-	xmlDoc = parser.parseFromString(sceneXML,"text/xml");
-
-	var xmlheader = `<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<LXFML versionMajor="5" versionMinor="0" name="${sceneName}_${stepName}">
-	<Meta>
-		<Application name="LEGO Digital Designer" versionMajor="4" versionMinor="3"/>
-		<Brand name="LDDExtended"/>
-	<BrickSet version="2670"/>
-</Meta>
-`
-
-	path = "/LXFML/Cameras/Camera[@refID=" + InstructionStep.camera + "]"
-	var nodes = xmlDoc.evaluate(path, xmlDoc, null, XPathResult.ANY_TYPE, null);
-	var cam = nodes.iterateNext();
-	cam = '<Cameras>\n\t' + new XMLSerializer().serializeToString(cam) + '\n</Cameras>\n'
-
-	var nodes = xmlDoc.evaluate("/LXFML/GroupSystems", xmlDoc, null, XPathResult.ANY_TYPE, null);
-	var groups = nodes.iterateNext();
-	groups = new XMLSerializer().serializeToString(groups)
-
-	var xpathstr = ''
-	var andchar = ''
-	for (var partID of InstructionStep.allStepParts){
-		xpathstr = xpathstr + andchar + "/LXFML/Bricks/Brick/Part[@refID=\'" + partID + "\']"
-		andchar =' | '
-	}
-
-	var nodes = xmlDoc.evaluate(xpathstr, xmlDoc, null, XPathResult.ANY_TYPE, null);
-	var result = nodes.iterateNext();
-	var allParts = ''
-	while (result) {
-		var part = new XMLSerializer().serializeToString(result)
-		part =  '\n\t<Brick refID="" designID="">' + part + '\n</Brick>'
-		allParts = allParts + part
-		//console.log(part)
-		result = nodes.iterateNext();
-	}
-	allParts = `<Bricks cameraRef="${InstructionStep.camera}">` + allParts + '\n</Bricks>\n'
-
-	var stepScene = xmlheader + cam + allParts + groups + '\n</LXFML>'
-	return stepScene
-
-}
-
-
 class DBURLFile {
 	constructor(urlHandle, name) {
 		this.urlHandle = urlHandle
@@ -1185,26 +1032,16 @@ class DBURLReader {
 
 
 //Start
-var scenefile = ''
-var pageparams = window.location.search
-	.substring(1)
-	.split("&")
-	.map(v => v.split("="))
-	.reduce((map, [key, value]) => map.set(key, decodeURIComponent(value)), new Map())
-	if (pageparams.get('scene')){
-		scenefile = pageparams.get('scene')
-	}
-
-	else{
-		scenefile = ["{{url_for('properties.get_ugc', id=id)}}"]
-    {# scenefile = "https://raw.githubusercontent.com/sttng/LDD-Webviewer/master/chicken.lxfml" #}
-	}
+var scenefile_list = [{% for item in model_list %} "{{url_for('properties.get_ugc', id=item)}}"{{ ", " if not loop.last else "" }} {% endfor %}]
 var ldddburl = FindDBURL()
 
 if (ldddburl) {
 	converter = new Converter()
 	converter.LoadDBURL(dbURLlocation = ldddburl)
-	converter.LoadScene(filename = scenefile)
+  for (var i = 0; i < scenefile_list.length; i++) {
+      console.log(scenefile_list[i]);
+      converter.LoadScene(filename = scenefile_list[i])
+  }
 	converter.Export(filename = 'test.webgl')
 
 }
@@ -1214,12 +1051,12 @@ else {
 
 
 // Three.JS stuff
-
 var container = document.createElement( 'div' );
 document.body.appendChild( container );
 
 camera = new THREE.PerspectiveCamera( 2.5, window.innerWidth / window.innerHeight, 1, 10000 );
-camera.position.set( 8, 445, -37 );
+
+camera.position.set( brick_pos.x + 50, brick_pos.y + 300, brick_pos.z + 50 );
 
 // scene
 scene.background = new THREE.Color( 0xdeebed );
@@ -1233,16 +1070,15 @@ scene.add( directionalLight );
 
 //
 
-renderer = new THREE.WebGLRenderer( { antialias: true } );
+renderer = new THREE.WebGLRenderer( { antialias: false } );
 renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 container.appendChild( renderer.domElement );
 
-
-
-{# camera.matrix = cammatr #}
-
+console.log(scene)
 var controls = new THREE.OrbitControls (camera, renderer.domElement);
+controls.target = brick_pos
+controls.update()
  // if ( vnh ) vnh.update();
 
 var render = function () {

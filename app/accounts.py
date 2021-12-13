@@ -3,6 +3,7 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import datetime
+import time
 from app.models import Account, AccountInvitation, db
 from app.schemas import AccountSchema
 
@@ -25,12 +26,8 @@ def view(id):
     if current_user.gm_level < 3:
         abort(403)
         return
-    account_data = json.loads(
-        account_schema.jsonify(
-            Account.query.filter(Account.id == id).first()
-        ).data
-    )
-    del account_data["password"]
+    account_data = Account.query.filter(Account.id == id).first()
+
     return render_template('accounts/view.html.j2', account_data=account_data)
 
 
@@ -93,6 +90,8 @@ def get():
         ColumnDT(Account.locked),
         ColumnDT(Account.banned),
         ColumnDT(Account.mute_expire),
+        ColumnDT(Account.created_at),
+        ColumnDT(Account.email_confirmed_at)
     ]
 
     query = db.session.query().select_from(Account)
@@ -114,19 +113,24 @@ def get():
             # Delete
             # </a>
         if account["4"]:
-            account["4"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+            account["4"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
-            account["4"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["4"] = '''<h2 class="far fa-check-square text-success"></h2>'''
 
         if account["5"]:
-            account["5"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+            account["5"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
-            account["5"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["5"] = '''<h2 class="far fa-check-square text-success"></h2>'''
 
         if account["6"]:
-            account["6"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+            account["6"] = f'''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
-            account["6"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            account["6"] = '''<h2 class="far fa-check-square text-success"></h2>'''
+
+        if account["8"]:
+            account["8"] = f'''<h2 class="far fa-check-square text-success"></h2>'''
+        else:
+            account["8"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
 
 
     return data

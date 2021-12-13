@@ -2,8 +2,8 @@ from flask import render_template, Blueprint, redirect, url_for, request, abort,
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
-import datetime
-from app.models import Property, db, UGC
+import time
+from app.models import Property, db, UGC, CharacterInfo, Zone, PropertyContent
 from app.schemas import PropertySchema
 
 import zlib
@@ -22,22 +22,20 @@ def index():
     return render_template('properties/index.html.j2')
 
 
-@property_blueprint.route('/approve_name/<id>/<action>', methods=['GET'])
+@property_blueprint.route('/approve/<id>', methods=['GET'])
 @login_required
-def approve_name(id, action):
+def approve(id):
     if current_user.gm_level < 3:
         abort(403)
         return
 
     property_data =  Property.query.filter(Property.id == id).first()
 
-    if action == "approve":
-        if property_data.pending_name:
-            property_data.name = property_data.pending_name
-            property_data.pending_name = ""
-        property_data.needs_rename = False
-    elif action == "rename":
-        property_data.needs_rename = True
+    property_data.mod_approved = not property_data.mod_approved
+
+    # If we approved it, clear the rejection reason
+    if property_data.mod_approved:
+        property_data.rejection_reason = ""
 
     property_data.save()
     return redirect(request.referrer if request.referrer else url_for("main.index"))
@@ -69,7 +67,7 @@ def get():
         return
     columns = [
         ColumnDT(Property.id),
-        ColumnDT(Property.owner),
+        ColumnDT(Property.owner_id),
         ColumnDT(Property.template_id),
         ColumnDT(Property.clone_id),
         ColumnDT(Property.name),
@@ -91,34 +89,55 @@ def get():
 
     data = rowTable.output_result()
     for property_data in data["data"]:
-        # id = property["0"]
-        # property["0"] = f"""
-        #     <a role="button" class="btn btn-primary btn btn-block"
-        #         href='{url_for('property.view', id=id)}'>
-        #         View
-        #     </a>
-        # """
-        print(property_data["1"])
-        # if not property["4"]:
-        #     property["0"] += f"""
-        #     <a role="button" class="btn btn-danger btn btn-block"
-        #         href='{url_for('propertys.approve_name', id=id, action="rename")}'>
-        #         Needs Rename
-        #     </a>
-        # """
+        id = property_data["0"]
 
-        # if property["3"] or property["4"]:
-        #     property["0"] += f"""
-        #     <a role="button" class="btn btn-success btn btn-block"
-        #         href='{url_for('propertys.approve_name', id=id, action="approve")}'>
-        #         Approve Name
-        #     </a>
-        # """
+        property_data["0"] = f"""
+            <a role="button" class="btn btn-primary btn btn-block"
+                href='{url_for('properties.view', id=id)}'>
+                View
+            </a>
+        """
 
         if not property_data["7"]:
-            property_data["7"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
+            property_data["0"] += f"""
+                <a role="button" class="btn btn-success btn btn-block"
+                    href='{url_for('properties.approve', id=id)}'>
+                    Approve
+                </a>
+            """
         else:
-            property_data["7"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+            property_data["0"] += f"""
+                <a role="button" class="btn btn-danger btn btn-block"
+                    href='{url_for('properties.approve', id=id)}'>
+                    Unapprove
+                </a>
+            """
+
+        property_data["1"] = f"""
+            <a role="button" class="btn btn-primary btn btn-block"
+                href='{url_for('characters.view', id=property_data["1"])}'>
+                {CharacterInfo.query.filter(CharacterInfo.id==property_data['1']).first().name}
+            </a>
+        """
+
+        if property_data["4"] == "":
+            property_data["4"] = f"{Zone.query.filter(Zone.id==property_data['12']).first().name}"
+
+        if property_data["6"] == 0:
+            property_data["6"] = "Private"
+        elif property_data["6"] == 1:
+            property_data["6"] = "Best Friends"
+        else:
+            property_data["6"] = "Public"
+
+        property_data["8"] = time.ctime(property_data["8"])
+        property_data["9"] = time.ctime(property_data["9"])
+        property_data["12"] = Zone.query.filter(Zone.id==property_data["12"]).first().name
+
+        if not property_data["7"]:
+            property_data["7"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
+        else:
+            property_data["7"] = '''<h2 class="far fa-check-square text-success"></h2>'''
 
 
     return data
@@ -129,12 +148,19 @@ def get():
 def view_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
-    # if current_user.gm_level < 3:
-    #     if current_user.id != ugc_data.account_id:
-    #         abort(403)
-    #         return
+    return render_template('ldd/ldd.html.j2', model_list=[id])
 
-    return render_template('ldd/ldd.html.j2', id=id)
+@property_blueprint.route('/view_models/<id>', methods=['GET'])
+def view_models(id):
+    property_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
+
+    model_list = []
+    for content in property_data:
+        if content.ugc_id:
+            model_list.append(content.ugc_id)
+
+
+    return render_template('ldd/ldd.html.j2', model_list=model_list)
 
 @property_blueprint.route('/get_ugc/<id>', methods=['GET'])
 # @login_required
