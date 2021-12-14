@@ -31,14 +31,14 @@
       </div>
     </div>
     {# Never get's updated currenlty #}
-    {# <div class="row">
+    <div class="row">
       <div class="col text-right">
         Updated:
       </div>
       <div class="col">
           {{ property.last_updated|ctime }}
       </div>
-    </div> #}
+    </div>
     <div class="row">
       <div class="col text-right">
         Claimed:
@@ -76,6 +76,16 @@
             <a role="button" class="btn btn-primary btn-block"
               href='{{ url_for('properties.view', id=property.id) }}'>
               View Property
+            </a>
+        </div>
+      </div>
+    {% else %}
+      <br/>
+      <div class="row">
+        <div class="col text-center">
+            <a role="button" class="btn btn-primary btn-block"
+              href='{{ url_for('properties.view_ugcs', id=property.id) }}'>
+              View UGC Models
             </a>
         </div>
       </div>

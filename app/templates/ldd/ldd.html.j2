@@ -33,7 +33,12 @@
 //Three.js stuff
 const scene = new THREE.Scene();
 var cammatr = new THREE.Matrix4();
-var brick_pos = new THREE.Vector3();
+{% if center %}
+  var brick_pos = new THREE.Vector3{{center}};
+{% else %}
+  var brick_pos = new THREE.Vector3();
+{% endif %}
+
 
 class Matrix3D{
 	//done
@@ -701,7 +706,9 @@ class Converter {
 					var mesh = new THREE.Mesh(geometry, materials);
 					mesh.matrixAutoUpdate = false
 					mesh.matrix = m
-          brick_pos.setFromMatrixPosition( m );
+          {% if not center %}
+            brick_pos.setFromMatrixPosition( m );
+          {% endif %}
 					scene.add(mesh);
 					// var vnh = new VertexNormalsHelper( mesh, 5 );
 					// scene.add( vnh );
@@ -1053,8 +1060,11 @@ var container = document.createElement( 'div' );
 document.body.appendChild( container );
 
 camera = new THREE.PerspectiveCamera( 2.5, window.innerWidth / window.innerHeight, 1, 10000 );
-
-camera.position.set( brick_pos.x + 50, brick_pos.y + 300, brick_pos.z + 50 );
+{% if center %}
+  camera.position.set( brick_pos.x + 800, brick_pos.y + 800, brick_pos.z + 800 );
+{% else %}
+  camera.position.set( brick_pos.x + 200, brick_pos.y + 300, brick_pos.z + 200 );
+{% endif %}
 
 // scene
 scene.background = new THREE.Color( 0xdeebed );
@@ -1062,9 +1072,13 @@ scene.background = new THREE.Color( 0xdeebed );
 var ambientLight = new THREE.AmbientLight( 0xdeebed, 0.4 );
 scene.add( ambientLight );
 
-var directionalLight = new THREE.DirectionalLight( 0xffffff, 1 );
-directionalLight.position.set( - 1000, 1200, 1500 );
+var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.75 );
+directionalLight.position.set( - 10000, 12000, 15000 );
 scene.add( directionalLight );
+
+var directionalLight2 = new THREE.DirectionalLight( 0xffffff, 0.75 );
+directionalLight2.position.set( 10000, 12000, -15000 );
+scene.add( directionalLight2 );
 
 //
 

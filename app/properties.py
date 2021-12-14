@@ -150,17 +150,31 @@ def view_ugc(id):
 
     return render_template('ldd/ldd.html.j2', model_list=[id])
 
-@property_blueprint.route('/view_models/<id>', methods=['GET'])
-def view_models(id):
-    property_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
+@property_blueprint.route('/view_ugcs/<id>', methods=['GET'])
+def view_ugcs(id):
+    property_content_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
 
     model_list = []
-    for content in property_data:
+    for content in property_content_data:
         if content.ugc_id:
             model_list.append(content.ugc_id)
 
+    property_center = {
+        1150: "(-17, 432, -60)",
+        1151: "(0, 455, -110)",
+        1250: "(-16, 432,-60)",
+        1251: "(0, 455, 100)",
+        1350: "(-10, 432, -57)",
+        1450: "(-10, 432, -77)"
+    }
 
-    return render_template('ldd/ldd.html.j2', model_list=model_list)
+    return render_template(
+        'ldd/ldd.html.j2',
+        model_list=model_list,
+        center=property_center[
+            Property.query.filter(Property.id==id).first().zone_id
+        ]
+    )
 
 @property_blueprint.route('/get_ugc/<id>', methods=['GET'])
 # @login_required

@@ -2,8 +2,7 @@ from flask import render_template, Blueprint, redirect, url_for, request, abort
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
-import datetime
-from app.models import CharacterInfo, db
+import datetime, time
 from app.schemas import CharacterInfoSchema
 
 character_blueprint = Blueprint('characters', __name__)
@@ -110,6 +109,8 @@ def get():
             character["4"] = '''<h1 class="far fa-check-square text-danger"></h1>'''
         else:
             character["4"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
+
+        character["5"] = time.ctime(character["5"])
 
 
     return data
