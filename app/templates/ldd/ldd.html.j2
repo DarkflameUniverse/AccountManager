@@ -310,7 +310,6 @@ class Scene{
 				}
 			}
 		}
-    console.log(this)
 		for (const [i, m] of this.Groups.entries()) {
 			for (const brick of this.Bricks){
 				for (const part of brick.Parts){
@@ -514,9 +513,9 @@ class Converter {
 
 	LoadDBURL(dbURLlocation){
 		this.database = new DBURLReader(dbURLlocation)
-		if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings.loc')){
+		if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings')){
 			this.allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
-			this.allMaterials.setLOC(new LOCReader(this.database.filelist['localizedStrings.loc'].read()))
+			this.allMaterials.setLOC(new LOCReader(this.database.filelist['localizedStrings'].read()))
 		}
 	}
 
@@ -702,7 +701,7 @@ class Converter {
 					var mesh = new THREE.Mesh(geometry, materials);
 					mesh.matrixAutoUpdate = false
 					mesh.matrix = m
-          brick_pos.getPositionFromMatrix( m );
+          brick_pos.setFromMatrixPosition( m );
 					scene.add(mesh);
 					// var vnh = new VertexNormalsHelper( mesh, 5 );
 					// scene.add( vnh );
@@ -1039,8 +1038,7 @@ if (ldddburl) {
 	converter = new Converter()
 	converter.LoadDBURL(dbURLlocation = ldddburl)
   for (var i = 0; i < scenefile_list.length; i++) {
-      console.log(scenefile_list[i]);
-      converter.LoadScene(filename = scenefile_list[i])
+    converter.LoadScene(filename = scenefile_list[i])
   }
 	converter.Export(filename = 'test.webgl')
 
@@ -1075,7 +1073,6 @@ renderer.setPixelRatio( window.devicePixelRatio );
 renderer.setSize( window.innerWidth, window.innerHeight );
 container.appendChild( renderer.domElement );
 
-console.log(scene)
 var controls = new THREE.OrbitControls (camera, renderer.domElement);
 controls.target = brick_pos
 controls.update()
