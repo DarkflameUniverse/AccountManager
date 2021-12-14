@@ -513,9 +513,9 @@ class Converter {
 
 	LoadDBURL(dbURLlocation){
 		this.database = new DBURLReader(dbURLlocation)
-		if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings')){
+		if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings.loc')){
 			this.allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
-			this.allMaterials.setLOC(new LOCReader(this.database.filelist['localizedStrings'].read()))
+			this.allMaterials.setLOC(new LOCReader(this.database.filelist['localizedStrings.loc'].read()))
 		}
 	}
 
