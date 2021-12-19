@@ -3,6 +3,7 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import datetime, time
+from app.models import CharacterInfo, db
 from app.schemas import CharacterInfoSchema
 
 character_blueprint = Blueprint('characters', __name__)

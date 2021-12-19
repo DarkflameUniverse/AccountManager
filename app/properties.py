@@ -144,13 +144,30 @@ def get():
 
 
 @property_blueprint.route('/view_ugc/<id>', methods=['GET'])
-# @login_required
+@login_required
 def view_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
+    if current_user.gm_level < 3:
+        if current_user.id != ugc_data.account_id:
+            abort(403)
+            return
+
     return render_template('ldd/ldd.html.j2', model_list=[id])
 
+
+property_center = {
+    1150: "(-17, 432, -60)",
+    1151: "(0, 455, -110)",
+    1250: "(-16, 432,-60)",
+    1251: "(0, 455, 100)",
+    1350: "(-10, 432, -57)",
+    1450: "(-10, 432, -77)"
+}
+
+
 @property_blueprint.route('/view_ugcs/<id>', methods=['GET'])
+@login_required
 def view_ugcs(id):
     property_content_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
 
@@ -159,14 +176,10 @@ def view_ugcs(id):
         if content.ugc_id:
             model_list.append(content.ugc_id)
 
-    property_center = {
-        1150: "(-17, 432, -60)",
-        1151: "(0, 455, -110)",
-        1250: "(-16, 432,-60)",
-        1251: "(0, 455, 100)",
-        1350: "(-10, 432, -57)",
-        1450: "(-10, 432, -77)"
-    }
+    if current_user.gm_level < 3:
+        if current_user.id != ugc_data.account_id:
+            abort(403)
+            return
 
     return render_template(
         'ldd/ldd.html.j2',
@@ -177,15 +190,15 @@ def view_ugcs(id):
     )
 
 @property_blueprint.route('/get_ugc/<id>', methods=['GET'])
-# @login_required
+@login_required
 def get_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
+    if current_user.gm_level < 3:
+        if current_user.id != ugc_data.account_id:
+            abort(403)
+            return
 
-    # if current_user.gm_level < 3:
-    #     if current_user.id != ugc_data.account_id:
-    #         abort(403)
-    #         return
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
     response = make_response(uncompressed_lxfml)
     response.headers.set('Content-Type', 'text/xml')
@@ -194,14 +207,14 @@ def get_ugc(id):
 
 
 @property_blueprint.route('/download_ugc/<id>', methods=['GET'])
-# @login_required
+@login_required
 def download_ugc(id):
     ugc_data = UGC.query.filter(UGC.id==id).first()
 
-    # if current_user.gm_level < 3:
-    #     if current_user.id != ugc_data.account_id:
-    #         abort(403)
-    #         return
+    if current_user.gm_level < 3:
+        if current_user.id != ugc_data.account_id:
+            abort(403)
+            return
 
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
 
