@@ -62,12 +62,11 @@ def upgrade():
     sa.Column('locked', sa.BOOLEAN(), server_default='0', nullable=False),
     sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
     sa.Column('banned', sa.BOOLEAN(), server_default='0', nullable=False),
-    sa.Column('play_key_id', mysql.INTEGER(), nullable=False),
+    sa.Column('play_key_id', mysql.INTEGER(), nullable=True),
     sa.Column('created_at', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
     sa.Column('mute_expire', mysql.BIGINT(unsigned=True), server_default='0', nullable=False),
     sa.ForeignKeyConstraint(['play_key_id'], ['play_keys.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id'),
-    sa.UniqueConstraint('email'),
     sa.UniqueConstraint('name')
     )
     op.create_table('account_invites',

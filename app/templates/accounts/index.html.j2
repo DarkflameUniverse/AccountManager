@@ -22,13 +22,17 @@
         <tr>
             <th>Actions</th>
             <th>Name</th>
-            <th>Email</th>
+            {% if config.USER_ENABLE_EMAIL %}
+              <th>Email</th>
+            {% endif %}
             <th>GM Level</th>
             <th>Locked</th>
             <th>Banned</th>
             <th>Muted</th>
             <th>Registered</th>
-            <th>Email Confirmed</th>
+            {% if config.USER_ENABLE_EMAIL %}
+              <th>Email Confirmed</th>
+            {% endif %}
         </tr>
     </thead>
     <tbody></tbody>

@@ -12,6 +12,7 @@
 
 <h1>{%trans%}Sign in{%endtrans%}</h1>
 
+
 {# ** Login form ** #}
 <form action="{{ url_for('user.login') }}" method="POST" class="form" role="form">
     {{ login_form.hidden_tag() }}

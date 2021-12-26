@@ -10,7 +10,6 @@
 
 <form action="" method="POST" novalidate formnovalidate class="form" role="form">
     {{ form.hidden_tag() }}
-    {# TODO: refactor registration to work with play keys #}
     {# Username or Email #}
     {% set field = form.username if user_manager.USER_ENABLE_USERNAME else form.email %}
     <div class="form-group {% if field.errors %}has-error{% endif %}">
@@ -38,7 +37,9 @@
         {{ render_field(form.email, tabindex=220) }}
     {% endif %}
 
-    {{ render_field(form.play_key_id, tabindex=225) }}
+    {% if config.REQUIRE_PLAY_KEY %}
+        {{ render_field(form.play_key_id, tabindex=225) }}
+    {% endif %}
 
     {{ render_field(form.password, tabindex=230) }}
 

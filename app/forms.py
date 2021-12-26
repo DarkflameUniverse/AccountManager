@@ -1,4 +1,5 @@
 from flask_wtf import FlaskForm
+from flask import current_app
 
 from flask_user.forms import (
     unique_email_validator,
@@ -18,7 +19,7 @@ from wtforms import (
     StringField
 )
 
-from wtforms.validators import DataRequired
+from wtforms.validators import DataRequired, Optional
 
 from app.models import PlayKey
 
@@ -31,7 +32,8 @@ def validate_play_key(form, field):
         None, raises ValidationError if failed
     """
     # jank to get the fireign key that we need back into the field
-    field.data = PlayKey.key_is_valid(key_string=field.data)
+    if current_app.config["REQUIRE_PLAY_KEY"]:
+        field.data = PlayKey.key_is_valid(key_string=field.data)
     return
 
 
@@ -49,7 +51,7 @@ class CustomRegisterForm(FlaskForm):
     email = StringField(
         'E-Mail',
         validators=[
-            DataRequired(),
+            Optional(),
             validators.Email('Invalid email address'),
             unique_email_validator,
         ]
@@ -66,7 +68,7 @@ class CustomRegisterForm(FlaskForm):
     play_key_id = StringField(
         'Play Key',
         validators=[
-            DataRequired(),
+            Optional(),
             validate_play_key,
         ]
     )

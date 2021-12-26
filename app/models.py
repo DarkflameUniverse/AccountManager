@@ -138,7 +138,7 @@ class Account(db.Model, UserMixin):
         db.Unicode(255),
         nullable=True,
         server_default='',
-        unique=True
+        unique=False
     )
 
     email_confirmed_at = db.Column(db.DateTime())
@@ -176,7 +176,7 @@ class Account(db.Model, UserMixin):
     play_key_id = db.Column(
         mysql.INTEGER,
         db.ForeignKey(PlayKey.id, ondelete='CASCADE'),
-        nullable=False
+        nullable=True
     )
 
     play_key = db.relationship(

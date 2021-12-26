@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, abort
+from flask import render_template, Blueprint, redirect, url_for, request, abort, current_app
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
@@ -83,15 +83,15 @@ def get():
         abort(403)
         return
     columns = [
-        ColumnDT(Account.id),
-        ColumnDT(Account.username),
-        ColumnDT(Account.email),
-        ColumnDT(Account.gm_level),
-        ColumnDT(Account.locked),
-        ColumnDT(Account.banned),
-        ColumnDT(Account.mute_expire),
-        ColumnDT(Account.created_at),
-        ColumnDT(Account.email_confirmed_at)
+        ColumnDT(Account.id),                   # 0
+        ColumnDT(Account.username),             # 1
+        ColumnDT(Account.email),                # 2
+        ColumnDT(Account.gm_level),             # 3
+        ColumnDT(Account.locked),               # 4
+        ColumnDT(Account.banned),               # 5
+        ColumnDT(Account.mute_expire),          # 6
+        ColumnDT(Account.created_at),           # 7
+        ColumnDT(Account.email_confirmed_at)    # 8
     ]
 
     query = db.session.query().select_from(Account)
@@ -112,6 +112,7 @@ def get():
             # href='{url_for('acounts.delete', id=account["0"])}'>
             # Delete
             # </a>
+
         if account["4"]:
             account["4"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
@@ -127,11 +128,21 @@ def get():
         else:
             account["6"] = '''<h2 class="far fa-check-square text-success"></h2>'''
 
-        if account["8"]:
-            account["8"] = f'''<h2 class="far fa-check-square text-success"></h2>'''
+        if current_app.config["USER_ENABLE_EMAIL"]:
+            if account["8"]:
+                account["8"] = f'''<h2 class="far fa-check-square text-success"></h2>'''
+            else:
+                account["8"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
-            account["8"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
-
+            # shift columns to fill in gap of 2
+            account["2"] = account["3"]
+            account["3"] = account["4"]
+            account["4"] = account["5"]
+            account["5"] = account["6"]
+            account["6"] = account["7"]
+            # remove last two columns
+            del account["7"]
+            del account["8"]
 
     return data
 

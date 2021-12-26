@@ -8,3 +8,4 @@ app/static/site.css
 app/static/.webassets-cache/**/*
 locale.json
 app/static/ldddb/*
+.vscode/settings.json

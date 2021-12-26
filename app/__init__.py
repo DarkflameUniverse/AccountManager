@@ -50,12 +50,12 @@ def create_app():
     # and increment the times it has been used
     @user_registered.connect_via(app)
     def after_register_hook(sender, user, **extra):
-
-        play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
-        play_key_used.key_uses = play_key_used.key_uses - 1
-        play_key_used.times_used = play_key_used.times_used + 1
-        db.session.add(play_key_used)
-        db.session.commit()
+        if app.config["REQUIRE_PLAY_KEY"]:
+            play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
+            play_key_used.key_uses = play_key_used.key_uses - 1
+            play_key_used.times_used = play_key_used.times_used + 1
+            db.session.add(play_key_used)
+            db.session.commit()
 
     @app.template_filter('ctime')
     def timectime(s):

@@ -77,22 +77,26 @@
     <br/>
     {% if current_user.id == account_data.id %}
       <div class="row">
-        <div class="col text-right">
-          <a role="button" class="btn btn-primary btn btn-block"
-            href='{{ url_for('user.change_password') }}'>
-            Change Password
-          </a>
-        </div>
-        <div class="col">
-          <a role="button" class="btn btn-primary btn btn-block"
-            href='{{ url_for('user.change_username') }}'>
-            Change Username
-          </a>
-        </div>
+        {% if config.USER_ENABLE_CHANGE_PASSWORD %}
+          <div class="col">
+            <a role="button" class="btn btn-primary btn btn-block"
+              href='{{ url_for('user.change_password') }}'>
+              Change Password
+            </a>
+          </div>
+        {% endif %}
+        {% if config.USER_ENABLE_CHANGE_USERNAME%}
+          <div class="col">
+            <a role="button" class="btn btn-primary btn btn-block"
+              href='{{ url_for('user.change_username') }}'>
+              Change Username
+            </a>
+          </div>
+        {% endif %}
       </div>
     {% endif %}
 
-    {% if account_data.play_key and current_user.gm_level > 3 %}
+    {% if account_data.play_key and current_user.gm_level > 3 and config.REQUIRE_PLAY_KEY %}
       <hr/>
       <div class="row">
         <div class="col text-center">
