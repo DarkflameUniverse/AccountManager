@@ -9,11 +9,6 @@ $link-color: #005ac2;
 
 @import "../bootstrap-4.2.1/scss/bootstrap";
 
-// colors <3
-.bg-primary {
-  background-color: map_get($theme-colors, "primary") !important;
-}
-
 // responsive font
 @include media-breakpoint-down(sm) {
   html {

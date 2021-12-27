@@ -1,12 +1,13 @@
 import os
-from flask import Flask, url_for
+from flask import Flask, url_for, g, redirect
+from functools import wraps
 from flask_assets import Environment
 from webassets import Bundle
 import time
 from app.models import db, migrate, PlayKey
 from app.schemas import ma
 from app.forms import CustomUserManager
-from flask_user import user_registered
+from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
 
 from app.commands import init_db, init_accounts, init_data
@@ -27,8 +28,23 @@ def create_app():
 
     app.config['TESTING'] = False
     app.config['DEBUG'] = False
+    # always pull these two from the env
     app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('APP_DATABASE_URI')
+
+    # try to get overides, otherwise just use what we have already
+    app.config['USER_ENABLE_REGISTRATION'] = os.getenv(
+        'USER_ENABLE_REGISTRATION',
+        app.config['USER_ENABLE_REGISTRATION']
+    )
+    app.config['USER_ENABLE_EMAIL'] = os.getenv(
+        'USER_ENABLE_EMAIL',
+        app.config['USER_ENABLE_EMAIL']
+    )
+    app.config['REQUIRE_PLAY_KEY'] = os.getenv(
+        'REQUIRE_PLAY_KEY',
+        app.config['REQUIRE_PLAY_KEY']
+    )
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         "pool_pre_ping": True,
         "pool_size": 10,
@@ -37,14 +53,14 @@ def create_app():
         "pool_pre_ping": True,
         "pool_use_lifo": True
     }
-    app.config['MAIL_SERVER'] = 'smtp.gmail.com'
-    app.config['MAIL_PORT'] = 587
-    app.config['MAIL_USE_SSL'] = False
-    app.config['MAIL_USE_TLS'] = True
-    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
-    app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME')
-    app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL')
+    app.config['MAIL_SERVER'] = os.getenv('MAIL_SERVER', 'smtp.gmail.com')
+    app.config['MAIL_PORT'] = os.getenv('MAIL_USE_SSL', 587)
+    app.config['MAIL_USE_SSL'] = os.getenv('MAIL_USE_SSL', False)
+    app.config['MAIL_USE_TLS'] = os.getenv('MAIL_USE_TLS', True)
+    app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME', None)
+    app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', None)
+    app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME', None)
+    app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL', None)
 
     # decrement uses on a play eky after a successful registration
     # and increment the times it has been used
@@ -109,3 +125,15 @@ def register_blueprints(app):
     app.register_blueprint(character_blueprint, url_prefix='/characters')
     from .properties import property_blueprint
     app.register_blueprint(property_blueprint, url_prefix='/properties')
+
+def gm_level(gm_level):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            if current_user.gm_level < gm_level:
+
+                return redirect(url_for('main.index'))
+            return func(*args, **kwargs)
+        return wrapper
+    return decorator
+

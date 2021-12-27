@@ -23,10 +23,10 @@ USER_ENABLE_USERNAME = True  # Register and Login with username
 
 # Email Related Settingss
 USER_ENABLE_EMAIL = True  # Register with Email WILL - DISABLE OTHER THINGS TOO
-USER_ENABLE_CONFIRM_EMAIL = True  # Force users to confirm their email
-USER_ENABLE_INVITE_USER = False  # Allow users to be invited
-USER_REQUIRE_INVITATION = False  # Only invited users may register
-USER_ENABLE_FORGOT_PASSWORD = True  # Allow users to reset their passwords
+USER_ENABLE_CONFIRM_EMAIL = USER_ENABLE_EMAIL  # Force users to confirm their email
+USER_ENABLE_INVITE_USER = USER_ENABLE_EMAIL  # Allow users to be invited
+USER_REQUIRE_INVITATION = USER_ENABLE_EMAIL  # Only invited users may register
+USER_ENABLE_FORGOT_PASSWORD = USER_ENABLE_EMAIL  # Allow users to reset their passwords
 
 # Require Play Key
 REQUIRE_PLAY_KEY = True

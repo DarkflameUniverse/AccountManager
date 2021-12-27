@@ -3,6 +3,7 @@ from flask_user import login_required, current_user
 from app.models import Account, AccountInvitation, PlayKey, db
 from datatables import ColumnDT, DataTables
 from app.forms import CreatePlayKeyForm, EditPlayKeyForm
+from app import gm_level
 
 play_keys_blueprint = Blueprint('play_keys', __name__)
 
@@ -10,27 +11,23 @@ play_keys_blueprint = Blueprint('play_keys', __name__)
 
 @play_keys_blueprint.route('/', methods=['GET'])
 @login_required
+@gm_level(9)
 def index():
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     return render_template('play_keys/index.html.j2')
 
 
 @play_keys_blueprint.route('/create/<count>/<uses>', methods=['GET'], defaults={'count': 1, 'uses': 1})
 @login_required
+@gm_level(9)
 def create(count=1, uses=1):
-
     PlayKey.create(count=count, uses=uses)
     return redirect(url_for('play_keys.index',  message=f"Created {count} Play Key(s) with {uses} uses!"))
 
 
 @play_keys_blueprint.route('/create/bulk', methods=('GET', 'POST'))
 @login_required
+@gm_level(9)
 def bulk_create():
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     form = CreatePlayKeyForm()
     if form.validate_on_submit():
         PlayKey.create(count=form.count.data, uses=form.uses.data)
@@ -41,10 +38,8 @@ def bulk_create():
 
 @play_keys_blueprint.route('/delete/<id>', methods=('GET', 'POST'))
 @login_required
+@gm_level(9)
 def delete(id):
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     key = PlayKey.query.filter(PlayKey.id == id).first()
     associated_accounts = Account.query.filter(Account.play_key_id==id).all()
     if len(associated_accounts) > 0:
@@ -55,11 +50,8 @@ def delete(id):
 
 @play_keys_blueprint.route('/edit/<id>', methods=('GET', 'POST'))
 @login_required
+@gm_level(9)
 def edit(id):
-    if current_user.gm_level != 9:
-        abort(403)
-        return
-
     key = PlayKey.query.filter(PlayKey.id==id).first()
     form = EditPlayKeyForm()
 
@@ -79,10 +71,8 @@ def edit(id):
 
 @play_keys_blueprint.route('/view/<id>', methods=('GET', 'POST'))
 @login_required
+@gm_level(9)
 def view(id):
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     key = PlayKey.query.filter(PlayKey.id == id).first()
     accounts = Account.query.filter(Account.play_key_id==id).all()
     return render_template('play_keys/view.html.j2', key=key, accounts=accounts)
@@ -90,10 +80,8 @@ def view(id):
 
 @play_keys_blueprint.route('/get', methods=['GET'])
 @login_required
+@gm_level(9)
 def get():
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     columns = [
         ColumnDT(PlayKey.id),
         ColumnDT(PlayKey.key_string),

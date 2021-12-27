@@ -6,6 +6,7 @@ import datetime
 import time
 from app.models import Account, AccountInvitation, db
 from app.schemas import AccountSchema
+from app import gm_level
 
 accounts_blueprint = Blueprint('accounts', __name__)
 
@@ -13,31 +14,23 @@ account_schema = AccountSchema()
 
 @accounts_blueprint.route('/', methods=['GET'])
 @login_required
+@gm_level(3)
 def index():
-    if current_user.gm_level < 3:
-        abort(403)
-        return
     return render_template('accounts/index.html.j2')
 
 
 @accounts_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
+@gm_level(3)
 def view(id):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
     account_data = Account.query.filter(Account.id == id).first()
-
     return render_template('accounts/view.html.j2', account_data=account_data)
 
 
 @accounts_blueprint.route('/lock/<id>', methods=['GET'])
 @login_required
+@gm_level(3)
 def lock(id):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
-
     account = Account.query.filter(Account.id == id).first()
     account.locked = not account.locked
     account.save()
@@ -46,11 +39,8 @@ def lock(id):
 
 @accounts_blueprint.route('/ban/<id>', methods=['GET'])
 @login_required
+@gm_level(3)
 def ban(id):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
-
     account = Account.query.filter(Account.id == id).first()
     account.banned = not account.banned
     account.save()
@@ -59,10 +49,8 @@ def ban(id):
 
 @accounts_blueprint.route('/muted/<id>/<days>', methods=['GET'])
 @login_required
+@gm_level(3)
 def mute(id, days=0):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
 
     account = Account.query.filter(Account.id == id).first()
 
@@ -78,10 +66,8 @@ def mute(id, days=0):
 
 @accounts_blueprint.route('/get', methods=['GET'])
 @login_required
+@gm_level(9)
 def get():
-    if current_user.gm_level != 9:
-        abort(403)
-        return
     columns = [
         ColumnDT(Account.id),                   # 0
         ColumnDT(Account.username),             # 1

@@ -30,7 +30,7 @@
   {% endblock %}
 
 </head>
-<body>
+<body class="bg-dark text-white">
 
 
 {% block header %}
@@ -41,15 +41,13 @@
 
 {# Content #}
 
-<div class="jumbotron shadow-sm py-0">
-  <div class="container">
+<div class="container py-0">
 
-    {# Text #}
-    <div class="text-center">
-      <span class="h3 mb-0"><br/>{% block content_before %}{% endblock %}<br/><br/></span>
-      </div>
-    </div>
+  {# Text #}
+  <div class="text-center">
+    <span class="h3 mb-0"><br/>{% block content_before %}{% endblock %}<br/><br/></span>
   </div>
+</div>
 
 {% block content_override %}
   <div class='container mt-4'>

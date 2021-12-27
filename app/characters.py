@@ -5,6 +5,7 @@ from datatables import ColumnDT, DataTables
 import datetime, time
 from app.models import CharacterInfo, db
 from app.schemas import CharacterInfoSchema
+from app import gm_level
 
 character_blueprint = Blueprint('characters', __name__)
 
@@ -12,20 +13,15 @@ character_schema = CharacterInfoSchema()
 
 @character_blueprint.route('/', methods=['GET'])
 @login_required
+@gm_level(3)
 def index():
-    if current_user.gm_level < 3:
-        abort(403)
-        return
     return render_template('character/index.html.j2')
 
 
 @character_blueprint.route('/approve_name/<id>/<action>', methods=['GET'])
 @login_required
+@gm_level(3)
 def approve_name(id, action):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
-
     character =  CharacterInfo.query.filter(CharacterInfo.id == id).first()
 
     if action == "approve":
@@ -42,14 +38,14 @@ def approve_name(id, action):
 
 @character_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
+@gm_level(3)
 def view(id):
 
     character_data = CharacterInfo.query.filter(CharacterInfo.id == id).first()
 
-    if current_user.gm_level < 3:
-        if character_data.account_id and character_data.account_id != current_user.id:
-            abort(403)
-            return
+    if character_data.account_id and character_data.account_id != current_user.id:
+        abort(403)
+        return
 
     if character_data == {}:
         abort(404)
@@ -60,10 +56,8 @@ def view(id):
 
 @character_blueprint.route('/get', methods=['GET'])
 @login_required
+@gm_level(9)
 def get():
-    if current_user.gm_level < 3 :
-        abort(403)
-        return
     columns = [
         ColumnDT(CharacterInfo.id),
         ColumnDT(CharacterInfo.account_id),

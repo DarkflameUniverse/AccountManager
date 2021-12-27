@@ -1,45 +1,48 @@
-# Darkflame Universe Account Manager
+# Darkflame Universe Account Manager v2
 
-This is a quick and simple web application intended for account creation and management for a [DLU](https://github.com/DarkflameUniverse/DarkflameServer) instance created by Wincent.
+Logo
+# Deployment
 
-Logo by BlasterBuilder.
+Environmental Variables:
 
-## Run and Install 
-* Clone this repository
-* Install `requirements.txt`
-* Create `credentials.py`
-```py
-# credentials.py
+ * Required:
+    * APP_SECRET_KEY
+    * APP_DATABASE_URI
+ * Optional
+    * USER_ENABLE_REGISTRATION (Default: True)
+    * USER_ENABLE_EMAIL (Default: True, Needs Mail to be configured)
+    * REQUIRE_PLAY_KEY (Default: True)
+    * MAIL_SERVER (Default: smtp.gmail.com)
+    * MAIL_PORT (Default: 587)
+    * MAIL_USE_SSL (Default: False)
+    * MAIL_USE_TLS (Default: True)
+    * MAIL_USERNAME (Default: None)
+    * MAIL_PASSWORD (Default: None)
+    * USER_EMAIL_SENDER_NAME (Default: None)
+    * USER_EMAIL_SENDER_EMAIL (Default: None)
 
-# Make sure this is a long random string
-SECRET_KEY = 'long-random-string'
+## Docker
 
-# Replace instances of <> with the database credentials
-DB_URL = 'mysql+pymysql://<mysql-user>:<mysql-password>@<mysql-host>/<mysql-database>'
-```
-* Create `resources.py`
-```py
-# resources.py
+TODO: Write instructions
 
-# Path to the logo image to display on the application
-LOGO = 'logo/logo.png'
 
-# Path to the privacy policy users have to agree to
-PRIVACY_POLICY = 'policy/Privacy Policy.pdf'
+# Database
 
-# Path to the terms of use users have to agree to
-TERMS_OF_USE = 'policy/Terms of Use.pdf'
-```
-* Run the application
-```sh
-# Run the python application, with a given port number
-flask run --port 5000
-# or simply
-python app.py
-```
+The database that is used is based on the DLU v1 Databases,
+but completely defined in this app for easier interface via the
+Object Relational Mapper (ORM) SqlAlchemy.
 
-## Available Endpoints
+## Migration from DLU v1 Database
 
-There are several available endpoints that are useful to users.
-- `/login`: Login as an Admin and create CD keys.
-- `/activate`: Create a new account as a non-admin user. You will require a CD key (which is provided by the admin).
+TODO: Implement, Maybe
+
+## From Scratch
+
+ * Make sure you have your venv setup and your db uri
+ * Run `flask upgrade`
+
+# Development
+
+Please use [Editor Config](https://editorconfig.org/)
+
+ * `flask run` to run local dev server
