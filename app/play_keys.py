@@ -43,9 +43,6 @@ def bulk_create():
 def delete(id):
     key = PlayKey.query.filter(PlayKey.id == id).first()
     associated_accounts = Account.query.filter(Account.play_key_id==id).all()
-    if len(associated_accounts) > 0:
-        flash("Cannot delete Play Key with associated Accounts!", "danger")
-        return redirect(url_for('play_keys.index'))
     flash(f"Deleted Play Key {key.key_string}", "danger")
     key.delete()
     return redirect(url_for('play_keys.index'))
@@ -102,20 +99,49 @@ def get():
 
     data = rowTable.output_result()
     for play_key in data["data"]:
+        # Hackily shove buttons into response
         play_key["0"] = f"""
             <a role="button" class="btn btn-primary btn btn-block"
             href='{url_for('play_keys.view', id=play_key["0"])}'>
             View
             </a>
+
             <a role="button" class="btn btn-secondary btn btn-block"
             href='{url_for('play_keys.edit', id=play_key["0"])}'>
             Edit
             </a>
-            <a role="button" class="btn btn-danger btn btn-block"
-            href='{url_for('play_keys.delete', id=play_key["0"])}'>
-            Delete
+
+            <a type="button" class="btn btn-danger btn-block" data-toggle="modal" data-target="#delete-{play_key["1"]}-modal">
+                Delete
             </a>
+
+            <div class="modal fade bd-example-modal-lg" id="delete-{play_key["1"]}-modal" tabindex="-1" role="dialog" aria-labelledby="delete-{play_key["1"]}-modalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content bg-dark border-primary">
+                    <div class="modal-header">
+                    <h5 class="modal-title" id="delemodalLabel">Delete Play Key {play_key["1"]} ?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                    </div>
+                    <div class="modal-body text-danger">
+                    Are you sure you want to delete the Play Key {play_key["1"]} ? </br></br>
+                    This will not delete accounts that have used this key, but they may be unable to play.
+                    </div>
+                    <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+                    <a href='{url_for('play_keys.delete', id=play_key["0"])}'
+                        class="btn btn-danger"
+                        role="button"
+                        aria-disabled="true">
+                        Delete
+                    </a>
+                    </div>
+                </div>
+                </div>
+            </div>
         """
+
         if play_key["5"]:
             play_key["5"] = '''<h1 class="far fa-check-square text-success"></h1>'''
         else:

@@ -1,10 +1,11 @@
-from flask import render_template, Blueprint, redirect, url_for, request, abort, jsonify, send_file, make_response
+from flask import render_template, Blueprint, redirect, url_for, request, abort, jsonify, send_file, make_response, flash
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import time
 from app.models import Property, db, UGC, CharacterInfo, Zone, PropertyContent
 from app.schemas import PropertySchema
+from app import gm_level
 
 import zlib
 import xmltodict
@@ -15,19 +16,15 @@ property_schema = PropertySchema()
 
 @property_blueprint.route('/', methods=['GET'])
 @login_required
+@gm_level(3)
 def index():
-    if current_user.gm_level < 3:
-        abort(403)
-        return
     return render_template('properties/index.html.j2')
 
 
 @property_blueprint.route('/approve/<id>', methods=['GET'])
 @login_required
+@gm_level(3)
 def approve(id):
-    if current_user.gm_level < 3:
-        abort(403)
-        return
 
     property_data =  Property.query.filter(Property.id == id).first()
 
@@ -36,7 +33,10 @@ def approve(id):
     # If we approved it, clear the rejection reason
     if property_data.mod_approved:
         property_data.rejection_reason = ""
-
+    flash(
+        f"Approved Property {property_data.name if property_data.name else Zone.query.filter(Zone.id==property_data.zone_id).first().name } from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}",
+        "success"
+    )
     property_data.save()
     return redirect(request.referrer if request.referrer else url_for("main.index"))
 
@@ -59,12 +59,10 @@ def view(id):
     return render_template('properties/view.html.j2', property_data=property_data)
 
 
-@property_blueprint.route('/get', methods=['GET'])
+@property_blueprint.route('/get/<status>', methods=['GET'])
 @login_required
-def get():
-    if current_user.gm_level < 3 :
-        abort(403)
-        return
+@gm_level(3)
+def get(status="all"):
     columns = [
         ColumnDT(Property.id),
         ColumnDT(Property.owner_id),
@@ -81,7 +79,16 @@ def get():
         ColumnDT(Property.zone_id),
     ]
 
-    query = db.session.query().select_from(Property)
+    query = None
+    if status=="all":
+        query = db.session.query().select_from(Property)
+    elif status=="approved":
+        query = db.session.query().select_from(Property).filter(Property.mod_approved==True)
+    elif status=="unapproved":
+        query = db.session.query().select_from(Property).filter(Property.mod_approved==False)
+    else:
+        raise Exception("Not a valid filter")
+
 
     params = request.args.to_dict()
 
@@ -138,7 +145,6 @@ def get():
             property_data["7"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''
         else:
             property_data["7"] = '''<h2 class="far fa-check-square text-success"></h2>'''
-
 
     return data
 

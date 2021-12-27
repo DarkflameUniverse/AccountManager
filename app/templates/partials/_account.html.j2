@@ -97,7 +97,7 @@
     {% endif %}
 
     {% if account_data.play_key and current_user.gm_level > 3 and config.REQUIRE_PLAY_KEY %}
-      <hr/>
+      <hr class="bg-primary"/>
       <div class="row">
         <div class="col text-center">
           <h4>Key Info</h4>
@@ -136,7 +136,7 @@
    {% endif %}
 
    {% if current_user.id != account_data.id and current_user.gm_level > 3 %}
-      <hr/>
+      <hr class="bg-primary"/>
       <div class="row">
         <div class="col text-center">
           <h4>Actions</h4>

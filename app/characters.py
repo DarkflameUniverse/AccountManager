@@ -43,21 +43,21 @@ def view(id):
 
     character_data = CharacterInfo.query.filter(CharacterInfo.id == id).first()
 
-    if character_data.account_id and character_data.account_id != current_user.id:
-        abort(403)
-        return
-
     if character_data == {}:
         abort(404)
+        return
+
+    if character_data.account_id and character_data.account_id != current_user.id:
+        abort(403)
         return
 
     return render_template('character/view.html.j2', character_data=character_data)
 
 
-@character_blueprint.route('/get', methods=['GET'])
+@character_blueprint.route('/get/<filter_by>', defaults={'filter_by': "all"}, methods=['GET'])
 @login_required
 @gm_level(9)
-def get():
+def get(filter_by="all"):
     columns = [
         ColumnDT(CharacterInfo.id),
         ColumnDT(CharacterInfo.account_id),
@@ -68,7 +68,15 @@ def get():
         ColumnDT(CharacterInfo.permission_map),
     ]
 
-    query = db.session.query().select_from(CharacterInfo)
+    query = None
+    if filter_by=="all":
+        query = db.session.query().select_from(CharacterInfo)
+    elif filter_by=="approved":
+        query = db.session.query().select_from(CharacterInfo).filter(CharacterInfo.pending_name == "" or CharacterInfo.needs_rename == False)
+    elif filter_by=="unapproved":
+        query = db.session.query().select_from(CharacterInfo).filter(CharacterInfo.pending_name != "")
+    else:
+        raise Exception("Not a valid filter")
 
     params = request.args.to_dict()
 

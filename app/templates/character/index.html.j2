@@ -41,7 +41,7 @@
         let characters_table = $('#characters_table').DataTable({
             "processing": true,
             "serverSide": true,
-            "ajax": "{{ url_for('characters.get') }}",
+            "ajax": "{{ url_for('characters.get', status='all') }}",
           });
         });
   </script>

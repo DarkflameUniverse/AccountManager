@@ -22,6 +22,83 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
 
+
+
+    # decrement uses on a play key after a successful registration
+    # and increment the times it has been used
+    @user_registered.connect_via(app)
+    def after_register_hook(sender, user, **extra):
+        if app.config["REQUIRE_PLAY_KEY"]:
+            play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
+            play_key_used.key_uses = play_key_used.key_uses - 1
+            play_key_used.times_used = play_key_used.times_used + 1
+            db.session.add(play_key_used)
+            db.session.commit()
+
+    @app.template_filter('ctime')
+    def timectime(s):
+        return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
+
+    # add the commands to flask cli
+    app.cli.add_command(init_db)
+    app.cli.add_command(init_accounts)
+    app.cli.add_command(init_data)
+
+    register_settings(app)
+    register_extensions(app)
+    register_blueprints(app)
+
+    return app
+
+
+def register_extensions(app):
+    """Register extensions for Flask app
+
+    Args:
+        app (Flask): Flask app to register for
+    """
+    db.init_app(app)
+    migrate.init_app(app, db)
+    csrf_protect.init_app(app)
+    ma.init_app(app)
+    user_manager = CustomUserManager(
+        app, db, Account, UserInvitationClass=AccountInvitation
+    )
+
+    assets = Environment(app)
+    assets.url = app.static_url_path
+    scss = Bundle('scss/site.scss', filters='libsass', output='site.css')
+    assets.register('scss_all', scss)
+
+
+def register_blueprints(app):
+    """Register blueprints for Flask app
+
+    Args:
+        app (Flask): Flask app to register for
+    """
+
+    from .main import main_blueprint
+    app.register_blueprint(main_blueprint)
+    from .play_keys import play_keys_blueprint
+    app.register_blueprint(play_keys_blueprint, url_prefix='/play_keys')
+    from .accounts import accounts_blueprint
+    app.register_blueprint(accounts_blueprint, url_prefix='/accounts')
+    from .characters import character_blueprint
+    app.register_blueprint(character_blueprint, url_prefix='/characters')
+    from .properties import property_blueprint
+    app.register_blueprint(property_blueprint, url_prefix='/properties')
+    from .moderation import moderation_blueprint
+    app.register_blueprint(moderation_blueprint, url_prefix='/moderation')
+
+
+def register_settings(app):
+    """Register setting from setting and env
+
+    Args:
+        app (Flask): Flask app to register for
+    """
+
     # Load common settings
     app.config.from_object('app.settings')
 
@@ -74,70 +151,6 @@ def create_app():
     app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD', None)
     app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME', None)
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL', None)
-
-    # decrement uses on a play key after a successful registration
-    # and increment the times it has been used
-    @user_registered.connect_via(app)
-    def after_register_hook(sender, user, **extra):
-        if app.config["REQUIRE_PLAY_KEY"]:
-            play_key_used = PlayKey.query.filter(PlayKey.id == user.play_key_id).first()
-            play_key_used.key_uses = play_key_used.key_uses - 1
-            play_key_used.times_used = play_key_used.times_used + 1
-            db.session.add(play_key_used)
-            db.session.commit()
-
-    @app.template_filter('ctime')
-    def timectime(s):
-        return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
-
-    # add the commands to flask cli
-    app.cli.add_command(init_db)
-    app.cli.add_command(init_accounts)
-    app.cli.add_command(init_data)
-
-    register_extensions(app)
-    register_blueprints(app)
-
-    return app
-
-
-def register_extensions(app):
-    """Register extensions for Flask app
-
-    Args:
-        app (Flask): Flask app to register for
-    """
-    db.init_app(app)
-    migrate.init_app(app, db)
-    csrf_protect.init_app(app)
-    ma.init_app(app)
-    user_manager = CustomUserManager(
-        app, db, Account, UserInvitationClass=AccountInvitation
-    )
-
-    assets = Environment(app)
-    assets.url = app.static_url_path
-    scss = Bundle('scss/site.scss', filters='libsass', output='site.css')
-    assets.register('scss_all', scss)
-
-
-def register_blueprints(app):
-    """Register blueprints for Flask app
-
-    Args:
-        app (Flask): Flask app to register for
-    """
-
-    from .main import main_blueprint
-    app.register_blueprint(main_blueprint)
-    from .play_keys import play_keys_blueprint
-    app.register_blueprint(play_keys_blueprint, url_prefix='/play_keys')
-    from .accounts import accounts_blueprint
-    app.register_blueprint(accounts_blueprint, url_prefix='/accounts')
-    from .characters import character_blueprint
-    app.register_blueprint(character_blueprint, url_prefix='/characters')
-    from .properties import property_blueprint
-    app.register_blueprint(property_blueprint, url_prefix='/properties')
 
 
 def gm_level(gm_level):
