@@ -47,6 +47,16 @@
   <div class="text-center">
     <span class="h3 mb-0"><br/>{% block content_before %}{% endblock %}<br/><br/></span>
   </div>
+  {# Show any errors #}
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{category}}" role="alert">
+          {{message}}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
 </div>
 
 {% block content_override %}

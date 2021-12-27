@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, abort
+from flask import render_template, Blueprint, redirect, url_for, request, abort, flash
 from flask_user import login_required, current_user
 from app.models import Account, AccountInvitation, PlayKey, db
 from datatables import ColumnDT, DataTables
@@ -21,7 +21,8 @@ def index():
 @gm_level(9)
 def create(count=1, uses=1):
     PlayKey.create(count=count, uses=uses)
-    return redirect(url_for('play_keys.index',  message=f"Created {count} Play Key(s) with {uses} uses!"))
+    flash(f"Created {count} Play Key(s) with {uses} uses!", "success")
+    return redirect(url_for('play_keys.index'))
 
 
 @play_keys_blueprint.route('/create/bulk', methods=('GET', 'POST'))
@@ -43,7 +44,9 @@ def delete(id):
     key = PlayKey.query.filter(PlayKey.id == id).first()
     associated_accounts = Account.query.filter(Account.play_key_id==id).all()
     if len(associated_accounts) > 0:
+        flash("Cannot delete Play Key with associated Accounts!", "danger")
         return redirect(url_for('play_keys.index'))
+    flash(f"Deleted Play Key {key.key_string}", "danger")
     key.delete()
     return redirect(url_for('play_keys.index'))
 

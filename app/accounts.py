@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, abort, current_app
+from flask import render_template, Blueprint, redirect, url_for, request, abort, current_app, flash
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
@@ -34,6 +34,10 @@ def lock(id):
     account = Account.query.filter(Account.id == id).first()
     account.locked = not account.locked
     account.save()
+    if account.locked:
+        flash("Locked Account", "danger")
+    else:
+        flash("Unlocked account", "success")
     return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
@@ -44,6 +48,10 @@ def ban(id):
     account = Account.query.filter(Account.id == id).first()
     account.banned = not account.banned
     account.save()
+    if account.banned:
+        flash("Banned Account", "danger")
+    else:
+        flash("Unbanned account", "success")
     return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
@@ -51,16 +59,16 @@ def ban(id):
 @login_required
 @gm_level(3)
 def mute(id, days=0):
-
     account = Account.query.filter(Account.id == id).first()
-
     if days == "0":
         account.mute_expire = 0
+        flash("Unmuted Account", "success")
     else:
         muted_intil = datetime.datetime.now() + datetime.timedelta(days=int(days))
         account.mute_expire = muted_intil.timestamp()
-
+        flash(f"Muted account for {days} days", "danger")
     account.save()
+
     return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 

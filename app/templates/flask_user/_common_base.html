@@ -4,23 +4,6 @@
 <div class='container mt-4'>
     <div class="card shadow rounded border-0 h-100 my-5 bg-dark">
         <div class="card-body d-flex flex-column m-2">
-            {% with messages = get_flashed_messages() %}
-
-                <h3 {% if not messages %}class="mb-4"{% endif %}>
-                    {% block form_title %}{% endblock %}
-                </h3>
-
-                <!-- {# Show any errors #}
-                {% if not disable_messages %}
-                    {% for message in messages %}
-                        <div class="alert alert-warning" role="alert">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
-                {% endif %} -->
-
-            {% endwith %}
-
             {% block content %}
             {% endblock %}
         </div>

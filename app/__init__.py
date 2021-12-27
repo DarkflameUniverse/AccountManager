@@ -24,10 +24,11 @@ def create_app():
 
     # Load common settings
     app.config.from_object('app.settings')
-    # Load environment specific settings
 
+    # Load environment specific settings
     app.config['TESTING'] = False
     app.config['DEBUG'] = False
+
     # always pull these two from the env
     app.config['SECRET_KEY'] = os.getenv('APP_SECRET_KEY')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('APP_DATABASE_URI')
@@ -74,7 +75,7 @@ def create_app():
     app.config['USER_EMAIL_SENDER_NAME'] = os.getenv('USER_EMAIL_SENDER_NAME', None)
     app.config['USER_EMAIL_SENDER_EMAIL'] = os.getenv('USER_EMAIL_SENDER_EMAIL', None)
 
-    # decrement uses on a play eky after a successful registration
+    # decrement uses on a play key after a successful registration
     # and increment the times it has been used
     @user_registered.connect_via(app)
     def after_register_hook(sender, user, **extra):
@@ -138,12 +139,17 @@ def register_blueprints(app):
     from .properties import property_blueprint
     app.register_blueprint(property_blueprint, url_prefix='/properties')
 
+
 def gm_level(gm_level):
+    """Decorator for handling permissions based on the user's GM Level
+
+    Args:
+        gm_level (int): 0-9
+    """
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
             if current_user.gm_level < gm_level:
-
                 return redirect(url_for('main.index'))
             return func(*args, **kwargs)
         return wrapper
