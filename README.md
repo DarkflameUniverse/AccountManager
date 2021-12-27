@@ -6,11 +6,14 @@ Logo
 Environmental Variables:
 
  * Required:
-    * APP_SECRET_KEY
-    * APP_DATABASE_URI
+    * APP_SECRET_KEY (Must be provided)
+    * APP_DATABASE_URI (Must be provided)
  * Optional
     * USER_ENABLE_REGISTRATION (Default: True)
     * USER_ENABLE_EMAIL (Default: True, Needs Mail to be configured)
+    * USER_ENABLE_CONFIRM_EMAIL (Default: True)
+    * USER_ENABLE_INVITE_USER (Default: False)
+    * USER_REQUIRE_INVITATION (Default: False)
     * REQUIRE_PLAY_KEY (Default: True)
     * MAIL_SERVER (Default: smtp.gmail.com)
     * MAIL_PORT (Default: 587)
@@ -24,7 +27,6 @@ Environmental Variables:
 ## Docker
 
 TODO: Write instructions
-
 
 # Database
 

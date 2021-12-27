@@ -41,9 +41,21 @@ def create_app():
         'USER_ENABLE_EMAIL',
         app.config['USER_ENABLE_EMAIL']
     )
+    app.config['USER_ENABLE_CONFIRM_EMAIL'] = os.getenv(
+        'USER_ENABLE_CONFIRM_EMAIL',
+        app.config['USER_ENABLE_CONFIRM_EMAIL']
+    )
     app.config['REQUIRE_PLAY_KEY'] = os.getenv(
         'REQUIRE_PLAY_KEY',
         app.config['REQUIRE_PLAY_KEY']
+    )
+    app.config['USER_ENABLE_INVITE_USER'] = os.getenv(
+        'USER_ENABLE_INVITE_USER',
+        app.config['USER_ENABLE_INVITE_USER']
+    )
+    app.config['USER_REQUIRE_INVITATION'] = os.getenv(
+        'USER_REQUIRE_INVITATION',
+        app.config['USER_REQUIRE_INVITATION']
     )
     app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
         "pool_pre_ping": True,
