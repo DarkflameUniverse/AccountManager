@@ -1,4 +1,4 @@
-from flask import render_template, Blueprint, redirect, url_for, request, abort
+from flask import render_template, Blueprint, redirect, url_for, request, abort, flash
 from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
@@ -29,8 +29,16 @@ def approve_name(id, action):
             character.name = character.pending_name
             character.pending_name = ""
         character.needs_rename = False
+        flash(
+            f"Approved name {character.name}",
+            "success"
+        )
     elif action == "rename":
         character.needs_rename = True
+        flash(
+            f"Marked character {character.name} (Pending Name: {character.pending_name if character.pending_name else 'None'}) as needing Rename",
+            "danger"
+        )
 
     character.save()
     return redirect(request.referrer if request.referrer else url_for("main.index"))
@@ -54,10 +62,10 @@ def view(id):
     return render_template('character/view.html.j2', character_data=character_data)
 
 
-@character_blueprint.route('/get/<filter_by>', defaults={'filter_by': "all"}, methods=['GET'])
+@character_blueprint.route('/get/<status>', methods=['GET'])
 @login_required
 @gm_level(9)
-def get(filter_by="all"):
+def get(status):
     columns = [
         ColumnDT(CharacterInfo.id),
         ColumnDT(CharacterInfo.account_id),
@@ -69,12 +77,12 @@ def get(filter_by="all"):
     ]
 
     query = None
-    if filter_by=="all":
+    if status=="all":
         query = db.session.query().select_from(CharacterInfo)
-    elif filter_by=="approved":
-        query = db.session.query().select_from(CharacterInfo).filter(CharacterInfo.pending_name == "" or CharacterInfo.needs_rename == False)
-    elif filter_by=="unapproved":
-        query = db.session.query().select_from(CharacterInfo).filter(CharacterInfo.pending_name != "")
+    elif status=="approved":
+        query = db.session.query().select_from(CharacterInfo).filter((CharacterInfo.pending_name == "") & (CharacterInfo.needs_rename == False))
+    elif status=="unapproved":
+        query = db.session.query().select_from(CharacterInfo).filter((CharacterInfo.pending_name != "") | (CharacterInfo.needs_rename == True))
     else:
         raise Exception("Not a valid filter")
 

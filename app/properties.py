@@ -33,8 +33,11 @@ def approve(id):
     # If we approved it, clear the rejection reason
     if property_data.mod_approved:
         property_data.rejection_reason = ""
+
     flash(
-        f"Approved Property {property_data.name if property_data.name else Zone.query.filter(Zone.id==property_data.zone_id).first().name } from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}",
+        f"""Approved Property
+        {property_data.name if property_data.name else Zone.query.filter(Zone.id==property_data.zone_id).first().name }
+        from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}""",
         "success"
     )
     property_data.save()
