@@ -36,28 +36,28 @@
         {# Play Key input #}
         <div class="form-group">
             <label for="play_key">Play Key</label>
-            <input type="text" class="form-control" name="play_key" aria-describedby="emailHelp" placeholder="AAAA-BBBB-CCCC-DDDD" value="{{ key }}">
+            <input type="text" class="form-control" name="play_key" aria-describedby="emailHelp" placeholder="AAAA-BBBB-CCCC-DDDD" value="{{ key }}" required pattern="([A-Z0-9]{4}-){3}[A-Z0-9]{4}">
             <small class="form-text text-muted">In the format: AAAA-BBBB-CCCC-DDDD</small>
         </div>
 
         {# Account Name input #}
         <div class="form-group">
             <label for="account_name">Username</label>
-            <input type="text" class="form-control" name="account_name" placeholder="Enter username...">
+            <input type="text" class="form-control" name="account_name" placeholder="Enter username..." required pattern="[a-zA-Z0-9]{1,32}">
             <small class="form-text text-muted">Limited to a-z, A-Z, and 0-9. No spaces or special characters. Max 32 characters.</small>
         </div>
 
         {# Account Password input #}
         <div class="form-group">
             <label for="account_password">Password</label>
-            <input type="password" class="form-control" name="account_password" placeholder="Enter password...">
+            <input type="password" class="form-control" name="account_password" placeholder="Enter password..." required minlength="4">
             <small class="form-text text-muted"></small>
         </div>
         
         {# Account Repeat Password input #}
         <div class="form-group">
             <label for="account_repeat_password">Repeat Password</label>
-            <input type="password" class="form-control" name="account_repeat_password" placeholder="Repeat password...">
+            <input type="password" class="form-control" name="account_repeat_password" placeholder="Repeat password..." required minlength="4">
             <small class="form-text text-muted"></small>
         </div>
 
