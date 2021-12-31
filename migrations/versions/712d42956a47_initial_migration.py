@@ -73,7 +73,6 @@ def upgrade():
             sa.Column('password', sa.Text(), server_default='', nullable=False),
             sa.Column('gm_level', mysql.INTEGER(unsigned=True), server_default='0', nullable=False),
             sa.Column('locked', sa.BOOLEAN(), server_default='0', nullable=False),
-            sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False),
             sa.Column('banned', sa.BOOLEAN(), server_default='0', nullable=False),
             sa.Column('created_at', mysql.TIMESTAMP(), server_default=sa.text('now()'), nullable=False),
             sa.Column('play_key_id', mysql.INTEGER(), nullable=True),
@@ -83,6 +82,7 @@ def upgrade():
             sa.UniqueConstraint('name')
         )
 
+    op.add_column('accounts', sa.Column('active', sa.BOOLEAN(), server_default='1', nullable=False))
     op.add_column('accounts', sa.Column('email_confirmed_at', sa.DateTime(), nullable=True))
     op.add_column('accounts', sa.Column('email', sa.Unicode(length=255), server_default='', nullable=True))
 
