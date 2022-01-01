@@ -3,7 +3,7 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import time
-from app.models import Property, db, UGC, CharacterInfo, Zone, PropertyContent
+from app.models import Property, db, UGC, CharacterInfo, PropertyContent
 from app.schemas import PropertySchema
 from app import gm_level
 
@@ -36,7 +36,7 @@ def approve(id):
 
     flash(
         f"""Approved Property
-        {property_data.name if property_data.name else Zone.query.filter(Zone.id==property_data.zone_id).first().name }
+        {property_data.name}
         from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}""",
         "success"
     )
@@ -130,8 +130,6 @@ def get(status="all"):
             </a>
         """
 
-        if property_data["4"] == "":
-            property_data["4"] = f"{Zone.query.filter(Zone.id==property_data['12']).first().name}"
 
         if property_data["6"] == 0:
             property_data["6"] = "Private"
@@ -142,7 +140,6 @@ def get(status="all"):
 
         property_data["8"] = time.ctime(property_data["8"])
         property_data["9"] = time.ctime(property_data["9"])
-        property_data["12"] = Zone.query.filter(Zone.id==property_data["12"]).first().name
 
         if not property_data["7"]:
             property_data["7"] = '''<h2 class="far fa-times-circle text-danger"></h2>'''

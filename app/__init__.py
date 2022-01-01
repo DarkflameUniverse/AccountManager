@@ -10,7 +10,7 @@ from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
 
-from app.commands import init_db, init_accounts, init_data
+from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
 
 # Instantiate Flask extensions
@@ -46,7 +46,6 @@ def create_app():
     # add the commands to flask cli
     app.cli.add_command(init_db)
     app.cli.add_command(init_accounts)
-    app.cli.add_command(init_data)
 
     register_settings(app)
     register_extensions(app)

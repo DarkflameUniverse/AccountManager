@@ -525,19 +525,6 @@ class PetNames(db.Model):
         db.session.commit()
         db.session.refresh(self)
 
-class Zone(db.Model):
-    __tablename__ = 'zones'
-
-    id = db.Column(
-        mysql.INTEGER,
-        primary_key=True,
-        autoincrement=False
-    )
-
-    name = db.Column(
-        db.String(75),
-        nullable=False
-    )
 
 class Property(db.Model):
     __tablename__ = 'properties'
@@ -630,7 +617,6 @@ class Property(db.Model):
 
     zone_id = db.Column(
         mysql.INTEGER,
-        db.ForeignKey(Zone.id),
         nullable=False,
     )
 
@@ -639,7 +625,6 @@ class Property(db.Model):
         db.session.commit()
         db.session.refresh(self)
 
-    zone = db.relationship('Zone')
 
 class UGC(db.Model):
     __tablename__ = 'ugc'
