@@ -1,11 +1,11 @@
 {% extends 'base.html.j2' %}
 
 {% block title %}
-  Account Management
+  Activity Log
 {% endblock title %}
 
 {% block content_before %}
-  Command Log
+  Activity Log
 {% endblock content_before %}
 
 {% block content %}
@@ -35,6 +35,7 @@
   <script>
     $(document).ready(function(){
         let command_table = $('#command_table').DataTable({
+            "order": [[0, "desc"]],
             "processing": true,
             "serverSide": true,
             "ajax": "{{ url_for('log.get_commands') }}",

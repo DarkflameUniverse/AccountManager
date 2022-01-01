@@ -56,9 +56,9 @@ def get_activities():
         """
 
         if activity["2"] == 0:
-            activity["2"] = "Logon"
+            activity["2"] = "Entered World"
         elif activity["2"] == 1:
-            activity["2"] = "Log Out"
+            activity["2"] = "Left World"
 
         activity["3"] = time.ctime(activity["3"])
 
