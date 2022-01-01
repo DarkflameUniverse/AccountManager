@@ -161,7 +161,7 @@
       </a>
       <a role="button" class="btn btn-primary btn-block"
         href='{{ url_for('accounts.ban', id=account_data.id) }}'>
-        {% if account_data.locked %}
+        {% if account_data.banned %}
           Unban
         {% else %}
           Ban

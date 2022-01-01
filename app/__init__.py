@@ -117,9 +117,9 @@ def register_settings(app):
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('APP_DATABASE_URI')
 
     # try to get overides, otherwise just use what we have already
-    app.config['USER_ENABLE_REGISTRATION'] = os.getenv(
-        'USER_ENABLE_REGISTRATION',
-        app.config['USER_ENABLE_REGISTRATION']
+    app.config['USER_ENABLE_REGISTER'] = os.getenv(
+        'USER_ENABLE_REGISTER',
+        app.config['USER_ENABLE_REGISTER']
     )
     app.config['USER_ENABLE_EMAIL'] = os.getenv(
         'USER_ENABLE_EMAIL',

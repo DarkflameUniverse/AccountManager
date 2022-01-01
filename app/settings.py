@@ -15,7 +15,7 @@ WTF_CSRF_TIME_LIMIT = 86400
 USER_APP_NAME = APP_NAME
 USER_ENABLE_CHANGE_PASSWORD = True  # Allow users to change their password
 USER_ENABLE_CHANGE_USERNAME = True  # Allow users to change their username
-USER_ENABLE_REGISTRATION = True  # Allow new users to register
+USER_ENABLE_REGISTER = False  # Allow new users to register
 
 # Should alwyas be set to true
 USER_REQUIRE_RETYPE_PASSWORD = True  # Prompt for `retype password`
