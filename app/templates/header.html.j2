@@ -54,6 +54,15 @@
             </div>
           </li>
         {% endif %}
+        {% if current_user.is_authenticated and current_user.gm_level >= 9 %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logs</a>
+            <div class="dropdown-menu">
+              <a class="dropdown-item" href='{{ url_for('log.activity') }}'>Command Log</a>
+              <a class="dropdown-item" href='{{ url_for('log.command') }}'>Activity Log</a>
+            </div>
+          </li>
+        {% endif %}
 
         {% if current_user.is_authenticated and current_user.gm_level == 9 and config.REQUIRE_PLAY_KEY %}
           <a id='play_keys-index' class='nav-link' href='{{ url_for('play_keys.index') }}'>Play Keys</a>

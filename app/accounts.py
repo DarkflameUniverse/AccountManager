@@ -36,7 +36,7 @@ def edit_gm_level(id):
         flash("You cannot your own GM Level", "danger")
         return redirect(request.referrer if request.referrer else url_for("main.index"))
     account_data = Account.query.filter(Account.id==id).first()
-    if account_data.gm_level == 8 and current_user.gm_level == 8:
+    if account_data.gm_level >= 8 and current_user.gm_level == 8:
         flash("You cannot edit this user's GM Level", "warning")
         return redirect(request.referrer if request.referrer else url_for("main.index"))
 
@@ -99,7 +99,7 @@ def mute(id, days=0):
 
 @accounts_blueprint.route('/get', methods=['GET'])
 @login_required
-@gm_level(9)
+@gm_level(3)
 def get():
     columns = [
         ColumnDT(Account.id),                   # 0

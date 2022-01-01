@@ -94,6 +94,8 @@ def register_blueprints(app):
     app.register_blueprint(property_blueprint, url_prefix='/properties')
     from .moderation import moderation_blueprint
     app.register_blueprint(moderation_blueprint, url_prefix='/moderation')
+    from .log import log_blueprint
+    app.register_blueprint(log_blueprint, url_prefix='/log')
 
 
 def register_settings(app):

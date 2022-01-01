@@ -28,6 +28,18 @@ def approve_pet(id):
     return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
+@moderation_blueprint.route('/reject_pet/<id>', methods=['GET'])
+@login_required
+@gm_level(3)
+def reject_pet(id):
+
+    pet_data =  PetNames.query.filter(PetNames.id == id).first()
+
+    pet_data.approved = 0
+    flash(f"Rejected pet name {pet_data.pet_name}", "danger")
+    pet_data.save()
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
+
 
 @moderation_blueprint.route('/get_pets/<status>', methods=['GET'])
 @login_required
@@ -59,10 +71,20 @@ def get_pets(status="all"):
         id = pet_data["0"]
         if pet_data["2"] == 1:
             pet_data["0"] = f"""
-                <a role="button" class="btn btn-success btn btn-block"
-                    href='{url_for('moderation.approve_pet', id=id)}'>
-                    Approve
-                </a>
+            <div class="row">
+                <div class="col">
+                    <a role="button" class="btn btn-success btn btn-block"
+                        href='{url_for('moderation.approve_pet', id=id)}'>
+                        Approve
+                    </a>
+                </div>
+                <div class="col">
+                    <a role="button" class="btn btn-danger btn btn-block"
+                        href='{url_for('moderation.reject_pet', id=id)}'>
+                        Reject
+                    </a>
+                </div>
+            </div>
             """
         else:
             pet_data["0"] = "Already Approved"

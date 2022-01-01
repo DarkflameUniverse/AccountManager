@@ -232,6 +232,6 @@ def download_ugc(id):
     response.headers.set(
         'Content-Disposition',
         'attachment',
-        filename='weedeater.lfxml'
+        filename=ugc_data.filename
     )
     return response

@@ -3,7 +3,7 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import datetime, time
-from app.models import CharacterInfo, db
+from app.models import CharacterInfo, Account, db
 from app.schemas import CharacterInfoSchema
 from app import gm_level
 
@@ -88,7 +88,7 @@ def restrict(id, bit):
 
 @character_blueprint.route('/get/<status>', methods=['GET'])
 @login_required
-@gm_level(9)
+@gm_level(3)
 def get(status):
     columns = [
         ColumnDT(CharacterInfo.id),                 # 0
@@ -137,6 +137,13 @@ def get(status):
             <a role="button" class="btn btn-success btn btn-block"
                 href='{url_for('characters.approve_name', id=id, action="approve")}'>
                 Approve Name
+            </a>
+        """
+
+        character["1"] = f"""
+            <a role="button" class="btn btn-primary btn btn-block"
+                href='{url_for('accounts.view', id=character["1"])}'>
+                View {Account.query.filter(Account.id==character['1']).first().username}
             </a>
         """
 
