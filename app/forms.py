@@ -7,7 +7,7 @@ from flask_user.forms import (
     unique_username_validator
 )
 from flask_user import UserManager
-from wtforms.widgets import TextArea
+from wtforms.widgets import TextArea, NumberInput
 from wtforms import (
     StringField,
     HiddenField,
@@ -110,6 +110,16 @@ class EditPlayKeyForm(FlaskForm):
     notes = StringField(
         'Notes',
         widget=TextArea()
+    )
+
+    submit = SubmitField('Submit')
+
+
+class EditGMLevelForm(FlaskForm):
+
+    gm_level = IntegerField(
+        'GM Level',
+        widget=NumberInput(min = 0, max = 9)
     )
 
     submit = SubmitField('Submit')

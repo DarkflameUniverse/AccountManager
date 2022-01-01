@@ -39,6 +39,10 @@ def create_app():
     def timectime(s):
         return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
 
+    @app.template_filter('check_perm_map')
+    def check_perm_map(perm_map, bit):
+        return perm_map & (1 << bit)
+
     # add the commands to flask cli
     app.cli.add_command(init_db)
     app.cli.add_command(init_accounts)

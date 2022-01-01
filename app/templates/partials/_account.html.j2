@@ -34,6 +34,14 @@
         {% with gm_level=account_data.gm_level %}
           {% include 'partials/_gm_level.html.j2' %}
         {% endwith %}
+        {% if current_user.id != account_data.id %}
+          {% if current_user.gm_level >= 8  and not(current_user.gm_level == 8 and account_data.gm_level == 8)%}
+            <a role="button" class="btn btn-primary"
+              href='{{ url_for('accounts.edit_gm_level', id=account_data.id) }}'>
+              Edit
+            </a>
+          {% endif %}
+        {% endif %}
       </div>
     </div>
     <div class="row">
@@ -145,11 +153,19 @@
       <br/>
       <a role="button" class="btn btn-primary btn-block"
         href='{{ url_for('accounts.lock', id=account_data.id) }}'>
-        Lock/Unlock
+        {% if account_data.locked %}
+          Unlock
+        {% else %}
+          Lock
+        {% endif %}
       </a>
       <a role="button" class="btn btn-primary btn-block"
         href='{{ url_for('accounts.ban', id=account_data.id) }}'>
-        Ban/Unban
+        {% if account_data.locked %}
+          Unban
+        {% else %}
+          Ban
+        {% endif %}
       </a>
       <br/>
       {% if account_data.mute_expire %}

@@ -46,7 +46,6 @@ def approve_name(id, action):
 
 @character_blueprint.route('/view/<id>', methods=['GET'])
 @login_required
-@gm_level(3)
 def view(id):
 
     character_data = CharacterInfo.query.filter(CharacterInfo.id == id).first()
@@ -55,11 +54,36 @@ def view(id):
         abort(404)
         return
 
-    if character_data.account_id and character_data.account_id != current_user.id:
+    if current_user.gm_level < 3:
+        if character_data.account_id and character_data.account_id != current_user.id:
+            abort(403)
+            return
+
+    return render_template('character/view.html.j2', character_data=character_data)
+
+
+@character_blueprint.route('/restrict/<bit>/<id>', methods=['GET'])
+@login_required
+@gm_level(3)
+def restrict(id, bit):
+
+    # restrict to bit 4-6
+    if 6 < int(bit) < 3:
         abort(403)
         return
 
-    return render_template('character/view.html.j2', character_data=character_data)
+    character_data = CharacterInfo.query.filter(CharacterInfo.id == id).first()
+
+    if character_data == {}:
+        abort(404)
+        return
+
+    print(character_data.permission_map)
+
+    character_data.permission_map ^= (1 << int(bit))
+    character_data.save()
+
+    return redirect(request.referrer if request.referrer else url_for("main.index"))
 
 
 @character_blueprint.route('/get/<status>', methods=['GET'])
@@ -67,13 +91,13 @@ def view(id):
 @gm_level(9)
 def get(status):
     columns = [
-        ColumnDT(CharacterInfo.id),
-        ColumnDT(CharacterInfo.account_id),
-        ColumnDT(CharacterInfo.name),
-        ColumnDT(CharacterInfo.pending_name),
-        ColumnDT(CharacterInfo.needs_rename),
-        ColumnDT(CharacterInfo.last_login),
-        ColumnDT(CharacterInfo.permission_map),
+        ColumnDT(CharacterInfo.id),                 # 0
+        ColumnDT(CharacterInfo.account_id),         # 1
+        ColumnDT(CharacterInfo.name),               # 2
+        ColumnDT(CharacterInfo.pending_name),       # 3
+        ColumnDT(CharacterInfo.needs_rename),       # 4
+        ColumnDT(CharacterInfo.last_login),         # 5
+        ColumnDT(CharacterInfo.permission_map),     # 6
     ]
 
     query = None
@@ -122,6 +146,18 @@ def get(status):
             character["4"] = '''<h1 class="far fa-times-circle text-success"></h1>'''
 
         character["5"] = time.ctime(character["5"])
+
+        perm_map = character["6"]
+        character["6"] = ""
+
+        if perm_map & (1 << 4):
+            character["6"] += "Restricted Trade</br>"
+
+        if perm_map & (1 << 5):
+            character["6"] += "Restricted Mail</br>"
+
+        if perm_map & (1 << 6):
+            character["6"] += "Restricted Chat</br>"
 
 
     return data

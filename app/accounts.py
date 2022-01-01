@@ -7,6 +7,7 @@ import time
 from app.models import Account, AccountInvitation, db
 from app.schemas import AccountSchema
 from app import gm_level
+from app.forms import EditGMLevelForm
 
 accounts_blueprint = Blueprint('accounts', __name__)
 
@@ -25,6 +26,30 @@ def index():
 def view(id):
     account_data = Account.query.filter(Account.id == id).first()
     return render_template('accounts/view.html.j2', account_data=account_data)
+
+
+@accounts_blueprint.route('/edit_gm_level/<id>', methods=('GET', 'POST'))
+@login_required
+@gm_level(8)
+def edit_gm_level(id):
+    if current_user.id == int(id):
+        flash("You cannot your own GM Level", "danger")
+        return redirect(request.referrer if request.referrer else url_for("main.index"))
+    account_data = Account.query.filter(Account.id==id).first()
+    if account_data.gm_level == 8 and current_user.gm_level == 8:
+        flash("You cannot edit this user's GM Level", "warning")
+        return redirect(request.referrer if request.referrer else url_for("main.index"))
+
+    form = EditGMLevelForm()
+
+    if form.validate_on_submit():
+        account_data.gm_level = form.gm_level.data
+        account_data.save()
+        return redirect(url_for('accounts.view', id=account_data.id))
+
+    form.gm_level.data = account_data.gm_level
+
+    return render_template('accounts/edit_gm_level.html.j2', form=form, username=account_data.username)
 
 
 @accounts_blueprint.route('/lock/<id>', methods=['GET'])
