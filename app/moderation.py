@@ -69,7 +69,8 @@ def get_pets(status="all"):
     data = rowTable.output_result()
     for pet_data in data["data"]:
         id = pet_data["0"]
-        if pet_data["2"] == 1:
+        status = pet_data["2"]
+        if status == 1:
             pet_data["0"] = f"""
             <div class="row">
                 <div class="col">
@@ -86,7 +87,22 @@ def get_pets(status="all"):
                 </div>
             </div>
             """
-        else:
-            pet_data["0"] = "Already Approved"
+            pet_data["2"] = "Awaiting Moderation"
+        elif status == 2:
+            pet_data["0"] = f"""
+                <a role="button" class="btn btn-danger btn btn-block"
+                    href='{url_for('moderation.reject_pet', id=id)}'>
+                    Reject
+                </a>
+            """
+            pet_data["2"] = "<span class='text-success'>Approved</span>"
+        elif status == 0:
+            pet_data["0"] = f"""
+                <a role="button" class="btn btn-success btn btn-block"
+                    href='{url_for('moderation.approve_pet', id=id)}'>
+                    Approve
+                </a>
+            """
+            pet_data["2"] = "<span class='text-danger'>Rejected</span>"
 
     return data
