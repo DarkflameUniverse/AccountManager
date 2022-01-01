@@ -3,14 +3,14 @@ properties([
     gitParameter(
         branch: '',
         branchFilter: 'origin/(.*)',
-        defaultValue: 'master',
+        defaultValue: 'origin/refactor',
         description: '',
         name: 'BRANCH',
         quickFilterEnabled: false,
         selectedValue: 'NONE',
         sortMode: 'NONE',
         tagFilter: '*',
-        useRepository: 'git@github.com:DarkflameUniverse/AccountManager.git',
+        useRepository: 'git@github.com:aronwk-aaron/AccountManager.git',
         type: 'PT_BRANCH'
     )
   ])
@@ -25,7 +25,7 @@ node('worker'){
             userRemoteConfigs: [
                 [
                     credentialsId: 'aronwk',
-                    url: 'git@github.com:DarkflameUniverse/AccountManager.git'
+                    url: 'git@github.com:aronwk-aaron/AccountManager.git'
                 ]
             ]
         ])
