@@ -78,8 +78,6 @@ def restrict(id, bit):
         abort(404)
         return
 
-    print(character_data.permission_map)
-
     character_data.permission_map ^= (1 << int(bit))
     character_data.save()
 
