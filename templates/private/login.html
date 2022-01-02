@@ -36,20 +36,20 @@
         {# Admin Username input #}
         <div class="form-group">
             <label for="account_name">Username</label>
-            <input type="text" class="form-control" name="account_name" placeholder="Enter username...">
+            <input type="text" class="form-control" id="account_name" name="account_name" placeholder="Enter username...">
         </div>
 
         {# Admin password input #}
         <div class="form-group">
             <label for="account_password">Password</label>
-            <input type="password" class="form-control" name="account_password" placeholder="Enter password...">
+            <input type="password" class="form-control" id="account_password" name="account_password" placeholder="Enter password...">
             <small class="form-text text-muted"></small>
         </div>
 
         {# Remember Me #}
         <div class="form-group">
             <label for="remember_me">Remember Me</label>
-            <input type="checkbox" class="form-control" name="remember_me">
+            <input type="checkbox" class="form-control" id="remember_me" name="remember_me">
             <small class="form-text text-muted"></small>
         </div>
         
@@ -71,7 +71,6 @@
     {% endif %}
     </div>
     <div class="col-lg-3">
-    </div>
     </div>
 </div>
 {% endblock %}
