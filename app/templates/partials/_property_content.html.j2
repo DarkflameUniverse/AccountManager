@@ -4,24 +4,17 @@
       <div class="col text-center">
         <h4>
           {% if not item.ugc_id %}
-            Model: {{ item.lot }}
+            {{ item.lot|get_lot_name }}
           {% else %}
-            UGC: {{ item.ugc_id }}
+            UGC: {{ item.ugc.filename.split('.')[0] }}
           {% endif %}
         </h4>
       </div>
     </div>
     <br/>
-    {# <div class="row">
-      <div class="col text-right">
-        ID:
-      </div>
-      <br/>
-      <div class="col">
-        {{ item.id }}
-      </div>
-    </div> #}
-    {% if item.lot != 14 %}
+    {% if item.lot == 14 %}
+      {# Do nothing for now#}
+    {% else %}
       <div class="row">
         <div class="col text-right">
           LOT:
@@ -31,26 +24,42 @@
           {{ item.lot }}
         </div>
       </div>
-    {% endif %}
-    {% if item.ugc_id %}
-      <br/>
       <div class="row">
-        <div class="col text-center">
-            <a role="button" class="btn btn-primary btn-block"
-              href='{{ url_for('properties.view_ugc', id=item.ugc_id) }}'>
-              View Model
-            </a>
+        <div class="col text-right">
+          Description:
+        </div>
+        <br/>
+        <div class="col">
+          {{ item.lot|get_lot_desc }}
         </div>
       </div>
       <br/>
-      <div class="row">
-        <div class="col text-center">
-            <a role="button" class="btn btn-primary btn-block"
-              href='{{ url_for('properties.download_ugc', id=item.ugc_id) }}'>
-              Download Model
-            </a>
-        </div>
-      </div>
     {% endif %}
+    <div class="row">
+      <div class="col text-center">
+          <a role="button" class="btn btn-primary btn-block"
+            href='{{ url_for('properties.get_model', id=item.id) }}'>
+            Get Model
+          </a>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col text-center">
+          <a role="button" class="btn btn-primary btn-block"
+            href='{{ url_for('properties.view_model', id=item.id) }}'>
+            View Model
+          </a>
+      </div>
+    </div>
+    <br/>
+    <div class="row">
+      <div class="col text-center">
+          <a role="button" class="btn btn-primary btn-block"
+            href='{{ url_for('properties.download_model', id=item.id) }}'>
+            Download Model
+          </a>
+      </div>
+    </div>
   </div>
 </div>

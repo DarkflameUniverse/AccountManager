@@ -2,12 +2,20 @@
 
 {% block title %}
   Viewing {{property_data.owner.name}}'s
-  {{ property_data.name }}
+  {% if property_data.name %}
+    {{ property_data.name }}
+  {% else %}
+    {{ property_data.zone_id|get_zone_name }}
+  {% endif %}
 {% endblock %}
 
 {% block content_before %}
   Viewing {{property_data.owner.name}}'s
-  {{ property_data.name }}
+  {% if property_data.name %}
+    {{ property_data.name }}
+  {% else %}
+    {{ property_data.zone_id|get_zone_name }}
+  {% endif %}
 {% endblock %}
 
 {% block content %}

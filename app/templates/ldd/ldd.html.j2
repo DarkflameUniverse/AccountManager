@@ -200,6 +200,7 @@
     //done
     constructor(node){
       this.refID = node.getAttribute('refID')
+      console.log(node.getAttribute('transformation').split(',').map(parseFloat))
       let [a, b, c, d, e, f, g, h, i, x, y, z] = node.getAttribute('transformation').split(',').map(parseFloat);
       this.matrix = new Matrix3D(a,b,c,0,d,e,f,0,g,h,i,0,x,y,z,1);
     }
@@ -754,7 +755,7 @@
   }
 
 
-  class Bone2 {
+  class Flex {
     //done
     constructor(boneId=0, angle=0, ax=0, ay=0, az=0, tx=0, ty=0, tz=0){
       this.boneId = boneId
@@ -822,7 +823,7 @@
           for (var j = 0; j < childnodes.length ;j++) {
             var childnode = childnodes[j]
             if (childnode.nodeName == 'Bone'){
-              this.Bones.push(new Bone2(parseInt(childnode.getAttribute('boneId')), parseFloat(childnode.getAttribute('angle')), parseFloat(childnode.getAttribute('ax')), parseFloat(childnode.getAttribute('ay')), parseFloat(childnode.getAttribute('az')), parseFloat(childnode.getAttribute('tx')), parseFloat(childnode.getAttribute('ty')), parseFloat(childnode.getAttribute('tz'))))
+              this.Bones.push(new Flex(parseInt(childnode.getAttribute('boneId')), parseFloat(childnode.getAttribute('angle')), parseFloat(childnode.getAttribute('ax')), parseFloat(childnode.getAttribute('ay')), parseFloat(childnode.getAttribute('az')), parseFloat(childnode.getAttribute('tx')), parseFloat(childnode.getAttribute('ty')), parseFloat(childnode.getAttribute('tz'))))
             }
           }
         }
@@ -1038,7 +1039,7 @@
 
 
   //Start
-  var scenefile_list = [{% for item in model_list %} "{{url_for('properties.get_ugc', id=item)}}"{{ ", " if not loop.last else "" }} {% endfor %}]
+  var scenefile_list = [{% for item in model_list %} "{{url_for('properties.get_model', id=item)}}"{{ ", " if not loop.last else "" }} {% endfor %}]
   var ldddburl = FindDBURL()
 
   if (ldddburl) {

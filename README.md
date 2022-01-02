@@ -3,7 +3,15 @@
 Logo
 # Deployment
 
-Environmental Variables:
+Need an LU client
+
+drop in app/luclient or bind mount docker `/path/to/client:/app/luclient
+
+Needs to have sqlite conversion of cdclient.fdb
+Needs to be located app/luclient/res/cdclient.sqlite
+
+## Docker
+
 
  * Required:
     * APP_SECRET_KEY (Must be provided)
@@ -24,24 +32,11 @@ Environmental Variables:
     * USER_EMAIL_SENDER_NAME (Default: None)
     * USER_EMAIL_SENDER_EMAIL (Default: None)
 
-## Docker
-
 TODO: Write instructions
 
-# Database
+## Manual
 
-The database that is used is based on the DLU v1 Databases,
-but completely defined in this app for easier interface via the
-Object Relational Mapper (ORM) SqlAlchemy.
-
-## Migration from DLU v1 Database
-
-TODO: Implement, Maybe
-
-## From Scratch
-
- * Make sure you have your venv setup and your db uri
- * Run `flask upgrade`
+TODO: Write
 
 # Development
 

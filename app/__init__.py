@@ -9,6 +9,7 @@ from app.schemas import ma
 from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
+import sqlite3
 
 from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
@@ -35,6 +36,7 @@ def create_app():
             db.session.add(play_key_used)
             db.session.commit()
 
+    # A bunch of jinja filters to make things easiers
     @app.template_filter('ctime')
     def timectime(s):
         return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
@@ -42,6 +44,36 @@ def create_app():
     @app.template_filter('check_perm_map')
     def check_perm_map(perm_map, bit):
         return perm_map & (1 << bit)
+
+    @app.template_filter('get_zone_name')
+    def check_perm_map(zone_id):
+        return query_cdclient(
+            'select DisplayDescription from ZoneTable where zoneID = ?',
+            [zone_id],
+            one=True
+        )[0]
+
+    @app.template_filter('get_lot_name')
+    def check_perm_map(lot_id):
+        return query_cdclient(
+            'select displayName from Objects where id = ?',
+            [lot_id],
+            one=True
+        )[0]
+
+    @app.template_filter('get_lot_desc')
+    def check_perm_map(lot_id):
+        return query_cdclient(
+            'select description from Objects where id = ?',
+            [lot_id],
+            one=True
+        )[0]
+
+    @app.teardown_appcontext
+    def close_connection(exception):
+        cdclient = getattr(g, '_cdclient', None)
+        if cdclient is not None:
+            cdclient.close()
 
     # add the commands to flask cli
     app.cli.add_command(init_db)
@@ -173,3 +205,28 @@ def gm_level(gm_level):
         return wrapper
     return decorator
 
+
+def get_cdclient():
+    """Connect to CDClient from file system Relative Path
+
+    Args:
+        None
+    """
+    cdclient = getattr(g, '_cdclient', None)
+    if cdclient is None:
+        cdclient = g._database = sqlite3.connect('app/luclient/res/cdclient.sqlite')
+    return cdclient
+
+
+def query_cdclient(query, args=(), one=False):
+    """Run sql queries on CDClient
+
+    Args:
+        query   (string)    : SQL query
+        args    (list)      : List of args to place in query
+        one     (bool)      : Return only on result or all results
+    """
+    cur = get_cdclient().execute(query, args)
+    rv = cur.fetchall()
+    cur.close()
+    return (rv[0] if rv else None) if one else rv
