@@ -1,6 +1,6 @@
 # Darkflame Universe Account Manager v2
 
-Logo
+Logo Here
 # Deployment
 
 Need an LU client
@@ -12,12 +12,14 @@ Needs to be located app/luclient/res/cdclient.sqlite
 
 ## Docker
 
+TODO: Write instructions
 
+### Environmental Variables
  * Required:
     * APP_SECRET_KEY (Must be provided)
     * APP_DATABASE_URI (Must be provided)
  * Optional
-    * USER_ENABLE_REGISTRATION (Default: True)
+    * USER_ENABLE_REGISTER (Default: True)
     * USER_ENABLE_EMAIL (Default: True, Needs Mail to be configured)
     * USER_ENABLE_CONFIRM_EMAIL (Default: True)
     * USER_ENABLE_INVITE_USER (Default: False)
@@ -32,11 +34,10 @@ Needs to be located app/luclient/res/cdclient.sqlite
     * USER_EMAIL_SENDER_NAME (Default: None)
     * USER_EMAIL_SENDER_EMAIL (Default: None)
 
-TODO: Write instructions
 
 ## Manual
 
-TODO: Write
+TODO: Write this, even though people should use docker
 
 # Development
 
