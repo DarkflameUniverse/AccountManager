@@ -13,19 +13,42 @@ import string
 import hashlib
 import time
 import json
+import os.path
 
 import resources as res
 
+# Application instance
+app = Flask(__name__)
+
+
 class Resources():
+    def _does_resource_exist(self, file_name):
+        static_folder = app.static_folder
+
+        if file_name is None or static_folder is None:
+            return False
+
+        return os.path.isfile(os.path.join(static_folder, file_name))
+
     def __init__(self) -> None:
         self.LOGO = res.LOGO or 'logo/logo.png'
+
         self.PRIVACY_POLICY = res.PRIVACY_POLICY
         self.TERMS_OF_USE = res.TERMS_OF_USE
 
-resources = Resources()
+        legal_agreement_resources = [res.PRIVACY_POLICY, res.TERMS_OF_USE]
+        missing_legal_agreement_resources = [file for file in legal_agreement_resources if not self._does_resource_exist(file)]
 
-# Application instance
-app = Flask(__name__)
+        # If any of the files are present, require user agreement
+        self.requires_user_agreement = len(missing_legal_agreement_resources) < len(legal_agreement_resources)
+        # Require that either all files are missing, or all files are present; otherwise print a warning
+        if self.requires_user_agreement and missing_legal_agreement_resources:
+            print("Warning: Missing legal resource files:")
+            for file in missing_legal_agreement_resources:
+                print("  " + file)
+
+
+resources = Resources()
 
 # SQL instance
 db = SQLAlchemy()
@@ -330,7 +353,7 @@ def account_creation(key):
         agree = request.form['agree'] if 'agree' in request.form else False
 
         # If the user didn't agree to the terms, return an error.
-        if not agree:
+        if resources.requires_user_agreement and not agree:
             return render_template('public/account_creation.html', error="You must agree to the Privacy Policy and Terms of Service to continue.", resources=resources)
 
         # If the passwords don't match, return an error.

@@ -62,12 +62,14 @@
         </div>
 
         {# Agree to the Privacy Policy and Terms of Service #}
-        <div class="form-group">
-            <label class="checkbox-inline">
-                <input type="checkbox" name="agree">
-                I agree to the <a href="{{ url_for('static', filename=resources.PRIVACY_POLICY) }}" target="_blank">Privacy Policy</a> and <a href="{{ url_for('static', filename=resources.TERMS_OF_USE) }}" target="_blank">Terms of Service</a>
-            </label>
-        </div>
+        {% if resources.requires_user_agreement %}
+            <div class="form-group">
+                <label class="checkbox-inline">
+                    <input type="checkbox" name="agree">
+                    I agree to the <a href="{{ url_for('static', filename=resources.PRIVACY_POLICY) }}" target="_blank">Privacy Policy</a> and <a href="{{ url_for('static', filename=resources.TERMS_OF_USE) }}" target="_blank">Terms of Service</a>
+                </label>
+            </div>
+        {% endif %}
         
         {# Submit button #}
         <div class="form-group">
