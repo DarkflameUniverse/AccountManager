@@ -200,9 +200,11 @@
     //done
     constructor(node){
       this.refID = node.getAttribute('refID')
-      console.log(node.getAttribute('transformation').split(',').map(parseFloat))
+      //console.log(node.getAttribute('transformation').split(',').map(parseFloat))
       let [a, b, c, d, e, f, g, h, i, x, y, z] = node.getAttribute('transformation').split(',').map(parseFloat);
       this.matrix = new Matrix3D(a,b,c,0,d,e,f,0,g,h,i,0,x,y,z,1);
+      //console.log(this.refID)
+      //console.log(this.matrix)
     }
   }
 
@@ -522,7 +524,6 @@
       this.database = new DBURLReader(dbURLlocation)
       if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings.loc')){
         this.allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
-        this.allMaterials.setLOC(new LOCReader(this.database.filelist['localizedStrings.loc'].read()))
       }
     }
 
@@ -865,14 +866,6 @@
           this.Materials[node.getAttribute('MatID')] = new Material(node.getAttribute('MatID'), parseInt(node.getAttribute('Red')), parseInt(node.getAttribute('Green')), parseInt(node.getAttribute('Blue')), parseInt(node.getAttribute('Alpha')), node.getAttribute('MaterialType'))
         }
 
-      }
-    }
-
-    setLOC(loc){
-      for (var key in loc.values){
-        if (key in this.Materials){
-          this.Materials[key].name = loc.values[key].replace(" ", "_")
-        }
       }
     }
 

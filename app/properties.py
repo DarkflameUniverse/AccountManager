@@ -21,6 +21,8 @@ from app import gm_level, query_cdclient
 import zlib
 import xmltodict
 import xml.etree.ElementTree as ET
+from pyquaternion import Quaternion
+import numpy as np
 
 property_blueprint = Blueprint('properties', __name__)
 
@@ -264,6 +266,19 @@ def download_model(id):
     return response
 
 
+@property_blueprint.route('/find_file_brickdb/<filename>', methods=['GET'])
+@login_required
+def find_file_brickdb(filename):
+    root = 'app/static/brickdb'
+
+    glob.glob(
+        root + f'**/{filename}',
+        recursive=True
+    )[2] # which LOD folder to load from
+
+
+
+
 def ugc(content):
     ugc_data = UGC.query.filter(UGC.id==content.ugc_id).first()
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
@@ -296,65 +311,58 @@ def prebuilt(content):
 
     tree = ET.fromstring(lxfml_data)
     for bone in tree.findall('.//Bone'):
-        transformation = bone.get('transformation').split(',')
-        # print(f"Bone ID: {bone.get('refID')} -- Transformation: {transformation}")
+        t = bone.get('transformation').split(',')
+        # print(f"Bone ID: {bone.get('refID')} -- Before Transformation: {t}")
+        # print(content.rx, content.ry, content.rx, content.rw)
+        # quaternion from DB values
+        try:
+            rotation = Quaternion(w=content.rw, x=content.rx, y=content.ry, z=content.rz)
+            # print(rotation)
+            # make the rotation matrix from the Bone transformation
+            rotation_matrix = np.matrix([
+                [float(t[0]), float(t[1]), float(t[2])],
+                [float(t[3]), float(t[4]), float(t[5])],
+                [float(t[6]), float(t[7]), float(t[8])],
+            ])
+            # print(rotation_matrix)
+            # covert the existing matrix to a quaternion
+            matrix_quat = Quaternion(
+                matrix=rotation_matrix,
+                atol=1e-05, # Adjust the tolerances since it's way too picky
+                rtol=1e-05  # by default and the floats are precise enough
+            )
+            # print(matrix_quat)
+            # do the rotation
+            new_rotation = rotation * matrix_quat
+            # print(new_rotation)
+            # get new matrix to shove in transpose
+            new_matrix = new_rotation.rotation_matrix
+            # print(new_matrix)
+            t[0] = new_matrix[0][0]
+            t[1] = new_matrix[0][1]
+            t[2] = new_matrix[0][2]
+            t[3] = new_matrix[1][0]
+            t[4] = new_matrix[1][1]
+            t[5] = new_matrix[1][2]
+            t[6] = new_matrix[2][0]
+            t[7] = new_matrix[2][1]
+            t[8] = new_matrix[2][2]
 
-        # TODO: Figure out Rotation
-        # quaternion = [content.rw, content.rx, content.ry, content.rz]
-        # rotation = quaternion_rotation_matrix(quaternion)
-        # for index in range(len(rotation)):
-        #     transformation[index] = rotation[index]
+        except ZeroDivisionError as e:
+            # print(f"No Rotation Needed: {e}")
+            pass  # No rotation needed
 
-        transformation[9] = float(transformation[9]) + content.x
-        transformation[10] = float(transformation[10]) + content.y
-        transformation[11] = float(transformation[11]) + content.z
+        # print(f"Position Translation ({content.x}, {content.y}, {content.z})")
 
-        # print(f"Bone ID: {bone.get('refID')} -- Transformation: {transformation}")
-        bone.set('transformation', ','.join(map(str,transformation)))
+        t[9] = float(t[9]) + content.x
+        t[10] = float(t[10]) + content.y
+        t[11] = float(t[11]) + content.z
+
+        # print(f"New  Position ({t[9]}, {t[10]}, {t[11]})")
+
+        # print(f"Bone ID: {bone.get('refID')} -- After Transformation: {t}")
+        bone.set('transformation', ','.join(map(str,t)))
 
     response = make_response(ET.tostring(tree))
 
     return response, lxfml.split('/')[-1]
-
-
-def quaternion_rotation_matrix(Q):
-    """
-    Covert a quaternion into a full three-dimensional rotation matrix.
-
-    Input
-    :param Q: A 4 element array representing the quaternion (q0,x,y,z)
-
-    Output
-    :return: A 3x3 element matrix representing the full 3D rotation matrix.
-             This rotation matrix converts a point in the local reference
-             frame to a point in the global reference frame.
-    """
-    # Extract the values from Q
-    w = Q[0]
-    x = Q[1]
-    y = Q[2]
-    z = Q[3]
-
-    # 3x3 rotation matrix
-    m = [
-        [0,0,0],
-        [0,0,0],
-        [0,0,0]
-    ]
-
-    # First row of the rotation matrix
-    m[0][0] = 2 * ((w * w) + (x * x)) - 1
-    m[0][1] = 2 * ((x * y) - (w * z))
-    m[0][2] = 2 * ((x * z) + (w * y))
-
-    # Second row of the rotation matrix
-    m[1][0] = 2 * ((x * y) + (w * z))
-    m[1][1] = 2 * ((w * w) + (y * y)) - 1
-    m[1][2] = 2 * ((y * z) - (w * x))
-
-    # Third row of the rotation matrix
-    m[2][0] = 2 * ((x * z) - (w * y))
-    m[2][1] = 2 * ((y * z) + (w * x))
-    m[2][2] = 2 * ((w * w) + (z * z)) - 1
-
-    return m
