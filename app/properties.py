@@ -187,7 +187,7 @@ def view_model(id):
     property_content_data = PropertyContent.query.filter(PropertyContent.id==id).all()
 
     # TODO: Restrict somehow
-    print(property_content_data)
+
     return render_template(
         'ldd/ldd.html.j2',
         content=property_content_data
@@ -252,7 +252,7 @@ def download_model(id):
     return response
 
 
-@property_blueprint.route('/find_file_brickdb/<filename>', methods=['GET'])
+@property_blueprint.route('/find_file/<filename>', methods=['GET'])
 @login_required
 def find_file_brickdb(filename):
     root = 'app/static/brickdb'
@@ -293,7 +293,7 @@ def prebuilt(content, file_format):
         lxfml = f'app/luclient/res/brickmodels/{filename.split(".")[0]}.lxfml'
         with open(lxfml, 'r') as file:
             lxfml_data = file.read()
-        print(lxfml_data)
+        # print(lxfml_data)
         response = make_response(lxfml_data)
 
     elif file_format in ["obj", "mtl"]:

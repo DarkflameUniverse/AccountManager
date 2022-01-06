@@ -501,51 +501,20 @@ class Primitive:
             elif node.nodeName == 'Decoration':
                 self.Decoration = {"faces": node.getAttribute('faces'), "subMaterialRedirectLookupTable": node.getAttribute('subMaterialRedirectLookupTable')}
 
-class LOCReader:
-    def __init__(self, data):
-        self.offset = 0
-        self.values = {}
-        self.data = data
-        if sys.version_info < (3, 0):
-            if ord(self.data[0]) == 50 and ord(self.data[1]) == 0:
-                self.offset += 2
-                while self.offset < len(self.data):
-                    key = self.NextString().replace('Material', '')
-                    value = self.NextString()
-                    self.values[key] = value
-        else:
-            if int(self.data[0]) == 50 and int(self.data[1]) == 0:
-                self.offset += 2
-                while self.offset < len(self.data):
-                    key = self.NextString().replace('Material', '')
-                    value = self.NextString()
-                    self.values[key] = value
-
-    def NextString(self):
-        out = ''
-        if sys.version_info < (3, 0):
-            t = ord(self.data[self.offset])
-            self.offset += 1
-            while not t == 0:
-                out = '{0}{1}'.format(out,chr(t))
-                t = ord(self.data[self.offset])
-                self.offset += 1
-        else:
-            t = int(self.data[self.offset])
-            self.offset += 1
-            while not t == 0:
-                out = '{0}{1}'.format(out,chr(t))
-                t = int(self.data[self.offset])
-                self.offset += 1
-        return out
-
 class Materials:
     def __init__(self, data):
         self.Materials = {}
         xml = minidom.parseString(data)
         for node in xml.firstChild.childNodes:
             if node.nodeName == 'Material':
-                self.Materials[node.getAttribute('MatID')] = Material(node.getAttribute('MatID'),r=int(node.getAttribute('Red')), g=int(node.getAttribute('Green')), b=int(node.getAttribute('Blue')), a=int(node.getAttribute('Alpha')), mtype=str(node.getAttribute('MaterialType')))
+                self.Materials[node.getAttribute('MatID')] = Material(
+                    node.getAttribute('MatID'),
+                    r=int(node.getAttribute('Red')),
+                    g=int(node.getAttribute('Green')),
+                    b=int(node.getAttribute('Blue')),
+                    a=int(node.getAttribute('Alpha')),
+                    mtype=str(node.getAttribute('MaterialType'))
+            )
 
     def getMaterialbyId(self, mid):
         return self.Materials[mid]
@@ -553,7 +522,7 @@ class Materials:
 class Material:
     def __init__(self,id, r, g, b, a, mtype):
         self.id = id
-        self.name = ''
+        self.name = id
         self.mattype = mtype
         self.r = float(r)
         self.g = float(g)
@@ -798,15 +767,17 @@ class Converter:
 
                 decoCount = 0
                 out.write("g " + "(" + geo.designID + ") " + geo.Partname + '\n')
+                last_color = 0
                 for part in geo.Parts:
 
 
                     #try catch here for possible problems in materials assignment of various g, g1, g2, .. files in lxf file
                     try:
                         materialCurrentPart = pa.materials[part]
+                        last_color = pa.materials[part]
                     except IndexError:
-                        # print('WARNING: {0}.g{1} has NO material assignment in lxf. Replaced with color 9. Fix {0}.xml faces values.'.format(pa.designID, part))
-                        materialCurrentPart = '9'
+                        # print('WARNING: {0}.g{1} has NO material assignment in lxf. Replaced with color {2}. Fix {0}.xml faces values.'.format(pa.designID, part, last_color))
+                        materialCurrentPart = last_color
 
                     lddmat = self.allMaterials.getMaterialbyId(materialCurrentPart)
                     matname = lddmat.name
@@ -920,8 +891,8 @@ def main(lxf_filename, obj_filename):
 
     converter = Converter()
     # print("Found DB folder. Will use this instead of db.lif!")
-    setDBFolderVars(dbfolderlocation = "app/static/brickdb")
-    converter.LoadDBFolder(dbfolderlocation = "app/static/brickdb")
+    setDBFolderVars(dbfolderlocation = "app/luclient/res/")
+    converter.LoadDBFolder(dbfolderlocation = "app/luclient/res/")
     converter.LoadScene(filename=lxf_filename)
     converter.Export(filename=obj_filename)
 
