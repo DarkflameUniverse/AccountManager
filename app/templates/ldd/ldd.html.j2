@@ -30,7 +30,9 @@
 
 <script type="text/javascript" src="{{ url_for('static', filename='lddviewer/base64-binary.js') }}"></script>
 
-<script>
+<script type='module'>
+  import {MTLLoader} from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/jsm/loaders/MTLLoader.js'
+  import {OBJLoader} from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/jsm/loaders/OBJLoader.js'
   //Three.js stuff
   const scene = new THREE.Scene();
   var cammatr = new THREE.Matrix4();
@@ -1032,30 +1034,100 @@
 
 
   //Start
-  var scenefile_list = [{% for item in model_list %} "{{url_for('properties.get_model', id=item)}}"{{ ", " if not loop.last else "" }} {% endfor %}]
+  var lxfml_file_list = [
+    {% for model in content %}
+      {% if model.lot == 14 %}
+        "{{url_for('properties.get_model', id=model.id, file_format='lxfml')}}"{{ ", " if not loop.last else "" }}
+      {% endif %}
+    {% endfor %}
+  ]
+  if (lxfml_file_list.length > 0) {
   var ldddburl = FindDBURL()
 
-  if (ldddburl) {
-    converter = new Converter()
-    converter.LoadDBURL(dbURLlocation = ldddburl)
-    for (var i = 0; i < scenefile_list.length; i++) {
-      converter.LoadScene(filename = scenefile_list[i])
+    if (ldddburl) {
+      var converter = new Converter()
+      converter.LoadDBURL(ldddburl)
+      for (var i = 0; i < lxfml_file_list.length; i++) {
+        converter.LoadScene(lxfml_file_list[i])
+      }
+      converter.Export('test.webgl')
+
     }
-    converter.Export(filename = 'test.webgl')
-
-  }
-  else {
-    alert("LDD database not available. Please look for LEGO-Digital-Designer database.")
+    else {
+      alert("LDD database not available. Please look for LEGO-Digital-Designer database.")
+    }
   }
 
+  const onProgress = function ( xhr ) {
+
+    if ( xhr.lengthComputable ) {
+
+      const percentComplete = xhr.loaded / xhr.total * 100;
+      console.log( Math.round( percentComplete, 2 ) + '% downloaded' );
+
+    }
+
+  };
+
+  const onError = function (error) {
+    console.log(error)
+   };
+
+  // Load in pre-built models
+  var obj_file_list = [
+    {% for model in content %}
+      {% if model.lot != 14 %}
+        [
+          "{{url_for('properties.get_model', id=model.id, file_format='obj')}}",
+          "{{url_for('properties.get_model', id=model.id, file_format='mtl')}}",
+          {{ model.x }},
+          {{ model.y }},
+          {{ model.z }},
+          {{ model.rw }},
+          {{ model.rx }},
+          {{ model.ry }},
+          {{ model.rz }},
+        ]{{ ", " if not loop.last else "" }}
+      {% endif %}
+    {% endfor %}
+  ]
+
+  for (let i = 0; i < obj_file_list.length; i++) {
+    var mtlLoader = new MTLLoader();
+    mtlLoader.load( obj_file_list[i][1], function( materials ) {
+
+        materials.preload();
+        var objLoader = new OBJLoader();
+        objLoader.setMaterials( materials );
+
+        objLoader.load( obj_file_list[i][0], function ( object ) {
+
+            object.position.x = obj_file_list[i][2];
+            object.position.y = obj_file_list[i][3];
+            object.position.z = obj_file_list[i][4];
+
+            var quaternion = new THREE.Quaternion(
+              obj_file_list[i][6],
+              obj_file_list[i][7],
+              obj_file_list[i][8],
+              obj_file_list[i][5]
+            );
+            object.rotation.setFromQuaternion(quaternion)
+
+            scene.add( object );
+        }, onProgress, onError );
+    });
+  }
 
   // Three.JS stuff
   var container = document.createElement( 'div' );
   document.body.appendChild( container );
 
-  camera = new THREE.PerspectiveCamera( 2.5, window.innerWidth / window.innerHeight, 1, 10000 );
+  let camera = new THREE.PerspectiveCamera( 2.5, window.innerWidth / window.innerHeight, 1, 10000 );
   {% if center %}
     camera.position.set( brick_pos.x + 800, brick_pos.y + 800, brick_pos.z + 800 );
+  {% elif content|length > 1 %}
+    camera.position.set( {{ content[0].x }}+ 200, {{ content[0].y }}+ 300, {{ content[0].z }}+ 200 );
   {% else %}
     camera.position.set( brick_pos.x + 200, brick_pos.y + 300, brick_pos.z + 200 );
   {% endif %}
@@ -1074,13 +1146,17 @@
   directionalLight2.position.set( 10000, 12000, -15000 );
   scene.add( directionalLight2 );
 
-  renderer = new THREE.WebGLRenderer( { antialias: true } );
+  let renderer = new THREE.WebGLRenderer( { antialias: true } );
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
 
   var controls = new THREE.OrbitControls (camera, renderer.domElement);
-  controls.target = brick_pos
+  {% if content|length == 1 and content[0].lot != 14 %}
+    controls.target = new THREE.Vector3({{ content[0].x }}, {{ content[0].y }}, {{ content[0].z }})
+  {% else %}
+    controls.target = brick_pos
+  {% endif %}
   controls.update()
   // if ( vnh ) vnh.update();
 

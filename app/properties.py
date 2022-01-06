@@ -23,6 +23,8 @@ import xmltodict
 import xml.etree.ElementTree as ET
 from pyquaternion import Quaternion
 import numpy as np
+import os
+import app.pylddlib as ldd
 
 property_blueprint = Blueprint('properties', __name__)
 
@@ -182,23 +184,14 @@ def get(status="all"):
 @property_blueprint.route('/view_model/<id>', methods=['GET'])
 @login_required
 def view_model(id):
-    ugc_data = UGC.query.filter(UGC.id==id).first()
+    property_content_data = PropertyContent.query.filter(PropertyContent.id==id).all()
 
-    if current_user.gm_level < 3:
-        if current_user.id != ugc_data.account_id:
-            abort(403)
-            return
-
-    return render_template('ldd/ldd.html.j2', model_list=[id])
-
-
-@property_blueprint.route('/view_lot/<id>', methods=['GET'])
-@login_required
-def view_lot(id):
-
-
-    return render_template('ldd/ldd.html.j2', model_list=[])
-
+    # TODO: Restrict somehow
+    print(property_content_data)
+    return render_template(
+        'ldd/ldd.html.j2',
+        content=property_content_data
+    )
 
 property_center = {
     1150: "(-17, 432, -60)",
@@ -215,32 +208,25 @@ property_center = {
 def view_models(id):
     property_content_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
 
-    model_list = []
-    for content in property_content_data:
-        model_list.append(content.id)
-
-    if current_user.gm_level < 3:
-        if current_user.id != ugc_data.account_id:
-            abort(403)
-            return
+    # TODO: Restrict somehow
 
     return render_template(
         'ldd/ldd.html.j2',
-        model_list=model_list,
+        content=property_content_data,
         center=property_center[
             Property.query.filter(Property.id==id).first().zone_id
         ]
     )
 
-@property_blueprint.route('/get_model/<id>', methods=['GET'])
+@property_blueprint.route('/get_model/<id>/<file_format>', methods=['GET'])
 @login_required
-def get_model(id):
+def get_model(id, file_format):
     content = PropertyContent.query.filter(PropertyContent.id==id).first()
 
     if content.lot == 14: # ugc model
         response = ugc(content)[0]
     else: # prebuild model
-        response = prebuilt(content)[0]
+        response = prebuilt(content, file_format)[0]
 
     response.headers.set('Content-Type', 'text/xml')
     return response
@@ -255,7 +241,7 @@ def download_model(id):
     if content.lot == 14: # ugc model
         response, filename = ugc(content)
     else: # prebuild model
-        response, filename = prebuilt(content)
+        response, filename = prebuilt(content, "lxfml")
 
     response.headers.set('Content-Type', 'attachment/xml')
     response.headers.set(
@@ -277,8 +263,6 @@ def find_file_brickdb(filename):
     )[2] # which LOD folder to load from
 
 
-
-
 def ugc(content):
     ugc_data = UGC.query.filter(UGC.id==content.ugc_id).first()
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)
@@ -286,7 +270,7 @@ def ugc(content):
     return response, ugc_data.filename
 
 
-def prebuilt(content):
+def prebuilt(content, file_format):
     # translate LOT to component id
     # we need to get a type of 2 because reasons
     render_component_id = query_cdclient(
@@ -295,74 +279,44 @@ def prebuilt(content):
         one=True
     )[0]
     # find the asset from rendercomponent given the  component id
-    lxfml = query_cdclient('select render_asset from RenderComponent where id = ?',
+    filename = query_cdclient('select render_asset from RenderComponent where id = ?',
         [render_component_id],
         one=True
     )
 
-    if lxfml:
-        lxfml = lxfml[0].split("\\\\")[-1].lower()
+    if filename:
+        filename = filename[0].split("\\\\")[-1].lower().split(".")[0]
     else:
-        return f"No lxfml for LOT {content.lot}"
+        return f"No filename for LOT {content.lot}"
 
-    lxfml = f'app/luclient/res/brickmodels/{lxfml.split(".")[0]}.lxfml'
-    with open(lxfml, 'r') as file:
-        lxfml_data = file.read()
+    if file_format == "lxfml":
+        lxfml = f'app/luclient/res/brickmodels/{filename.split(".")[0]}.lxfml'
+        with open(lxfml, 'r') as file:
+            lxfml_data = file.read()
+        print(lxfml_data)
+        response = make_response(lxfml_data)
 
-    tree = ET.fromstring(lxfml_data)
-    for bone in tree.findall('.//Bone'):
-        t = bone.get('transformation').split(',')
-        # print(f"Bone ID: {bone.get('refID')} -- Before Transformation: {t}")
-        # print(content.rx, content.ry, content.rx, content.rw)
-        # quaternion from DB values
-        try:
-            rotation = Quaternion(w=content.rw, x=content.rx, y=content.ry, z=content.rz)
-            # print(rotation)
-            # make the rotation matrix from the Bone transformation
-            rotation_matrix = np.matrix([
-                [float(t[0]), float(t[1]), float(t[2])],
-                [float(t[3]), float(t[4]), float(t[5])],
-                [float(t[6]), float(t[7]), float(t[8])],
-            ])
-            # print(rotation_matrix)
-            # covert the existing matrix to a quaternion
-            matrix_quat = Quaternion(
-                matrix=rotation_matrix,
-                atol=1e-05, # Adjust the tolerances since it's way too picky
-                rtol=1e-05  # by default and the floats are precise enough
-            )
-            # print(matrix_quat)
-            # do the rotation
-            new_rotation = rotation * matrix_quat
-            # print(new_rotation)
-            # get new matrix to shove in transpose
-            new_matrix = new_rotation.rotation_matrix
-            # print(new_matrix)
-            t[0] = new_matrix[0][0]
-            t[1] = new_matrix[0][1]
-            t[2] = new_matrix[0][2]
-            t[3] = new_matrix[1][0]
-            t[4] = new_matrix[1][1]
-            t[5] = new_matrix[1][2]
-            t[6] = new_matrix[2][0]
-            t[7] = new_matrix[2][1]
-            t[8] = new_matrix[2][2]
+    elif file_format in ["obj", "mtl"]:
 
-        except ZeroDivisionError as e:
-            # print(f"No Rotation Needed: {e}")
-            pass  # No rotation needed
+        cache = f"app/cache/{filename}.{file_format}"
 
-        # print(f"Position Translation ({content.x}, {content.y}, {content.z})")
+        if os.path.exists(cache):
+            with open(cache, 'r') as file:
+                cache_data = file.read()
+            response = make_response(cache_data)
 
-        t[9] = float(t[9]) + content.x
-        t[10] = float(t[10]) + content.y
-        t[11] = float(t[11]) + content.z
+        else:
+            lxfml = f'app/luclient/res/brickmodels/{filename.split(".")[0]}.lxfml'
+            ldd.main(lxfml, cache.split('.')[0]) # convert to OBJ
 
-        # print(f"New  Position ({t[9]}, {t[10]}, {t[11]})")
+            if os.path.exists(cache):
+                with open(cache, 'r') as file:
+                    cache_data = file.read()
+                response = make_response(cache_data)
 
-        # print(f"Bone ID: {bone.get('refID')} -- After Transformation: {t}")
-        bone.set('transformation', ','.join(map(str,t)))
+    else:
+        raise(Exception("INVALID FILE FORMAT"))
 
-    response = make_response(ET.tostring(tree))
 
-    return response, lxfml.split('/')[-1]
+
+    return response, f"{filename}.{file_format}"

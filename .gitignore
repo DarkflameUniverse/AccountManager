@@ -12,3 +12,4 @@ app/static/ldddb/*
 .vscode/settings.json
 locale.xml
 app/luclient/*
+app/cache/*
