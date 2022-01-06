@@ -719,9 +719,9 @@ class Converter:
 
         start_time = time.time()
 
-        out = open(filename + ".obj", "w+")
+        out = open(filename + ".obj.tmp", "w+")
         out.write("mtllib " + filename + ".mtl" + '\n\n')
-        outtext = open(filename + ".mtl", "w+")
+        outtext = open(filename + ".mtl.tmp", "w+")
 
         total = len(self.scene.Bricks)
         current = 0
@@ -817,6 +817,8 @@ class Converter:
                     textOffset += len(geo.Parts[part].textures)
                 # -----------------------------------------------------------------
                 out.write('\n')
+        os.rename(filename + ".obj.tmp", filename + ".obj")
+        os.rename(filename + ".mtl.tmp", filename + ".mtl")
 
         sys.stdout.write('%s\r' % ('                                                                                                 '))
         # print("--- %s seconds ---" % (time.time() - start_time))
