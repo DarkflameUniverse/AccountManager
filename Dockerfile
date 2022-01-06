@@ -2,6 +2,9 @@
 
 FROM python:3.8-slim-buster
 
+RUN apt update
+RUN apt -y install zip
+
 COPY requirements.txt requirements.txt
 
 RUN pip install -r requirements.txt
