@@ -306,7 +306,7 @@ def prebuilt(content, file_format):
             response = make_response(cache_data)
 
         else:
-            lxfml = f'app/luclient/res/brickmodels/{filename.split(".")[0]}.lxfml'
+            lxfml = f'app/luclient/res/BrickModels/{filename.split(".")[0]}.lxfml'
             ldd.main(lxfml, cache.split('.')[0]) # convert to OBJ
 
             if os.path.exists(cache):
