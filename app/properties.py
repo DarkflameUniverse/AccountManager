@@ -20,6 +20,9 @@ from app import gm_level, query_cdclient
 
 import zlib
 import xmltodict
+import xml.etree.ElementTree as ET
+from pyquaternion import Quaternion
+import numpy as np
 import os
 import app.pylddlib as ldd
 
@@ -247,6 +250,17 @@ def download_model(id):
         filename=filename
     )
     return response
+
+
+@property_blueprint.route('/find_file/<filename>', methods=['GET'])
+@login_required
+def find_file_brickdb(filename):
+    root = 'app/static/brickdb'
+
+    glob.glob(
+        root + f'**/{filename}',
+        recursive=True
+    )[2] # which LOD folder to load from
 
 
 def ugc(content):

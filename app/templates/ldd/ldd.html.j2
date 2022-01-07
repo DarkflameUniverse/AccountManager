@@ -274,7 +274,7 @@
     }
 
     AddScene(file){
-      var lxfmlfile = new LDDFile(file,file)
+      var lxfmlfile = new DBURLFile(file,file)
       this.xmldata = lxfmlfile.read()
 
       if (this.xmldata === ""){
@@ -437,19 +437,23 @@
 
   class Geometry {
     //done
-    constructor(designID){
+    constructor(designID, database){
       this.designID = designID
       this.Parts = []
+      var GEOMETRIEPATH = 'Primitives/LOD0/'
+      var PRIMITIVEPATH = 'Primitives/'
 
       this.studsFields2D = []
-      var GeometryLocation = `${designID}`
-      var PrimitiveLocation = `${designID}`
+      var GeometryLocation = `${designID}.g`
+      var PrimitiveLocation = `${designID}.xml`
 
       var GeometryCount = 0
-      this.Parts[GeometryCount] = new GeometryReader(new LDDFile(`/find_file/g/${GeometryLocation}`,`/find_file/g/${GeometryLocation}`).read())
-      GeometryCount += 1
-      GeometryLocation = `${designID}.g${GeometryCount}`
-      var primitive = new Primitive(new LDDFile(`/find_file/xml/${PrimitiveLocation}`,`/find_file/xml/${PrimitiveLocation}`).read())
+      while (GeometryLocation in database.filelist) {
+        this.Parts[GeometryCount] = new GeometryReader(database.filelist[GeometryLocation].read())
+        GeometryCount += 1
+        GeometryLocation = `${GEOMETRIEPATH}${designID}.g${GeometryCount}`
+      }
+      var primitive = new Primitive(database.filelist[PrimitiveLocation].read())
       this.Partname = primitive.Designname
       this.studsFields2D = primitive.Fields2D
 
@@ -518,12 +522,21 @@
       this.scene = new Scene()
     }
 
+    LoadDBURL(dbURLlocation){
+      this.database = new DBURLReader(dbURLlocation)
+      if(this.database.initok && this.database.fileexist('Materials.xml') && this.database.fileexist('localizedStrings.loc')){
+        this.allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
+      }
+    }
+
     LoadScene(filename){
-      this.scene.AddScene(filename)
+      if(this.database.initok){
+        this.scene.AddScene(filename)
+      }
     }
 
     Export(filename){
-      var allMaterials = new Materials(new LDDFile(`/find_file/xml/Materials`,`/find_file/xml/Materials`).read())
+      var allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
       var invert = new Matrix3D()
       //invert.n33 = -1 //uncomment to invert the Z-Axis
 
@@ -551,9 +564,9 @@
       for (const bri of this.scene.Bricks){
         current += 1
         for (const pa of bri.Parts){
-          var geo = new Geometry(pa.designID)
+          var geo = new Geometry(pa.designID, this.database)
           if (!(pa.designID in geometriecache)) {
-            var geo = new Geometry(pa.designID)
+            var geo = new Geometry(pa.designID, this.database)
             geometriecache[pa.designID] = geo
           }
           else {
@@ -681,6 +694,7 @@
             if (!(deco == '0')){
               var DECORATIONPATH = 'Decorations/'
               var decofilename = DECORATIONPATH + deco + '.png'
+              var extfile = this.database.filelist[decofilename].urlHandle
               var texture = new THREE.TextureLoader().load( extfile );
               material1 = new THREE.MeshPhongMaterial( { map: texture } );
               material1.transparent = true
@@ -917,7 +931,7 @@
   }
 
 
-  class LDDFile {
+  class DBURLFile {
     constructor(urlHandle, name) {
       this.urlHandle = urlHandle
       this.name = name
@@ -936,7 +950,7 @@
 
         // request completed?
         if (xhr.readyState !== 4) {//return;
-          console.log('readyState error in LDDFile:', xhr.status, xhr.statusText);
+          console.log('readyState error in DBURLFile:', xhr.status, xhr.statusText);
         }
         if (xhr.status === 200) {
           // request successful - show response
@@ -944,13 +958,77 @@
         }
         else {
           // request error
-          console.log('HTTP error in LDDFile:', xhr.status, xhr.statusText);
+          console.log('HTTP error in DBURLFile:', xhr.status, xhr.statusText);
         }
       };
 
       // start request
       xhr.send();
       return fileContent
+    }
+  }
+
+
+  class DBURLReader {
+    constructor(dburl) {
+      this.filelist = {};
+      this.initok = false;
+      this.location = dburl;
+      this.dbinfo = '';
+      this.parse(this.location);
+
+      // console.log(JSON.stringify(this.filelist))
+
+      if(this.fileexist('Materials.xml') && this.fileexist('info.xml')){
+        this.dbinfo = new DBinfo(this.filelist['info.xml'].read());
+        this.initok = true
+      }
+      else{
+        alert("db url ERROR")
+      }
+    }
+
+    fileexist(filename) {
+      var self = this;
+      return self.filelist[filename];
+    }
+
+    parse(dburl) {
+      var self = this;
+      let xhr = new XMLHttpRequest();
+      xhr.open('GET', dburl, false);
+
+      // request state change event
+      xhr.onreadystatechange = function() {
+
+        // request completed?
+        if (xhr.readyState !== 4) return;
+
+        if (xhr.status === 200) {
+          // request successful - show response
+          var data = JSON.parse(xhr.responseText)
+          //console.log(JSON.stringify(data, null, "\t"));
+          for(var i = 0; i < data.length; i++) {
+            var obj = data[i];
+            if (obj.type == 'directory'){
+              // parse subdirs
+              self.parse(dburl + obj.name + '/')
+            }
+            else if (obj.type == 'file'){
+              self.filelist[obj.name] = new DBURLFile(dburl + obj.name, obj.name)
+            }
+            else {
+              console.log('Strange object parsed: ' + obj.type)
+            }
+          }
+        }
+        else {
+          // request error
+          console.log('HTTP error', xhr.status, xhr.statusText);
+        }
+      };
+      // start request
+      xhr.send();
     }
   }
 
@@ -964,11 +1042,20 @@
     {% endfor %}
   ]
   if (lxfml_file_list.length > 0) {
-    var converter = new Converter()
-    for (var i = 0; i < lxfml_file_list.length; i++) {
-      converter.LoadScene(lxfml_file_list[i])
+  var ldddburl = FindDBURL()
+
+    if (ldddburl) {
+      var converter = new Converter()
+      converter.LoadDBURL(ldddburl)
+      for (var i = 0; i < lxfml_file_list.length; i++) {
+        converter.LoadScene(lxfml_file_list[i])
+      }
+      converter.Export('test.webgl')
+
     }
-    converter.Export('test.webgl')
+    else {
+      alert("LDD database not available. Please look for LEGO-Digital-Designer database.")
+    }
   }
 
   const onProgress = function ( xhr ) {
