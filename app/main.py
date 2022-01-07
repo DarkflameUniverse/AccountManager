@@ -1,6 +1,6 @@
 from flask import render_template, Blueprint, redirect, url_for, request, send_from_directory
 from flask_user import login_required, current_user
-import json
+import json, glob, os
 
 from app.models import Account, AccountInvitation, CharacterInfo
 from app.schemas import AccountSchema, CharacterInfoSchema
@@ -36,3 +36,19 @@ def favicon():
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
+
+@main_blueprint.route('/find_file/<file_format>/<filename>', methods=['GET'])
+@login_required
+def find_file_brickdb(file_format, filename):
+    root = 'app/luclient/res/'
+
+    file_loc = glob.glob(
+        root + f'**/{filename}.{file_format}',
+        recursive=True
+    )[0] # which LOD folder to load from
+
+    with open(file_loc, 'r', errors="ignore") as file:
+        file_data = file.read()
+
+    return send_from_directory(os.getcwd() + "/" + ("/".join(file_loc.split("/")[:-1])), file_loc.split("/")[-1])
