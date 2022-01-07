@@ -276,7 +276,7 @@ def prebuilt(content, file_format):
         return f"No filename for LOT {content.lot}"
 
     if file_format == "lxfml":
-        lxfml = f'app/luclient/res/brickmodels/{filename.split(".")[0]}.lxfml'
+        lxfml = f'app/luclient/res/BrickModels/{filename.split(".")[0]}.lxfml'
         with open(lxfml, 'r') as file:
             lxfml_data = file.read()
         # print(lxfml_data)
