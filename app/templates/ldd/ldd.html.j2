@@ -1134,6 +1134,23 @@
     camera.position.set( brick_pos.x + 200, brick_pos.y + 300, brick_pos.z + 200 );
   {% endif %}
 
+  {% if center %}
+    var center = new THREE.Vector3{{ center }};
+    var groundTexture = new THREE.TextureLoader().load( "/get_dds/env_nim_ag_grass.dds");
+    groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
+    groundTexture.repeat.set( 10, 10 );
+    groundTexture.anisotropy = 16;
+    groundTexture.encoding = THREE.sRGBEncoding;
+    var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+    var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 400, 400 ), groundMaterial );
+    mesh.position.y = center.y;
+    mesh.position.x = center.x;
+    mesh.position.z = center.z
+    mesh.rotation.x = - Math.PI / 2;
+    mesh.receiveShadow = true;
+    scene.add( mesh );
+  {% endif %}
+
   // scene
   scene.background = new THREE.Color( 0xdeebed );
 

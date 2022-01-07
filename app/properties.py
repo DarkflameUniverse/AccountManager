@@ -250,17 +250,6 @@ def download_model(id):
     return response
 
 
-@property_blueprint.route('/find_file/<filename>', methods=['GET'])
-@login_required
-def find_file_brickdb(filename):
-    root = 'app/static/brickdb'
-
-    glob.glob(
-        root + f'**/{filename}',
-        recursive=True
-    )[2] # which LOD folder to load from
-
-
 def ugc(content):
     ugc_data = UGC.query.filter(UGC.id==content.ugc_id).first()
     uncompressed_lxfml = zlib.decompress(ugc_data.lxfml)

@@ -1,6 +1,7 @@
-from flask import render_template, Blueprint, redirect, url_for, request, send_from_directory
+from flask import render_template, Blueprint, redirect, url_for, request, send_from_directory, make_response
 from flask_user import login_required, current_user
-import json
+import json, glob, os
+from wand import image
 
 from app.models import Account, AccountInvitation, CharacterInfo
 from app.schemas import AccountSchema, CharacterInfoSchema
@@ -24,10 +25,12 @@ def index():
     else:
         return render_template('main/index.html.j2')
 
+
 @main_blueprint.route('/about')
 def about():
     """About Page"""
     return render_template('main/about.html.j2')
+
 
 @main_blueprint.route('/favicon.ico')
 def favicon():
@@ -36,3 +39,33 @@ def favicon():
         'favicon.ico',
         mimetype='image/vnd.microsoft.icon'
     )
+
+
+@main_blueprint.route('/get_dds/<filename>')
+def get_dds(filename):
+    if filename.split('.')[-1] != 'dds':
+        return (404, "NO")
+
+    cache = f'app/cache/{filename.split(".")[0]}.png'
+
+    if not os.path.exists(cache):
+        root = 'app/luclient/res/'
+
+        path = glob.glob(
+            root + f'**/{filename}',
+            recursive=True
+        )[0]
+
+        with image.Image(filename=path) as img:
+            img.compression = "no"
+            img.save(filename='app/cache/'+filename.split('.')[0] + '.png')
+
+    return send_from_directory(
+        'cache/',
+        filename.split('.')[0] + '.png',
+        mimetype='image/vnd.microsoft.icon'
+    )
+
+
+
+
