@@ -9,7 +9,7 @@ from app.schemas import ma
 from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
-import sqlite3
+from app.luclient import query_cdclient
 
 from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
@@ -204,29 +204,3 @@ def gm_level(gm_level):
             return func(*args, **kwargs)
         return wrapper
     return decorator
-
-
-def get_cdclient():
-    """Connect to CDClient from file system Relative Path
-
-    Args:
-        None
-    """
-    cdclient = getattr(g, '_cdclient', None)
-    if cdclient is None:
-        cdclient = g._database = sqlite3.connect('app/luclient/res/cdclient.sqlite')
-    return cdclient
-
-
-def query_cdclient(query, args=(), one=False):
-    """Run sql queries on CDClient
-
-    Args:
-        query   (string)    : SQL query
-        args    (list)      : List of args to place in query
-        one     (bool)      : Return only on result or all results
-    """
-    cur = get_cdclient().execute(query, args)
-    rv = cur.fetchall()
-    cur.close()
-    return (rv[0] if rv else None) if one else rv

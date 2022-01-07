@@ -16,13 +16,11 @@ from datatables import ColumnDT, DataTables
 import time
 from app.models import Property, db, UGC, CharacterInfo, PropertyContent
 from app.schemas import PropertySchema
-from app import gm_level, query_cdclient
+from app import gm_level
+from app.luclient import query_cdclient
 
 import zlib
 import xmltodict
-import xml.etree.ElementTree as ET
-from pyquaternion import Quaternion
-import numpy as np
 import os
 import app.pylddlib as ldd
 

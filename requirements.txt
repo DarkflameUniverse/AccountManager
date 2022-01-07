@@ -1,5 +1,6 @@
 alembic==1.7.5
 astroid==2.9.1
+autopep8==1.6.0
 bcrypt==3.2.0
 blinker==1.4
 cffi==1.14.6
@@ -30,7 +31,6 @@ MarkupSafe==2.0.1
 marshmallow==3.14.1
 marshmallow-sqlalchemy==0.26.1
 mccabe==0.6.1
-numpy==1.22.0
 passlib==1.7.4
 platformdirs==2.4.1
 pycodestyle==2.8.0
@@ -40,7 +40,6 @@ pyflakes==2.4.0
 pylama==8.3.3
 pylint==2.12.2
 PyMySQL==1.0.2
-pyquaternion==0.9.9
 python-dateutil==2.8.2
 six==1.16.0
 snowballstemmer==2.2.0

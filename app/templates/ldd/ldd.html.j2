@@ -684,6 +684,8 @@
 
             var material = new THREE.MeshPhongMaterial();
             material.color.set(lddmat.toString());
+            material.transparent = true
+            material.opacity = (lddmat.a / 255)
             var material1 = new THREE.MeshPhongMaterial();
             var materials = [];
             materials.push(material)
@@ -1146,7 +1148,7 @@
   directionalLight2.position.set( 10000, 12000, -15000 );
   scene.add( directionalLight2 );
 
-  let renderer = new THREE.WebGLRenderer( { antialias: true } );
+  let renderer = new THREE.WebGLRenderer( { antialias: true, alpha: true } );
   renderer.setPixelRatio( window.devicePixelRatio );
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
