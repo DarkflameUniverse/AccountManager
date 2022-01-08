@@ -7,8 +7,6 @@ from app import gm_level
 
 log_blueprint = Blueprint('log', __name__)
 
-# Key creation page
-
 @log_blueprint.route('/activities', methods=['GET'])
 @login_required
 @gm_level(8)

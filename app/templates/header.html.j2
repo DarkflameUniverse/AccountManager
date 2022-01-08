@@ -44,6 +44,7 @@
           <a id='accounts-index' class='nav-link' href='{{ url_for('accounts.index') }}'>Accounts</a>
           <a id='character-index' class='nav-link' href='{{ url_for('characters.index') }}'>Characters</a>
           <a id='property-index' class='nav-link' href='{{ url_for('properties.index') }}'>Properties</a>
+          <a id='mail-send' class='nav-link' href='{{ url_for('mail.send') }}'>Send Mail</a>
         {% endif %}
 
         {% if current_user.is_authenticated and current_user.gm_level >= 2 %}

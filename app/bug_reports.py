@@ -8,8 +8,6 @@ from app.luclient import translate_from_locale
 
 bug_report_blueprint = Blueprint('bug_reports', __name__)
 
-# Key creation page
-
 @bug_report_blueprint.route('/<status>', methods=['GET'])
 @login_required
 @gm_level(3)

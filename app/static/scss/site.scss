@@ -16,6 +16,12 @@ $link-color: #005ac2;
   }
 }
 
+
+.select2-results ul li {
+  background-color: grey;
+}
+
+
 .card-columns {
   @include media-breakpoint-only(lg) {
     column-count: 4;

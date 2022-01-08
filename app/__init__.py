@@ -139,6 +139,8 @@ def register_blueprints(app):
     app.register_blueprint(log_blueprint, url_prefix='/log')
     from .bug_reports import bug_report_blueprint
     app.register_blueprint(bug_report_blueprint, url_prefix='/bug_reports')
+    from .mail import mail_blueprint
+    app.register_blueprint(mail_blueprint, url_prefix='/mail')
 
 
 def register_settings(app):

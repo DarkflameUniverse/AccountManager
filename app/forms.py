@@ -16,11 +16,11 @@ from wtforms import (
     SubmitField,
     validators,
     IntegerField,
-    StringField
+    StringField,
+    SelectField
 )
 
 from wtforms.validators import DataRequired, Optional
-
 from app.models import PlayKey
 
 def validate_play_key(form, field):
@@ -131,6 +131,40 @@ class ResolveBugReportForm(FlaskForm):
         'Resolution',
         widget=TextArea(),
         validators=[DataRequired()]
+    )
+
+    submit = SubmitField('Submit')
+
+
+class SendMailForm(FlaskForm):
+
+    recipient = SelectField(
+        'Recipient: ',
+        coerce=str,
+        choices=[("0","All Characters")],
+        validators=[validators.DataRequired()]
+    )
+
+    subject = StringField(
+        'Subject',
+        validators=[validators.DataRequired()]
+    )
+
+    body = StringField(
+        'Body',
+        widget=TextArea(),
+        validators=[validators.DataRequired()]
+    )
+
+    attachment = SelectField(
+        "Attachment",
+        coerce=str,
+        choices=[(0,"Nothing")]
+    )
+
+    attachment_count = IntegerField(
+        'Attachment Count',
+        default=0
     )
 
     submit = SubmitField('Submit')

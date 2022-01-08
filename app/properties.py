@@ -304,6 +304,4 @@ def prebuilt(content, file_format):
     else:
         raise(Exception("INVALID FILE FORMAT"))
 
-
-
     return response, f"{filename}.{file_format}"
