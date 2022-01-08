@@ -1,0 +1,97 @@
+{% extends 'base.html.j2' %}
+
+{% block title %}
+  View Report {{ report.id }}
+{% endblock title %}
+
+{% block content_before %}
+  View Report {{ report.id }}
+{% endblock content_before %}
+
+{% block content %}
+  <div class="card shadow-sm mx-auto pb-3 bg-dark border-primary" style="width: 20rem;">
+    <div class="card-body">
+
+      <div class="row">
+        <div class="col text-right">
+          Message:
+        </div>
+        <div class="col">
+          {{ report.body }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Client Version:
+        </div>
+        <div class="col">
+          {{ report.client_version }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Other Player:
+        </div>
+        <div class="col">
+          {{ report.other_player_id }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Type:
+        </div>
+        <div class="col">
+          {{ report.selection[2:-1]|lu_translate }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Submitted:
+        </div>
+        <div class="col">
+          {{ report.submitted }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Resolved:
+        </div>
+        <div class="col">
+          {{ report.resolved_time }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Resolved By:
+        </div>
+        <div class="col">
+          {{ resolved_by }}
+        </div>
+      </div>
+      <br/>
+
+      <div class="row">
+        <div class="col text-right">
+          Resolution:
+        </div>
+        <div class="col">
+          {{ report.resolution }}
+        </div>
+      </div>
+      <br/>
+
+    </div>
+  </div>
+{% endblock content %}
