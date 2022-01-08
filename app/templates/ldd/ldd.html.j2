@@ -1136,7 +1136,7 @@
 
   {% if center %}
     var center = new THREE.Vector3{{ center }};
-    var groundTexture = new THREE.TextureLoader().load( "/get_dds/env_nim_ag_grass.dds");
+    var groundTexture = new THREE.TextureLoader().load( "/get_dds_as_png/env_nim_ag_grass.dds");
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 10, 10 );
     groundTexture.anisotropy = 16;

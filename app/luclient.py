@@ -34,6 +34,8 @@ def translate_from_locale(trans_string):
     Args:
         trans_string   (string)    : ID to find translation
     """
+    if not trans_string:
+         return "INVALID STRING"
 
     locale = "app/luclient/locale/locale.xml"
 

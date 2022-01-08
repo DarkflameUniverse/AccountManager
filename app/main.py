@@ -41,8 +41,8 @@ def favicon():
     )
 
 
-@main_blueprint.route('/get_dds/<filename>')
-def get_dds(filename):
+@main_blueprint.route('/get_dds_as_png/<filename>')
+def get_dds_as_png(filename):
     if filename.split('.')[-1] != 'dds':
         return (404, "NO")
 
@@ -67,5 +67,22 @@ def get_dds(filename):
     )
 
 
+@main_blueprint.route('/get_dds/<filename>')
+def get_dds(filename):
+    if filename.split('.')[-1] != 'dds':
+        return 404
+
+    root = 'app/luclient/res/'
+
+    dds = glob.glob(
+        root + f'**/{filename}',
+        recursive=True
+    )[0]
+
+    with open(dds, 'r', errors="ignore") as file:
+        dds_data = file.read()
+
+    response = make_response(dds_data)
+    return response
 
 

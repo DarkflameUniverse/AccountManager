@@ -235,6 +235,14 @@ class AccountInvitation(db.Model):
         server_default=''
     )
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
     @staticmethod
@@ -314,6 +322,10 @@ class CharacterInfo(db.Model):
         db.session.commit()
         db.session.refresh(self)
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 class CharacterXML(db.Model):
     __tablename__ = 'charxml'
     id = db.Column(mysql.BIGINT, primary_key=True)
@@ -321,6 +333,15 @@ class CharacterXML(db.Model):
         db.Text(4294000000),
         nullable=False
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class CommandLog(db.Model):
     __tablename__ = 'command_log'
@@ -342,6 +363,15 @@ class CommandLog(db.Model):
         mysql.VARCHAR(256),
         nullable=False
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Friends(db.Model):
     __tablename__ = 'friends'
@@ -378,6 +408,15 @@ class Friends(db.Model):
         nullable=False,
         server_default='0'
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Leaderboard(db.Model):
     __tablename__ = 'leaderboard'
@@ -418,6 +457,15 @@ class Leaderboard(db.Model):
         nullable=False,
         server_default='0'
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class Mail(db.Model):
     __tablename__ = 'mail'
@@ -498,6 +546,15 @@ class Mail(db.Model):
         server_default='0'
     )
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 class ObjectIDTracker(db.Model):
     __tablename__ = 'object_id_tracker'
     last_object_id = db.Column(
@@ -524,6 +581,10 @@ class PetNames(db.Model):
         db.session.add(self)
         db.session.commit()
         db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 
 class Property(db.Model):
@@ -625,6 +686,10 @@ class Property(db.Model):
         db.session.commit()
         db.session.refresh(self)
 
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 
 class UGC(db.Model):
     __tablename__ = 'ugc'
@@ -678,6 +743,15 @@ class UGC(db.Model):
         nullable=False,
         server_default=''
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class PropertyContent(db.Model):
     __tablename__ = 'properties_contents'
@@ -750,6 +824,15 @@ class PropertyContent(db.Model):
         nullable=False,
     )
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 class ActivityLog(db.Model):
     __tablename__ = 'activity_log'
     id = db.Column(mysql.INTEGER, primary_key=True)
@@ -780,6 +863,15 @@ class ActivityLog(db.Model):
         mysql.INTEGER,
         nullable=False,
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
 
 class BugReport(db.Model):
     __tablename__ = 'bug_reports'
@@ -833,6 +925,15 @@ class BugReport(db.Model):
         nullable=True
     )
 
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
 class Server(db.Model):
     __tablename__ = 'servers'
     id = db.Column(
@@ -864,3 +965,12 @@ class Server(db.Model):
         nullable=False,
         server_default='0'
     )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()

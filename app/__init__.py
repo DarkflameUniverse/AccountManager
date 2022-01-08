@@ -9,7 +9,7 @@ from app.schemas import ma
 from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
-from app.luclient import query_cdclient
+from app.luclient import query_cdclient, translate_from_locale
 
 from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
@@ -39,11 +39,17 @@ def create_app():
     # A bunch of jinja filters to make things easiers
     @app.template_filter('ctime')
     def timectime(s):
-        return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
+        if s:
+            return time.ctime(s) # or datetime.datetime.fromtimestamp(s)
+        else:
+            return "Never"
 
     @app.template_filter('check_perm_map')
     def check_perm_map(perm_map, bit):
-        return perm_map & (1 << bit)
+        if perm_map:
+            return perm_map & (1 << bit)
+        else:
+            return 0 & (1 << bit)
 
     @app.template_filter('get_zone_name')
     def check_perm_map(zone_id):
@@ -54,7 +60,7 @@ def create_app():
         )[0]
 
     @app.template_filter('get_lot_name')
-    def check_perm_map(lot_id):
+    def get_lot_name(lot_id):
         return query_cdclient(
             'select displayName from Objects where id = ?',
             [lot_id],
@@ -62,12 +68,16 @@ def create_app():
         )[0]
 
     @app.template_filter('get_lot_desc')
-    def check_perm_map(lot_id):
+    def get_lot_desc(lot_id):
         return query_cdclient(
             'select description from Objects where id = ?',
             [lot_id],
             one=True
         )[0]
+
+    @app.template_filter('lu_translate')
+    def lu_translate(to_translate):
+        return translate_from_locale(to_translate)
 
     @app.teardown_appcontext
     def close_connection(exception):
@@ -127,6 +137,8 @@ def register_blueprints(app):
     app.register_blueprint(moderation_blueprint, url_prefix='/moderation')
     from .log import log_blueprint
     app.register_blueprint(log_blueprint, url_prefix='/log')
+    from .bug_reports import bug_report_blueprint
+    app.register_blueprint(bug_report_blueprint, url_prefix='/bug_reports')
 
 
 def register_settings(app):

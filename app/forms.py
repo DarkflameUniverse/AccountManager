@@ -123,3 +123,14 @@ class EditGMLevelForm(FlaskForm):
     )
 
     submit = SubmitField('Submit')
+
+
+class ResolveBugReportForm(FlaskForm):
+
+    resolution = StringField(
+        'Resolution',
+        widget=TextArea(),
+        validators=[DataRequired()]
+    )
+
+    submit = SubmitField('Submit')
