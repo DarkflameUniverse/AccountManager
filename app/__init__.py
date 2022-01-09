@@ -141,6 +141,9 @@ def register_blueprints(app):
     app.register_blueprint(bug_report_blueprint, url_prefix='/bug_reports')
     from .mail import mail_blueprint
     app.register_blueprint(mail_blueprint, url_prefix='/mail')
+    from .luclient import luclient_blueprint
+    app.register_blueprint(luclient_blueprint, url_prefix='/luclient')
+
 
 
 def register_settings(app):

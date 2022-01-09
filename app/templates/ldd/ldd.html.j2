@@ -35,11 +35,11 @@
   import {OBJLoader} from 'https://cdn.jsdelivr.net/gh/mrdoob/three.js/examples/jsm/loaders/OBJLoader.js'
   //Three.js stuff
   const scene = new THREE.Scene();
-  var cammatr = new THREE.Matrix4();
+  let cammatr = new THREE.Matrix4();
   {% if center %}
-    var brick_pos = new THREE.Vector3{{center}};
+    let brick_pos = new THREE.Vector3{{center}};
   {% else %}
-    var brick_pos = new THREE.Vector3();
+    let brick_pos = new THREE.Vector3();
   {% endif %}
 
 
@@ -69,17 +69,17 @@
     }
 
     rotate(angle, axis){
-      var c = Math.cos(angle)
-      var s = Math.sin(angle)
-      var t = 1 - c
+      let c = Math.cos(angle)
+      let s = Math.sin(angle)
+      let t = 1 - c
 
-      var tx = t * axis.x
-      var ty = t * axis.y
-      var tz = t * axis.z
+      let tx = t * axis.x
+      let ty = t * axis.y
+      let tz = t * axis.z
 
-      var sx = s * axis.x
-      var sy = s * axis.y
-      var sz = s * axis.z
+      let sx = s * axis.x
+      let sy = s * axis.y
+      let sz = s * axis.z
 
       this.n11 = c + axis.x * tx
       this.n12 = axis.y * tx + sz
@@ -136,18 +136,18 @@
     }
 
     transformW(matrix){
-      var x = matrix.n11 * this.x + matrix.n21 * this.y + matrix.n31 * this.z
-      var y = matrix.n12 * this.x + matrix.n22 * this.y + matrix.n32 * this.z
-      var z = matrix.n13 * this.x + matrix.n23 * this.y + matrix.n33 * this.z
+      let x = matrix.n11 * this.x + matrix.n21 * this.y + matrix.n31 * this.z
+      let y = matrix.n12 * this.x + matrix.n22 * this.y + matrix.n32 * this.z
+      let z = matrix.n13 * this.x + matrix.n23 * this.y + matrix.n33 * this.z
       this.x = x
       this.y = y
       this.z = z
     }
 
     transform(matrix){
-      var x = matrix.n11 * this.x + matrix.n21 * this.y + matrix.n31 * this.z + matrix.n41
-      var y = matrix.n12 * this.x + matrix.n22 * this.y + matrix.n32 * this.z + matrix.n42
-      var z = matrix.n13 * this.x + matrix.n23 * this.y + matrix.n33 * this.z + matrix.n43
+      let x = matrix.n11 * this.x + matrix.n21 * this.y + matrix.n31 * this.z + matrix.n41
+      let y = matrix.n12 * this.x + matrix.n22 * this.y + matrix.n32 * this.z + matrix.n42
+      let z = matrix.n13 * this.x + matrix.n23 * this.y + matrix.n33 * this.z + matrix.n43
       this.x = x
       this.y = y
       this.z = z
@@ -221,7 +221,7 @@
       this.designID = node.getAttribute('designID')
       this.materials =  node.getAttribute('materials').split(',')
 
-      var lastm = '0'
+      let lastm = '0'
       for (const [i, m] of this.materials.entries()) {
         if (m == '0'){
           //this.materials[i] = lastm
@@ -235,9 +235,9 @@
       if (node.hasAttribute('decoration')){
         this.decoration = node.getAttribute('decoration').split(',')
       }
-      var childnodes = node.childNodes
-      for (var j = 0; j < childnodes.length ;j++) {
-        var childnode = childnodes[j]
+      let childnodes = node.childNodes
+      for (let j = 0; j < childnodes.length ;j++) {
+        let childnode = childnodes[j]
         if (childnode.nodeName == 'Bone'){
           this.Bones.push(new Bone(childnode))
         }
@@ -252,9 +252,9 @@
       this.refID = node.getAttribute('refID')
       this.designID = node.getAttribute('designID')
       this.Parts = []
-      var childnodes = node.childNodes
-      for (var j = 0; j < childnodes.length ;j++) {
-        var childnode = childnodes[j]
+      let childnodes = node.childNodes
+      for (let j = 0; j < childnodes.length ;j++) {
+        let childnode = childnodes[j]
         if (childnode.nodeName == 'Part'){
           this.Parts.push(new Part(childnode))
         }
@@ -274,45 +274,45 @@
     }
 
     AddScene(file){
-      var lxfmlfile = new DBURLFile(file,file)
+      let lxfmlfile = new DBURLFile(file,file)
       this.xmldata = lxfmlfile.read()
 
       if (this.xmldata === ""){
         alert(this.xmldata)
       }
 
-      var parser = new DOMParser();
-      var xml = parser.parseFromString(this.xmldata, "text/xml");
+      let parser = new DOMParser();
+      let xml = parser.parseFromString(this.xmldata, "text/xml");
 
-      var nodes = xml.firstChild.childNodes;
-      for (var i = 0; i < nodes.length ;i++) {
-        var node = nodes[i]
+      let nodes = xml.firstChild.childNodes;
+      for (let i = 0; i < nodes.length ;i++) {
+        let node = nodes[i]
         if (node.nodeName == 'Meta'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'BrickSet'){
               this.Version = childnode.getAttribute('version')
             }
           }
         }
         else if (node.nodeName == 'Bricks'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'Brick'){
               this.Bricks.push(new Brick(childnode))
             }
           }
         }
         else if (node.nodeName == 'GroupSystems'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'GroupSystem'){
-              var subchildnodes = childnode.childNodes
-              for (var k = 0; k < subchildnodes.length ;k++) {
-                var subchildnode = subchildnodes[k]
+              let subchildnodes = childnode.childNodes
+              for (let k = 0; k < subchildnodes.length ;k++) {
+                let subchildnode = subchildnodes[k]
                 if (subchildnode.nodeName == 'Group'){
                   this.Groups.push(new Group(subchildnode))
                 }
@@ -352,7 +352,7 @@
 
       this.binary = "";
 
-      for (var i = 0; i < data.length; i++ ) {
+      for (let i = 0; i < data.length; i++ ) {
         this.binary += String.fromCharCode(data.charCodeAt(i) & 255)
       }
       this.data = Base64Binary.decodeArrayBuffer(btoa(this.binary));
@@ -362,39 +362,39 @@
         this.valueCount = this.readInt()
         this.indexCount = this.readInt()
         this.faceCount = this.indexCount / 3
-        var options = this.readInt()
+        let options = this.readInt()
 
-        for (var i = 0; i < this.valueCount ;i++) {
+        for (let i = 0; i < this.valueCount ;i++) {
           this.positions.push(new Point3D(this.readFloat(), this.readFloat(), this.readFloat()))
         }
-        for (var i = 0; i < this.valueCount ;i++) {
+        for (let i = 0; i < this.valueCount ;i++) {
           this.normals.push(new Point3D(this.readFloat(), this.readFloat(), this.readFloat()))
         }
         if ((options & 3) == 3){
           this.texCount = this.valueCount
-          for (var i = 0; i < this.valueCount ;i++) {
+          for (let i = 0; i < this.valueCount ;i++) {
             this.textures.push(new Point2D(this.readFloat(), this.readFloat()))
           }
         }
-        for (var i = 0; i < this.faceCount ;i++) {
+        for (let i = 0; i < this.faceCount ;i++) {
           this.faces.push(new Face(this.readInt(), this.readInt(), this.readInt()))
         }
         if ((options & 48) == 48){
-          var num = this.readInt()
+          let num = this.readInt()
           this.offset += (num * 4) + (this.indexCount * 4)
           num = this.readInt()
           this.offset += (3 * num * 4) + (this.indexCount * 4)
         }
 
-        var bonelength = this.readInt()
+        let bonelength = this.readInt()
         this.bonemap.length = this.valueCount
         this.bonemap.fill(0);
 
         if ((bonelength > this.valueCount) || (bonelength > this.faceCount)){
-          var datastart = this.offset
+          let datastart = this.offset
           this.offset += bonelength
-          for (var i = 0; i < this.valueCount ;i++) {
-            var boneoffset = this.readInt() + 4
+          for (let i = 0; i < this.valueCount ;i++) {
+            let boneoffset = this.readInt() + 4
             this.bonemap[i] = this.read_Int(datastart + boneoffset)
           }
         }
@@ -403,24 +403,24 @@
 
     read_Int(_offset){
       //console.log(_offset)
-      var ret = (this.view[_offset+0]) + (this.view[_offset+1]<<8)+ (this.view[_offset+2]<<16) + (this.view[_offset+3]<<24)
+      let ret = (this.view[_offset+0]) + (this.view[_offset+1]<<8)+ (this.view[_offset+2]<<16) + (this.view[_offset+3]<<24)
       //console.log(ret)
       return ret
     }
 
     readInt(){
-      //var ret = (this.view[this.offset+0]<<24) + (this.view[this.offset+1]<<16)+ (this.view[this.offset+2]<<8) + (this.view[this.offset+3])
-      var ret = (this.view[this.offset+0]) + (this.view[this.offset+1]<<8)+ (this.view[this.offset+2]<<16) + (this.view[this.offset+3]<<24)
+      //let ret = (this.view[this.offset+0]<<24) + (this.view[this.offset+1]<<16)+ (this.view[this.offset+2]<<8) + (this.view[this.offset+3])
+      let ret = (this.view[this.offset+0]) + (this.view[this.offset+1]<<8)+ (this.view[this.offset+2]<<16) + (this.view[this.offset+3]<<24)
       this.offset += 4
       //console.log(ret)
       return ret
     }
 
     readFloat(){
-      var tempdata = [(this.view[this.offset+3]), (this.view[this.offset+2]), (this.view[this.offset+1]), (this.view[this.offset+0])];
+      let tempdata = [(this.view[this.offset+3]), (this.view[this.offset+2]), (this.view[this.offset+1]), (this.view[this.offset+0])];
       // Create a buffer and a data view of it
-      var buf = new ArrayBuffer(4);
-      var view = new DataView(buf);
+      let buf = new ArrayBuffer(4);
+      let view = new DataView(buf);
 
       // set bytes
       tempdata.forEach(function (b, i) {
@@ -428,7 +428,7 @@
       });
 
       // Read the bits as a float; note that by doing this, we're implicitly converting it from a 32-bit float into JavaScript's native 64-bit double
-      var number = view.getFloat32(0);
+      let number = view.getFloat32(0);
       this.offset += 4
       return number
     }
@@ -440,20 +440,18 @@
     constructor(designID, database){
       this.designID = designID
       this.Parts = []
-      var GEOMETRIEPATH = 'Primitives/LOD0/'
-      var PRIMITIVEPATH = 'Primitives/'
 
       this.studsFields2D = []
-      var GeometryLocation = `${designID}.g`
-      var PrimitiveLocation = `${designID}.xml`
+      let GeometryLocation = `${designID}.g`
+      let PrimitiveLocation = `${designID}.xml`
 
-      var GeometryCount = 0
+      let GeometryCount = 0
       while (GeometryLocation in database.filelist) {
         this.Parts[GeometryCount] = new GeometryReader(database.filelist[GeometryLocation].read())
-        GeometryCount += 1
-        GeometryLocation = `${GEOMETRIEPATH}${designID}.g${GeometryCount}`
+        GeometryCount = GeometryCount + 1
+        GeometryLocation = `${designID}.g${GeometryCount}`
       }
-      var primitive = new Primitive(database.filelist[PrimitiveLocation].read())
+      let primitive = new Primitive(database.filelist[PrimitiveLocation].read())
       this.Partname = primitive.Designname
       this.studsFields2D = primitive.Fields2D
 
@@ -478,7 +476,7 @@
     }
 
     valuecount(){
-      var count = 0
+      let count = 0
       for (const part of this.Parts) {
         count += part.valueCount
       }
@@ -486,7 +484,7 @@
     }
 
     facecount(){
-      var count = 0
+      let count = 0
       for (const part of this.Parts) {
         count += part.facecount
       }
@@ -494,7 +492,7 @@
     }
 
     texcount(){
-      var count = 0
+      let count = 0
       for (const part of this.Parts) {
         count += part.texCount
       }
@@ -506,9 +504,9 @@
   class DBinfo {
     //done
     constructor(data) {
-      var parser = new DOMParser();
-      var xml = parser.parseFromString(data, "text/xml");
-      var Version = xml.getElementsByTagName('Bricks')[0].attributes['version'].value
+      let parser = new DOMParser();
+      let xml = parser.parseFromString(data, "text/xml");
+      let Version = xml.getElementsByTagName('Bricks')[0].attributes['version'].value
       console.log('DB Version: ' + Version);
       return ('DB Version: ' + Version);
     }
@@ -536,20 +534,20 @@
     }
 
     Export(filename){
-      var allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
-      var invert = new Matrix3D()
+      let allMaterials = new Materials(this.database.filelist['Materials.xml'].read())
+      let invert = new Matrix3D()
       //invert.n33 = -1 //uncomment to invert the Z-Axis
 
-      var indexOffset = 1
-      var textOffset = 1
-      var usedmaterials = []
-      var geometriecache = {}
+      let indexOffset = 1
+      let textOffset = 1
+      let usedmaterials = []
+      let geometriecache = {}
 
-      var total = this.scene.Bricks.length
-      var current = 0
+      let total = this.scene.Bricks.length
+      let current = 0
 
       for (const cam of this.scene.Scenecamera){
-        var camm = new THREE.Matrix4();
+        let camm = new THREE.Matrix4();
 
         camm.set(
           cam.matrix.n11, cam.matrix.n21, cam.matrix.n31, cam.matrix.n41,
@@ -564,37 +562,37 @@
       for (const bri of this.scene.Bricks){
         current += 1
         for (const pa of bri.Parts){
-          var geo = new Geometry(pa.designID, this.database)
+          let geo = new Geometry(pa.designID, this.database)
           if (!(pa.designID in geometriecache)) {
-            var geo = new Geometry(pa.designID, this.database)
+            let geo = new Geometry(pa.designID, this.database)
             geometriecache[pa.designID] = geo
           }
           else {
             geo = geometriecache[pa.designID]
           }
 
-          var ind = 0
-          var n11 = pa.Bones[ind].matrix.n11
-          var n12 = pa.Bones[ind].matrix.n12
-          var n13 = pa.Bones[ind].matrix.n13
-          var n14 = pa.Bones[ind].matrix.n14
-          var n21 = pa.Bones[ind].matrix.n21
-          var n22 = pa.Bones[ind].matrix.n22
-          var n23 = pa.Bones[ind].matrix.n23
-          var n24 = pa.Bones[ind].matrix.n24
-          var n31 = pa.Bones[ind].matrix.n31
-          var n32 = pa.Bones[ind].matrix.n32
-          var n33 = pa.Bones[ind].matrix.n33
-          var n34 = pa.Bones[ind].matrix.n34
-          var n41 = pa.Bones[ind].matrix.n41
-          var n42 = pa.Bones[ind].matrix.n42
-          var n43 = pa.Bones[ind].matrix.n43
-          var n44 = pa.Bones[ind].matrix.n44
+          let ind = 0
+          let n11 = pa.Bones[ind].matrix.n11
+          let n12 = pa.Bones[ind].matrix.n12
+          let n13 = pa.Bones[ind].matrix.n13
+          let n14 = pa.Bones[ind].matrix.n14
+          let n21 = pa.Bones[ind].matrix.n21
+          let n22 = pa.Bones[ind].matrix.n22
+          let n23 = pa.Bones[ind].matrix.n23
+          let n24 = pa.Bones[ind].matrix.n24
+          let n31 = pa.Bones[ind].matrix.n31
+          let n32 = pa.Bones[ind].matrix.n32
+          let n33 = pa.Bones[ind].matrix.n33
+          let n34 = pa.Bones[ind].matrix.n34
+          let n41 = pa.Bones[ind].matrix.n41
+          let n42 = pa.Bones[ind].matrix.n42
+          let n43 = pa.Bones[ind].matrix.n43
+          let n44 = pa.Bones[ind].matrix.n44
 
-          var m = new THREE.Matrix4();
+          let m = new THREE.Matrix4();
 
           // Only parts with more then 1 bone are flex parts
-          var flexflag = 1
+          let flexflag = 1
 
 
           if (!(pa.Bones.length > flexflag)){
@@ -604,7 +602,7 @@
                 n14, n24 ,n34, n44);
           }
 
-          var decoCount = 0
+          let decoCount = 0
 
           for (const [partindex, part] of geo.Parts.entries()){
             part.outpositions = Array.from(part.positions);
@@ -627,32 +625,32 @@
                 }
               }
             }
-            var parr = []
+            let parr = []
             for (const point of part.outpositions){
               parr.push(point.x)
               parr.push(point.y)
               parr.push(point.z)
             }
-            var threevertices = new Float32Array(parr)
+            let threevertices = new Float32Array(parr)
 
-            var narr = []
+            let narr = []
             for (const normal of part.outnormals){
               narr.push(normal.x)
               narr.push(normal.y)
               narr.push(normal.z)
             }
-            var threenormals = new Float32Array(narr)
+            let threenormals = new Float32Array(narr)
 
-            var tarr = []
+            let tarr = []
             for (const text of part.textures){
               tarr.push(text.x)
               // NOTE Three.js maps Textures in from top to bottom so we calculate 1.0 - t so the image will map properly
               tarr.push(1 - text.y)
               //console.log(text.toString())
             }
-            var threeuvs = new Float32Array(tarr)
+            let threeuvs = new Float32Array(tarr)
 
-            var farr =[]
+            let farr =[]
             for (const face of part.faces){
               farr.push(face.a)
               farr.push(face.b)
@@ -660,8 +658,8 @@
               //console.log(face.toString())
             }
 
-            var materialCurrentPart = pa.materials[partindex]
-            var lddmat = allMaterials.getMaterialbyId(materialCurrentPart)
+            let materialCurrentPart = pa.materials[partindex]
+            let lddmat = allMaterials.getMaterialbyId(materialCurrentPart)
 
             if (typeof lddmat !== 'undefined'){
               //nothing. Everything ok.
@@ -671,10 +669,10 @@
               console.log('partindex: ' + partindex)
               console.log(pa.materials)
 
-              var lddmat = allMaterials.getMaterialbyId(21)
+              let lddmat = allMaterials.getMaterialbyId(21)
             }
 
-            var deco = '0'
+            let deco = '0'
             if (pa.hasOwnProperty('decoration') && geo.Parts[partindex].textures.length > 0 ){
               if (decoCount < pa.decoration.length){
                 deco = pa.decoration[decoCount]
@@ -682,22 +680,22 @@
               decoCount += 1
             }
 
-            var material = new THREE.MeshPhongMaterial();
+            let material = new THREE.MeshPhongMaterial();
             material.color.set(lddmat.toString());
             material.transparent = true
             material.opacity = (lddmat.a / 255)
-            var material1 = new THREE.MeshPhongMaterial();
-            var materials = [];
+            let material1 = new THREE.MeshPhongMaterial();
+            let materials = [];
             materials.push(material)
 
-            var geometry = new THREE.BufferGeometry();
+            let geometry = new THREE.BufferGeometry();
             geometry.addGroup( 0, Infinity, 0 );
 
             if (!(deco == '0')){
-              var DECORATIONPATH = 'Decorations/'
-              var decofilename = DECORATIONPATH + deco + '.png'
-              var extfile = this.database.filelist[decofilename].urlHandle
-              var texture = new THREE.TextureLoader().load( extfile );
+              let DECORATIONPATH = 'Decorations/'
+              let decofilename = DECORATIONPATH + deco + '.png'
+              let extfile = this.database.filelist[decofilename].urlHandle
+              let texture = new THREE.TextureLoader().load( extfile );
               material1 = new THREE.MeshPhongMaterial( { map: texture } );
               material1.transparent = true
               materials.push(material1)
@@ -710,14 +708,14 @@
             geometry.setIndex(farr);
 
 
-            var mesh = new THREE.Mesh(geometry, materials);
+            let mesh = new THREE.Mesh(geometry, materials);
             mesh.matrixAutoUpdate = false
             mesh.matrix = m
             {% if not center %}
               brick_pos.setFromMatrixPosition( m );
             {% endif %}
             scene.add(mesh);
-            // var vnh = new VertexNormalsHelper( mesh, 5 );
+            // let vnh = new VertexNormalsHelper( mesh, 5 );
             // scene.add( vnh );
           }
 
@@ -739,16 +737,16 @@
 
         this.offset += 2
         while (this.offset < this.data.length){
-          var key = this.NextString().replace('Material', '')
-          var value = this.NextString()
+          let key = this.NextString().replace('Material', '')
+          let value = this.NextString()
           this.values[key] = value
         }
       }
     }
 
     NextString(){
-      var out =''
-      var t = this.data[this.offset].charCodeAt()
+      let out =''
+      let t = this.data[this.offset].charCodeAt()
       this.offset += 1
       while (t != 0){
         out = out + String.fromCharCode(t)
@@ -764,9 +762,9 @@
     //done
     constructor(boneId=0, angle=0, ax=0, ay=0, az=0, tx=0, ty=0, tz=0){
       this.boneId = boneId
-      var rotationMatrix = new Matrix3D()
+      let rotationMatrix = new Matrix3D()
       rotationMatrix.rotate(-angle * Math.PI / 180.0, new Point3D(ax, ay, az))
-      var p = new Point3D(tx, ty, tz)
+      let p = new Point3D(tx, ty, tz)
       p.transformW(rotationMatrix)
       rotationMatrix.n41 -= p.x
       rotationMatrix.n42 -= p.y
@@ -781,9 +779,9 @@
     constructor(type=0, width=0, height=0, angle=0, ax=0, ay=0, az=0, tx=0, ty=0, tz=0, field2DRawData='none'){
       this.type = type
       this.field2DRawData = field2DRawData
-      var rotationMatrix = new Matrix3D()
+      let rotationMatrix = new Matrix3D()
       rotationMatrix.rotate(-angle * Math.PI / 180.0, new Point3D(ax, ay, az))
-      var p = new Point3D(tx, ty, tz)
+      let p = new Point3D(tx, ty, tz)
       p.transformW(rotationMatrix)
       rotationMatrix.n41 -= p.x
       rotationMatrix.n42 -= p.y
@@ -791,15 +789,15 @@
       this.matrix = rotationMatrix
       this.custom2DField = []
 
-      var rows_count = height + 1
-      var cols_count = width + 1
+      let rows_count = height + 1
+      let cols_count = width + 1
       this.custom2DField = new Array(rows_count).fill(new Array(cols_count).fill(0));
-      var custom2DFieldString = field2DRawData.replace(/[\r\n\x0B\x0C\u0085\u2028\u2029]+/g, '').replace(/\s/g, '')
-      var custom2DFieldArr = custom2DFieldString.split(',')
+      let custom2DFieldString = field2DRawData.replace(/[\r\n\x0B\x0C\u0085\u2028\u2029]+/g, '').replace(/\s/g, '')
+      let custom2DFieldArr = custom2DFieldString.split(',')
 
-      var k = 0
-      for (var i = 0; i < rows_count ;i++) {
-        for (var j = 0; j < cols_count ;j++){
+      let k = 0
+      for (let i = 0; i < rows_count ;i++) {
+        for (let j = 0; j < cols_count ;j++){
           this.custom2DField[i][j] = custom2DFieldArr[k]
           k += 1
         }
@@ -817,25 +815,25 @@
       this.PhysicsAttributes = {}
       this.Bounding = {}
       this.GeometryBounding = {}
-      var parser = new DOMParser();
-      var xml = parser.parseFromString(data,"text/xml");
+      let parser = new DOMParser();
+      let xml = parser.parseFromString(data,"text/xml");
 
-      var nodes = xml.firstChild.childNodes;
-      for (var i = 0; i < nodes.length ;i++) {
-        var node = nodes[i]
+      let nodes = xml.firstChild.childNodes;
+      for (let i = 0; i < nodes.length ;i++) {
+        let node = nodes[i]
         if (node.nodeName == 'Flex'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'Bone'){
               this.Bones.push(new Flex(parseInt(childnode.getAttribute('boneId')), parseFloat(childnode.getAttribute('angle')), parseFloat(childnode.getAttribute('ax')), parseFloat(childnode.getAttribute('ay')), parseFloat(childnode.getAttribute('az')), parseFloat(childnode.getAttribute('tx')), parseFloat(childnode.getAttribute('ty')), parseFloat(childnode.getAttribute('tz'))))
             }
           }
         }
         else if (node.nodeName == 'Annotations'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'Annotation' && childnode.hasAttribute('designname')){
               this.Designname = childnode.getAttribute('designname')
             }
@@ -843,9 +841,9 @@
 
         }
         else if (node.nodeName == 'Connectivity'){
-          var childnodes = node.childNodes
-          for (var j = 0; j < childnodes.length ;j++) {
-            var childnode = childnodes[j]
+          let childnodes = node.childNodes
+          for (let j = 0; j < childnodes.length ;j++) {
+            let childnode = childnodes[j]
             if (childnode.nodeName == 'Custom2DField'){
               this.Fields2D.push(new Field2D(parseInt(childnode.getAttribute('type')), parseInt(childnode.getAttribute('width')), parseInt(childnode.getAttribute('height')), parseFloat(childnode.getAttribute('angle')), parseFloat(childnode.getAttribute('ax')), parseFloat(childnode.getAttribute('ay')), parseFloat(childnode.getAttribute('az')), parseFloat(childnode.getAttribute('tx')), parseFloat(childnode.getAttribute('ty')), parseFloat(childnode.getAttribute('tz')), (childnode.firstChild.data)))
             }
@@ -860,12 +858,12 @@
     //done
     constructor(data) {
       this.Materials = {}
-      var parser = new DOMParser();
-      var xml = parser.parseFromString(data,"text/xml");
+      let parser = new DOMParser();
+      let xml = parser.parseFromString(data,"text/xml");
 
-      var nodes = xml.firstChild.childNodes;
-      for (var i = 0; i < nodes.length ;i++) {
-        var node = nodes[i]
+      let nodes = xml.firstChild.childNodes;
+      for (let i = 0; i < nodes.length ;i++) {
+        let node = nodes[i]
         if (node.nodeName == 'Material') {
           this.Materials[node.getAttribute('MatID')] = new Material(node.getAttribute('MatID'), parseInt(node.getAttribute('Red')), parseInt(node.getAttribute('Green')), parseInt(node.getAttribute('Blue')), parseInt(node.getAttribute('Alpha')), node.getAttribute('MaterialType'))
         }
@@ -892,19 +890,19 @@
     }
 
     string(){
-      var out = ('Red: ' + this.r + ' Green: ' + this.g + ' Blue: '+ this.b + ' Aplha: ' + this.a)
+      let out = ('Red: ' + this.r + ' Green: ' + this.g + ' Blue: '+ this.b + ' Aplha: ' + this.a)
       return out;
     }
 
     toString(){
-      var out = `rgb(${this.r}, ${this.g}, ${this.b})`
+      let out = `rgb(${this.r}, ${this.g}, ${this.b})`
       return out;
     }
   }
 
 
   function FindDBURL(){
-    var dburl = 'https://json.aronwk.com/LDD-DB/'
+    let dburl = 'https://json.aronwk.com/LDD-DB/'
     let xhr = new XMLHttpRequest();
     xhr.open('GET', dburl, false);  // `false` makes the request synchronous
 
@@ -940,8 +938,8 @@
     }
 
     read() {
-      var fileContent
-      var self = this;
+      let fileContent
+      let self = this;
       let xhr = new XMLHttpRequest();
       xhr.open('GET', self.urlHandle, false);
       // Hack to pass bytes through unprocessed.
@@ -991,12 +989,12 @@
     }
 
     fileexist(filename) {
-      var self = this;
+      let self = this;
       return self.filelist[filename];
     }
 
     parse(dburl) {
-      var self = this;
+      let self = this;
       let xhr = new XMLHttpRequest();
       xhr.open('GET', dburl, false);
 
@@ -1008,10 +1006,10 @@
 
         if (xhr.status === 200) {
           // request successful - show response
-          var data = JSON.parse(xhr.responseText)
+          let data = JSON.parse(xhr.responseText)
           //console.log(JSON.stringify(data, null, "\t"));
-          for(var i = 0; i < data.length; i++) {
-            var obj = data[i];
+          for(let i = 0; i < data.length; i++) {
+            let obj = data[i];
             if (obj.type == 'directory'){
               // parse subdirs
               self.parse(dburl + obj.name + '/')
@@ -1036,7 +1034,7 @@
 
 
   //Start
-  var lxfml_file_list = [
+  let lxfml_file_list = [
     {% for model in content %}
       {% if model.lot == 14 %}
         "{{url_for('properties.get_model', id=model.id, file_format='lxfml')}}"{{ ", " if not loop.last else "" }}
@@ -1044,12 +1042,12 @@
     {% endfor %}
   ]
   if (lxfml_file_list.length > 0) {
-  var ldddburl = FindDBURL()
+  let ldddburl = FindDBURL()
 
     if (ldddburl) {
-      var converter = new Converter()
+      let converter = new Converter()
       converter.LoadDBURL(ldddburl)
-      for (var i = 0; i < lxfml_file_list.length; i++) {
+      for (let i = 0; i < lxfml_file_list.length; i++) {
         converter.LoadScene(lxfml_file_list[i])
       }
       converter.Export('test.webgl')
@@ -1076,7 +1074,7 @@
    };
 
   // Load in pre-built models
-  var obj_file_list = [
+  let obj_file_list = [
     {% for model in content %}
       {% if model.lot != 14 %}
         [
@@ -1095,11 +1093,11 @@
   ]
 
   for (let i = 0; i < obj_file_list.length; i++) {
-    var mtlLoader = new MTLLoader();
+    let mtlLoader = new MTLLoader();
     mtlLoader.load( obj_file_list[i][1], function( materials ) {
 
         materials.preload();
-        var objLoader = new OBJLoader();
+        let objLoader = new OBJLoader();
         objLoader.setMaterials( materials );
 
         objLoader.load( obj_file_list[i][0], function ( object ) {
@@ -1108,7 +1106,7 @@
             object.position.y = obj_file_list[i][3];
             object.position.z = obj_file_list[i][4];
 
-            var quaternion = new THREE.Quaternion(
+            let quaternion = new THREE.Quaternion(
               obj_file_list[i][6],
               obj_file_list[i][7],
               obj_file_list[i][8],
@@ -1122,7 +1120,7 @@
   }
 
   // Three.JS stuff
-  var container = document.createElement( 'div' );
+  let container = document.createElement( 'div' );
   document.body.appendChild( container );
 
   let camera = new THREE.PerspectiveCamera( 2.5, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -1135,14 +1133,14 @@
   {% endif %}
 
   {% if center %}
-    var center = new THREE.Vector3{{ center }};
-    var groundTexture = new THREE.TextureLoader().load( "/get_dds_as_png/env_nim_ag_grass.dds");
+    let center = new THREE.Vector3{{ center }};
+    let groundTexture = new THREE.TextureLoader().load( "{{url_for('luclient.get_dds_as_png', filename='env_nim_ag_grass.dds')}}");
     groundTexture.wrapS = groundTexture.wrapT = THREE.RepeatWrapping;
     groundTexture.repeat.set( 10, 10 );
     groundTexture.anisotropy = 16;
     groundTexture.encoding = THREE.sRGBEncoding;
-    var groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
-    var mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 400, 400 ), groundMaterial );
+    let groundMaterial = new THREE.MeshStandardMaterial( { map: groundTexture } );
+    let mesh = new THREE.Mesh( new THREE.PlaneBufferGeometry( 400, 400 ), groundMaterial );
     mesh.position.y = center.y;
     mesh.position.x = center.x;
     mesh.position.z = center.z
@@ -1154,14 +1152,14 @@
   // scene
   scene.background = new THREE.Color( 0xdeebed );
 
-  var ambientLight = new THREE.AmbientLight( 0xdeebed, 0.4 );
+  let ambientLight = new THREE.AmbientLight( 0xdeebed, 0.4 );
   scene.add( ambientLight );
 
-  var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.75 );
+  let directionalLight = new THREE.DirectionalLight( 0xffffff, 0.75 );
   directionalLight.position.set( - 10000, 12000, 15000 );
   scene.add( directionalLight );
 
-  var directionalLight2 = new THREE.DirectionalLight( 0xffffff, 0.75 );
+  let directionalLight2 = new THREE.DirectionalLight( 0xffffff, 0.75 );
   directionalLight2.position.set( 10000, 12000, -15000 );
   scene.add( directionalLight2 );
 
@@ -1170,7 +1168,7 @@
   renderer.setSize( window.innerWidth, window.innerHeight );
   container.appendChild( renderer.domElement );
 
-  var controls = new THREE.OrbitControls (camera, renderer.domElement);
+  let controls = new THREE.OrbitControls (camera, renderer.domElement);
   {% if content|length == 1 and content[0].lot != 14 %}
     controls.target = new THREE.Vector3({{ content[0].x }}, {{ content[0].y }}, {{ content[0].z }})
   {% else %}
@@ -1179,7 +1177,7 @@
   controls.update()
   // if ( vnh ) vnh.update();
 
-  var render = function () {
+  let render = function () {
     requestAnimationFrame(render);
     // camera.rotation.z += 0.01;
     renderer.render(scene, camera);
