@@ -44,42 +44,36 @@
           <a id='accounts-index' class='nav-link' href='{{ url_for('accounts.index') }}'>Accounts</a>
           <a id='character-index' class='nav-link' href='{{ url_for('characters.index') }}'>Characters</a>
           <a id='property-index' class='nav-link' href='{{ url_for('properties.index') }}'>Properties</a>
-          <a id='mail-send' class='nav-link' href='{{ url_for('mail.send') }}'>Send Mail</a>
         {% endif %}
 
         {% if current_user.is_authenticated and current_user.gm_level >= 2 %}
 
-          {# Moderation dropdown #}
           <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Moderation</a>
+            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Tools</a>
             <div class="dropdown-menu">
+
+              <a class="dropdown-item" href='{{ url_for('mail.send') }}'>Send Mail</a>
+              <hr/>
+              <h6 class="text-center">Moderation</h6>
               <a class="dropdown-item" href='{{ url_for('moderation.index', status='unapproved') }}'>View Unapproved Items</a>
               <a class="dropdown-item" href='{{ url_for('moderation.index', status='approved') }}'>View Approved Items</a>
               <a class="dropdown-item" href='{{ url_for('moderation.index', status='all') }}'>View All Items</a>
-            </div>
-          </li>
-
-          {# Bug Report dropdown #}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Bug Reports</a>
-            <div class="dropdown-menu">
+              <hr/>
+              <h6 class="text-center">Bug Reports</h6>
               <a class="dropdown-item" href='{{ url_for('bug_reports.index', status='unresolved') }}'>View Unresolved Reports</a>
               <a class="dropdown-item" href='{{ url_for('bug_reports.index', status='resolved') }}'>View Resolved Reports</a>
               <a class="dropdown-item" href='{{ url_for('bug_reports.index', status='all') }}'>View All Reports</a>
+              {% if current_user.is_authenticated and current_user.gm_level >= 8 %}
+                <hr/>
+                <h6 class="text-center">Logs</h6>
+                <a class="dropdown-item" href='{{ url_for('log.activity') }}'>Command Log</a>
+                <a class="dropdown-item" href='{{ url_for('log.command') }}'>Activity Log</a>
+              {% endif %}
             </div>
           </li>
         {% endif %}
 
-        {% if current_user.is_authenticated and current_user.gm_level >= 8 %}
-          {# Logs dropdown #}
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" role="button" aria-haspopup="true" aria-expanded="false">Logs</a>
-            <div class="dropdown-menu">
-              <a class="dropdown-item" href='{{ url_for('log.activity') }}'>Command Log</a>
-              <a class="dropdown-item" href='{{ url_for('log.command') }}'>Activity Log</a>
-            </div>
-          </li>
-        {% endif %}
+
 
         {% if current_user.is_authenticated and current_user.gm_level == 9 and config.REQUIRE_PLAY_KEY %}
           {# Play Keys #}

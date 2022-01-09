@@ -9,9 +9,16 @@
 {% endblock %}
 
 {% block content %}
-    {% with character=character_data%}
-      {% include 'partials/_character.html.j2' %}
-    {% endwith %}
+  <div class="row">
+    <div class="col-sm">
+      {% with character=character_data%}
+        {% include 'partials/_character.html.j2' %}
+      {% endwith %}
+    </div>
+    <div class="col-sm">
+      {% include 'partials/_charxml.html.j2'%}
+    </div>
+  </div>
 {% endblock content %}
 
 {% block content_after %}

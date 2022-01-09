@@ -65,7 +65,7 @@ def send():
     for character in recipients:
         form.recipient.choices.append((character.id, character.name))
     form.attachment.choices = query_cdclient(
-        'Select id, displayName from Objects where type = ? and displayName != ?',
+        'Select id, name from Objects where type = ? and name != ?',
         ["Loot", "None"]
     )
     form.attachment.choices.insert(0, (0, "Nothing"))

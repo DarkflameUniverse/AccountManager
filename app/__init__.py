@@ -9,7 +9,7 @@ from app.schemas import ma
 from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
-from app.luclient import query_cdclient, translate_from_locale
+from app.luclient import query_cdclient, register_luclient_jinja_helpers
 
 from app.commands import init_db, init_accounts
 from app.models import Account, AccountInvitation
@@ -51,39 +51,12 @@ def create_app():
         else:
             return 0 & (1 << bit)
 
-    @app.template_filter('get_zone_name')
-    def check_perm_map(zone_id):
-        return query_cdclient(
-            'select DisplayDescription from ZoneTable where zoneID = ?',
-            [zone_id],
-            one=True
-        )[0]
-
-    @app.template_filter('get_lot_name')
-    def get_lot_name(lot_id):
-        return query_cdclient(
-            'select displayName from Objects where id = ?',
-            [lot_id],
-            one=True
-        )[0]
-
-    @app.template_filter('get_lot_desc')
-    def get_lot_desc(lot_id):
-        return query_cdclient(
-            'select description from Objects where id = ?',
-            [lot_id],
-            one=True
-        )[0]
-
-    @app.template_filter('lu_translate')
-    def lu_translate(to_translate):
-        return translate_from_locale(to_translate)
-
     @app.teardown_appcontext
     def close_connection(exception):
         cdclient = getattr(g, '_cdclient', None)
         if cdclient is not None:
             cdclient.close()
+
 
     # add the commands to flask cli
     app.cli.add_command(init_db)
@@ -92,6 +65,7 @@ def create_app():
     register_settings(app)
     register_extensions(app)
     register_blueprints(app)
+    register_luclient_jinja_helpers(app)
 
     return app
 

@@ -53,9 +53,9 @@ def get_dds(filename):
     return send_file(dds)
 
 
-@luclient_blueprint.route('/get_icon/<id>')
+@luclient_blueprint.route('/get_icon_lot/<id>')
 @login_required
-def get_icon(id):
+def get_icon_lot(id):
 
     render_component_id = query_cdclient(
         'select component_id from ComponentsRegistry where component_type = 2 and id = ?',
@@ -66,6 +66,30 @@ def get_icon(id):
     # find the asset from rendercomponent given the  component id
     filename = query_cdclient('select icon_asset from RenderComponent where id = ?',
         [render_component_id],
+        one=True
+    )[0]
+
+    filename = filename.replace("..\\", "").replace("\\", "/")
+
+    cache = f'cache/{filename.split("/")[-1].split(".")[0]}.png'
+
+    if not os.path.exists("app/" + cache):
+        root = 'app/luclient/res/'
+
+        with image.Image(filename=f'{root}{filename}'.lower()) as img:
+            img.compression = "no"
+            img.save(filename=f'app/cache/{filename.split("/")[-1].split(".")[0]}.png')
+
+    return send_file(cache)
+
+
+@luclient_blueprint.route('/get_icon_iconid/<id>')
+@login_required
+def get_icon_iconid(id):
+
+    filename = query_cdclient(
+        'select IconPath from Icons where IconID = ?',
+        [id],
         one=True
     )[0]
 
@@ -128,3 +152,44 @@ def translate_from_locale(trans_string):
     phrase = locale_file.find(f'.//phrase[@id="{trans_string}"]').find('.//translation[@locale="en_US"]').text
 
     return phrase
+
+
+def register_luclient_jinja_helpers(app):
+
+    @app.template_filter('get_zone_name')
+    def get_zone_name(zone_id):
+        return query_cdclient(
+            'select DisplayDescription from ZoneTable where zoneID = ?',
+            [zone_id],
+            one=True
+        )[0]
+
+    @app.template_filter('get_lot_name')
+    def get_lot_name(lot_id):
+        return query_cdclient(
+            'select displayName from Objects where id = ?',
+            [lot_id],
+            one=True
+        )[0]
+
+    @app.template_filter('get_lot_desc')
+    def get_lot_desc(lot_id):
+        return query_cdclient(
+            'select description from Objects where id = ?',
+            [lot_id],
+            one=True
+        )[0]
+
+    @app.template_filter('query_cdclient')
+    def jinja_query_cdclient(query, items):
+        print(query, items)
+        return query_cdclient(
+            query,
+            items,
+            one=True
+        )[0]
+
+    @app.template_filter('lu_translate')
+    def lu_translate(to_translate):
+        return translate_from_locale(to_translate)
+

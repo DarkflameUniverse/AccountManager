@@ -3,9 +3,10 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import datetime, time
-from app.models import CharacterInfo, Account, db
+from app.models import CharacterInfo, CharacterXML, Account, db
 from app.schemas import CharacterInfoSchema
 from app import gm_level
+import xmltodict
 
 character_blueprint = Blueprint('characters', __name__)
 
@@ -58,8 +59,18 @@ def view(id):
         if character_data.account_id and character_data.account_id != current_user.id:
             abort(403)
             return
+    character_json = xmltodict.parse(
+            CharacterXML.query.filter(
+                CharacterXML.id==id
+            ).first().xml_data,
+            attr_prefix=""
+        )
 
-    return render_template('character/view.html.j2', character_data=character_data)
+    return render_template(
+        'character/view.html.j2',
+        character_data=character_data,
+        character_json=character_json
+    )
 
 
 @character_blueprint.route('/restrict/<bit>/<id>', methods=['GET'])

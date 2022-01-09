@@ -1,0 +1,87 @@
+<div class="card shadow-sm bg-dark border-primary">
+  <div class="card-body">
+    <div class="row">
+      <div class="col text-center">
+        <h4>
+          Chatacter Data
+        </h4>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col text-right">
+        U-Score: {{ character_json.obj.char.ls }}
+      </div>
+      <div class="col">
+        Level: {{ character_json.obj.lvl.l }}
+      </div>
+    </div>
+    <br/>
+
+
+    <div class="row">
+      <div class="col text-right">
+        <img src="{{url_for('luclient.get_icon_iconid', id=4273)}}"
+          alt="Coins: "
+          width="32"
+          height="32">
+          {{ character_json.obj.char.cc }}
+      </div>
+      <div class="col text-center">
+        <img src="{{url_for('luclient.get_icon_iconid', id=3262)}}"
+          alt="Health: "
+          width="32"
+          height="32">
+          {{ character_json.obj.dest.hc }}/{{ character_json.obj.dest.hm }}
+      </div>
+      <div class="col text-center">
+        <img src="{{url_for('luclient.get_icon_iconid', id=3263)}}"
+          alt="Armor: "
+          width="32"
+          height="32">
+          {{ character_json.obj.dest.ac }}/{{ character_json.obj.dest.am }}
+      </div>
+      <div class="col">
+        <img src="{{url_for('luclient.get_icon_iconid', id=3264)}}"
+          alt="Imagination: "
+          width="32"
+          height="32">
+          {{ character_json.obj.dest.ic }}/{{ character_json.obj.dest.im }}
+      </div>
+    </div>
+    <br/>
+
+    <div class="row">
+      <div class="col text-right">
+        Play time:
+      </div>
+      <div class="col">
+          {{ (character_json.obj.char.time|int/60/60/24)|int }} Days
+          {{ (character_json.obj.char.time|int/60/60)|int - ((character_json.obj.char.time|int/60/60/24)|int) * 24}} Hours
+          {{ (character_json.obj.char.time|int/60 - (character_json.obj.char.time|int/60/60)|int*60)|int }} Minutes
+      </div>
+    </div>
+
+    {# {% if current_user.gm_level > 2 %}
+      <hr class="bg-primary"/>
+      <div class="row">
+        <div class="col text-center">
+          <h4>Actions</h4>
+        </div>
+      </div>
+      <br/>
+      <a role="button" class="btn btn-primary btn-block"
+        href='{{ url_for('characters.restrict', id=character.id, bit=4) }}'>
+        {% if character.permission_map|check_perm_map(4) %}Unrestrict{% else %}Restrict{% endif %} Trade
+      </a>
+      <a role="button" class="btn btn-primary btn-block"
+        href='{{ url_for('characters.restrict', id=character.id, bit=5) }}'>
+        {% if character.permission_map|check_perm_map(5) %}Unrestrict{% else %}Restrict{% endif %} Mail
+      </a>
+      <a role="button" class="btn btn-primary btn-block"
+        href='{{ url_for('characters.restrict', id=character.id, bit=6) }}'>
+        {% if character.permission_map|check_perm_map(6) %}Unrestrict{% else %}Restrict{% endif %} Chat
+      </a>
+   {% endif %} #}
+
+  </div>
+</div>
