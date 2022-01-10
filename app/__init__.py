@@ -23,8 +23,6 @@ def create_app():
 
     app = Flask(__name__, instance_relative_config=True)
 
-
-
     # decrement uses on a play key after a successful registration
     # and increment the times it has been used
     @user_registered.connect_via(app)

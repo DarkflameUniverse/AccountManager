@@ -63,8 +63,11 @@ def view(id):
             CharacterXML.query.filter(
                 CharacterXML.id==id
             ).first().xml_data,
-            attr_prefix=""
+            attr_prefix="attr_"
         )
+
+    # stupid fix for jinja parsing
+    character_json["obj"]["inv"]["holdings"] = character_json["obj"]["inv"].pop("items")
 
     return render_template(
         'character/view.html.j2',

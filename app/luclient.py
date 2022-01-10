@@ -164,6 +164,14 @@ def register_luclient_jinja_helpers(app):
             one=True
         )[0]
 
+    @app.template_filter('parse_lzid')
+    def parse_lzid(lzid):
+        return[
+            (int(lzid) & ((1 << 16) - 1)),
+            ((int(lzid) >> 16) & ((1 << 16) - 1)),
+            ((int(lzid) >> 32) & ((1 << 30) - 1))
+        ]
+
     @app.template_filter('get_lot_name')
     def get_lot_name(lot_id):
         return query_cdclient(
