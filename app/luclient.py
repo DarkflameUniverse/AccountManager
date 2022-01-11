@@ -12,7 +12,7 @@ import sqlite3
 import xml.etree.ElementTree as ET
 
 luclient_blueprint = Blueprint('luclient', __name__)
-
+locale: str = ""
 
 @luclient_blueprint.route('/get_dds_as_png/<filename>')
 @login_required
@@ -142,12 +142,12 @@ def translate_from_locale(trans_string):
     if not trans_string:
         return "INVALID STRING"
 
-    locale = "app/luclient/locale/locale.xml"
+    if locale is None:
+        locale_path = "app/luclient/locale/locale.xml"
+        with open(locale_path, 'r') as file:
+            locale = file.read()
 
-    with open(locale, 'r') as file:
-        locale_data = file.read()
-
-    locale_file = ET.XML(locale_data)
+    locale_file = ET.XML(locale)
 
     try:
         phrase = locale_file.find(f'.//phrase[@id="{trans_string}"]').find('.//translation[@locale="en_US"]').text
