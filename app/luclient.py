@@ -1,12 +1,15 @@
 from flask import (
     Blueprint,
     send_file,
-    g
+    g,
+    redirect,
+    url_for
 )
 from flask_user import login_required
 import glob
 import os
 from wand import image
+from wand.exceptions import BlobError as BE
 
 import sqlite3
 import xml.etree.ElementTree as ET
@@ -75,10 +78,13 @@ def get_icon_lot(id):
 
     if not os.path.exists("app/" + cache):
         root = 'app/luclient/res/'
+        try:
 
-        with image.Image(filename=f'{root}{filename}'.lower()) as img:
-            img.compression = "no"
-            img.save(filename=f'app/cache/{filename.split("/")[-1].split(".")[0]}.png')
+            with image.Image(filename=f'{root}{filename}'.lower()) as img:
+                img.compression = "no"
+                img.save(filename=f'app/cache/{filename.split("/")[-1].split(".")[0]}.png')
+        except BE:
+            return redirect(url_for('luclient.unknown'))
 
     return send_file(cache)
 
@@ -99,10 +105,30 @@ def get_icon_iconid(id):
 
     if not os.path.exists("app/" + cache):
         root = 'app/luclient/res/'
+        try:
+
+            with image.Image(filename=f'{root}{filename}'.lower()) as img:
+                img.compression = "no"
+                img.save(filename=f'app/cache/{filename.split("/")[-1].split(".")[0]}.png')
+        except BE:
+            return redirect(url_for('luclient.unknown'))
+
+    return send_file(cache)
+
+@luclient_blueprint.route('/unknown')
+@login_required
+def unknown():
+    filename = "textures/ui/inventory/unknown.dds"
+
+    cache = f'cache/{filename.split("/")[-1].split(".")[0]}.png'
+
+    if not os.path.exists("app/" + cache):
+        root = 'app/luclient/res/'
 
         with image.Image(filename=f'{root}{filename}'.lower()) as img:
             img.compression = "no"
             img.save(filename=f'app/cache/{filename.split("/")[-1].split(".")[0]}.png')
+
 
     return send_file(cache)
 
