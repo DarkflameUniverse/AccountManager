@@ -158,11 +158,7 @@ def register_luclient_jinja_helpers(app):
 
     @app.template_filter('get_zone_name')
     def get_zone_name(zone_id):
-        return query_cdclient(
-            'select DisplayDescription from ZoneTable where zoneID = ?',
-            [zone_id],
-            one=True
-        )[0]
+        return translate_from_locale(f'ZoneTable_{zone_id}_DisplayDescription')
 
     @app.template_filter('parse_lzid')
     def parse_lzid(lzid):
@@ -174,21 +170,11 @@ def register_luclient_jinja_helpers(app):
 
     @app.template_filter('get_lot_name')
     def get_lot_name(lot_id):
-        item = query_cdclient(
-            'select * from Objects where id = ?',
-            [lot_id],
-            one=True
-        )
-
-        return item[7] if (item[7] != "None" and item[7] !="" and item[7] != None) else item[1]
+        return translate_from_locale(f'Objects_{lot_id}_name')
 
     @app.template_filter('get_lot_desc')
     def get_lot_desc(lot_id):
-        return query_cdclient(
-            'select description from Objects where id = ?',
-            [lot_id],
-            one=True
-        )[0]
+        return translate_from_locale(f'Objects_{lot_id}_description')
 
     @app.template_filter('query_cdclient')
     def jinja_query_cdclient(query, items):
