@@ -12,7 +12,7 @@ import sqlite3
 import xml.etree.ElementTree as ET
 
 luclient_blueprint = Blueprint('luclient', __name__)
-locale: str = None
+locale = ""
 
 @luclient_blueprint.route('/get_dds_as_png/<filename>')
 @login_required
@@ -142,20 +142,31 @@ def translate_from_locale(trans_string):
     if not trans_string:
         return "INVALID STRING"
 
+    global locale
+
+    locale_data = ""
+
     if locale is None:
         locale_path = "app/luclient/locale/locale.xml"
         with open(locale_path, 'r') as file:
-            locale = file.read()
+            locale_data = file.read()
+        locale_xml = ET.XML(locale_data)
+        root = locale_xml.getroot()
+        for item in root.findall('./phrases/phrase'):
+            id = item.get('id')
+            translation = ""
+            for translation_item in item.findall('./translation'):
+                if translation_item == "en_US":
+                    translation = translation_item.text
 
-    locale_file = ET.XML(locale)
+            locale[id] = translation
 
-    try:
-        phrase = locale_file.find(f'.//phrase[@id="{trans_string}"]').find('.//translation[@locale="en_US"]').text
-    except: # I object to not having a proper check :(
+    print(locale)
+
+    if trans_string in locale:
+        return locale[trans_string]
+    else:
         return trans_string
-    
-    return phrase
-
 
 def register_luclient_jinja_helpers(app):
 
