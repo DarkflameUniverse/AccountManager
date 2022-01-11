@@ -8,6 +8,9 @@ $theme-colors: (
 $link-color: #005ac2;
 
 @import "../bootstrap-4.2.1/scss/bootstrap";
+@import url(http://fonts.googleapis.com/css?family=Nunito:700);
+
+body { font-family:'Nunito', Helvetica, Arial, sans-serif; }
 
 // responsive font
 @include media-breakpoint-down(sm) {
@@ -15,6 +18,30 @@ $link-color: #005ac2;
     font-size: 14px;
   }
 }
+
+.inventory-item {
+  display: inline-block;
+  position: relative;
+  text-align: right;
+  vertical-align: bottom;
+}
+
+.inventory-count {
+  position: absolute;
+  bottom: 4px;
+  right: 10px;
+  font-size: 20px;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+.inventory-lock {
+  position: absolute;
+  bottom: 8px;
+  right: 48px;
+  font-size: 13px;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
 
 
 .select2-results ul li {
