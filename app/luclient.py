@@ -149,7 +149,12 @@ def translate_from_locale(trans_string):
 
     locale_file = ET.XML(locale_data)
 
-    phrase = locale_file.find(f'.//phrase[@id="{trans_string}"]').find('.//translation[@locale="en_US"]').text
+    temp_locale_find = locale_file.find(f'.//phrase[@id="{trans_string}"]')
+    
+    if not temp_locale_find:
+        return trans_string
+    
+    phrase = temp_locale_find.find('.//translation[@locale="en_US"]').text
 
     return phrase
 
