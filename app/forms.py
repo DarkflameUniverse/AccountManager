@@ -159,7 +159,7 @@ class SendMailForm(FlaskForm):
     attachment = SelectField(
         "Attachment",
         coerce=str,
-        choices=[(0,"Nothing")]
+        choices=[(0,"No Attachment")]
     )
 
     attachment_count = IntegerField(

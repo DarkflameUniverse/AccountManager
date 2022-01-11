@@ -26,7 +26,6 @@ def send():
 
     if request.method == "POST":
     # if form.validate_on_submit():
-        print(form.attachment.data)
         if form.attachment.data != "0" and form.attachment_count.data == 0:
             form.attachment_count.data = 1
         if form.recipient.data == "0":
@@ -64,11 +63,18 @@ def send():
     recipients = CharacterInfo.query.all()
     for character in recipients:
         form.recipient.choices.append((character.id, character.name))
-    form.attachment.choices = query_cdclient(
-        'Select id, name from Objects where type = ? and name != ?',
-        ["Loot", "None"]
+
+    items = query_cdclient(
+        'Select * from Objects where type = ?',
+        ["Loot"]
     )
-    form.attachment.choices.insert(0, (0, "Nothing"))
+
+    for item in items:
+        form.attachment.choices.append(
+            (item[0],
+            (item[7] if (item[7] != "None" and item[7] !="" and item[7] != None) else item[1]))
+        )
+
 
     return render_template('mail/send.html.j2', form=form)
 

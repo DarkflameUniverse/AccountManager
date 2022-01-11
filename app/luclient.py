@@ -174,11 +174,13 @@ def register_luclient_jinja_helpers(app):
 
     @app.template_filter('get_lot_name')
     def get_lot_name(lot_id):
-        return query_cdclient(
-            'select displayName from Objects where id = ?',
+        item = query_cdclient(
+            'select * from Objects where id = ?',
             [lot_id],
             one=True
-        )[0]
+        )
+
+        return item[7] if (item[7] != "None" and item[7] !="" and item[7] != None) else item[1]
 
     @app.template_filter('get_lot_desc')
     def get_lot_desc(lot_id):
