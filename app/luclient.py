@@ -12,7 +12,7 @@ import sqlite3
 import xml.etree.ElementTree as ET
 
 luclient_blueprint = Blueprint('luclient', __name__)
-locale: str = ""
+locale: str = None
 
 @luclient_blueprint.route('/get_dds_as_png/<filename>')
 @login_required
