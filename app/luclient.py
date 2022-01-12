@@ -207,11 +207,28 @@ def register_luclient_jinja_helpers(app):
 
     @app.template_filter('get_lot_name')
     def get_lot_name(lot_id):
-        return translate_from_locale(f'Objects_{lot_id}_name')
+        name = translate_from_locale(f'Objects_{lot_id}_name')
+        if name == translate_from_locale(f'Objects_{lot_id}_name'):
+            intermed = query_cdclient(
+                'select * from Objects where id = ?',
+                [lot_id],
+                one=True
+            )
+            name = intermed[7] if (intermed[7] != "None" and intermed[7] !="" and intermed[7] != None) else intermed[1]
+        return name
 
     @app.template_filter('get_lot_desc')
     def get_lot_desc(lot_id):
-        return translate_from_locale(f'Objects_{lot_id}_description')
+        desc = translate_from_locale(f'Objects_{lot_id}_description')
+        if desc == f'Objects_{lot_id}_description':
+            desc = query_cdclient(
+                'select description from Objects where id = ?',
+                [lot_id],
+                one=True
+            )[0]
+            if desc == None or desc == "":
+                desc = "No Description"
+        return desc
 
     @app.template_filter('query_cdclient')
     def jinja_query_cdclient(query, items):
