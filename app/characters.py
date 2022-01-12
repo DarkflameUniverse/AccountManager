@@ -68,6 +68,11 @@ def view(id):
 
     # stupid fix for jinja parsing
     character_json["obj"]["inv"]["holdings"] = character_json["obj"]["inv"].pop("items")
+    # sort by items slot index
+    for inv in character_json["obj"]["inv"]["holdings"]["in"]:
+        if "i" in inv.keys():
+            inv["i"] = sorted(inv["i"], key = lambda i: int(i['attr_s']))
+
 
     return render_template(
         'character/view.html.j2',

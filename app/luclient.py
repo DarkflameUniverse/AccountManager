@@ -226,9 +226,44 @@ def register_luclient_jinja_helpers(app):
                 [lot_id],
                 one=True
             )[0]
-            if desc == None or desc == "":
-                desc = "No Description"
+            if desc in ("", None):
+                desc = None
         return desc
+
+    @app.template_filter('get_lot_stats')
+    def get_lot_stats(lot_id):
+        stats = query_cdclient(
+            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI FROM SkillBehavior WHERE skillID IN (\
+                SELECT skillID FROM ObjectSkills WHERE objectTemplate=?\
+                ) AND (\
+                    imBonusUI NOT NULL OR armorBonusUI NOT NULL OR lifeBonusUI NOT NULL or damageUI NOT NULL\
+                )',
+            [lot_id]
+        )
+
+        if len(stats) > 1:
+            consolidated_stats = {"im": 0,"life": 0,"armor": 0, "damage": 0}
+            for stat in stats:
+                if stat[0]:
+                    consolidated_stats["im"] += stat[0]
+                if stat[1]:
+                    consolidated_stats["life"] += stat[1]
+                if stat[2]:
+                    consolidated_stats["armor"] += stat[2]
+                if stat[3]:
+                    consolidated_stats["damage"] += stat[3]
+            stats = consolidated_stats
+        elif len(stats) == 1:
+            stats = {
+                "im": stats[0][0] if stats[0][0] else 0,
+                "life": stats[0][1] if stats[0][1] else 0,
+                "armor": stats[0][2] if stats[0][2] else 0,
+                "damage": stats[0][3] if stats[0][3] else 0
+            }
+        else:
+            stats = None
+        return stats
+
 
     @app.template_filter('query_cdclient')
     def jinja_query_cdclient(query, items):
@@ -242,4 +277,3 @@ def register_luclient_jinja_helpers(app):
     @app.template_filter('lu_translate')
     def lu_translate(to_translate):
         return translate_from_locale(to_translate)
-

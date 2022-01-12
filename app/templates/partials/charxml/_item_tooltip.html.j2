@@ -1,0 +1,39 @@
+{% set stat = inv_item.attr_l|get_lot_stats %}
+{% set desc = inv_item.attr_l|get_lot_desc %}
+
+{{ inv_item.attr_l|get_lot_name }}
+{% if desc %}
+  <br/>{{ desc }}
+{% endif %}
+{% if stat %}
+  <br/>
+  {% if stat.life > 0 %}
+      + {{ stat.life }}
+      <img src='{{url_for('luclient.get_icon_iconid', id=3262)}}'
+        alt='Health: '
+        width='16'
+        height='16'>
+  {% endif %}
+  {% if stat.armor > 0 %}
+      + {{ stat.armor }}
+      <img src='{{url_for('luclient.get_icon_iconid', id=3263)}}'
+        alt='Armor: '
+        width='16'
+        height='16'>
+  {% endif %}
+  {% if stat.im > 0 %}
+      + {{ stat.im }}
+      <img src='{{url_for('luclient.get_icon_iconid', id=3264)}}'
+        alt='Imagination: '
+        width='16'
+        height='16'>
+  {% endif %}
+  {% if stat.damage > 0 %}
+      + {{ stat.damage }}
+      <img src='{{url_for('luclient.get_icon_iconid', id=3674)}}'
+        alt='Damage: '
+        width='16'
+        height='16'>
+  {% endif %}
+{% endif %}
+
