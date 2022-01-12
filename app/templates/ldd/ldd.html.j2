@@ -1077,7 +1077,7 @@
   let obj_file_list = [
     {% for model in content %}
       {% if model.lot != 14 %}
-        {{ model }}{{ ", " if not loop.last else "" }}
+        {{ model }} {{ ", " if not loop.last else "" }}
       {% endif %}
     {% endfor %}
   ]
@@ -1091,9 +1091,9 @@
         objLoader.setMaterials( materials );
 
         objLoader.load( obj_file_list[i].obj, function ( object ) {
-          console.log(obj_file_list[i].pos)
+          // console.log(obj_file_list[i].pos)
           for (let j = 0; j < obj_file_list[i].pos.length; j++) {
-            console.log(obj_file_list[i].pos[j])
+            // console.log(obj_file_list[i].pos[j])
             var newModel = object.clone();
             newModel.position.x = obj_file_list[i].pos[j].x;
             newModel.position.y = obj_file_list[i].pos[j].y;
@@ -1164,7 +1164,7 @@
 
   let controls = new THREE.OrbitControls (camera, renderer.domElement);
   {% if content|length == 1 and content[0].lot != 14 %}
-    controls.target = new THREE.Vector3({{ content[0].x }}, {{ content[0].y }}, {{ content[0].z }})
+    controls.target = new THREE.Vector3({{ content[0].pos[0].x }}, {{ content[0].pos[0].y }}, {{ content[0].pos[0].z }})
   {% else %}
     controls.target = brick_pos
   {% endif %}

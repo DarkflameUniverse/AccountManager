@@ -185,10 +185,27 @@ def view_model(id):
     property_content_data = PropertyContent.query.filter(PropertyContent.id==id).all()
 
     # TODO: Restrict somehow
+    formatted_data = [
+        {
+            "obj": url_for('properties.get_model', id=property_content_data[0].id, file_format='obj'),
+            "mtl": url_for('properties.get_model', id=property_content_data[0].id, file_format='mtl'),
+            "lot": property_content_data[0].lot,
+            "id": property_content_data[0].id,
+            "pos": [{
+                "x": property_content_data[0].x,
+                "y": property_content_data[0].y,
+                "z": property_content_data[0].z,
+                "rx": property_content_data[0].rx,
+                "ry": property_content_data[0].ry,
+                "rz": property_content_data[0].rz,
+                "rw": property_content_data[0].rw
+            }]
+        }
+    ]
 
     return render_template(
         'ldd/ldd.html.j2',
-        content=property_content_data
+        content=formatted_data
     )
 
 property_center = {
@@ -232,6 +249,7 @@ def view_models(id):
                     "obj": url_for('properties.get_model', id=property_content_data[item].id, file_format='obj'),
                     "mtl": url_for('properties.get_model', id=property_content_data[item].id, file_format='mtl'),
                     "lot": property_content_data[item].lot,
+                    "id": property_content_data[item].id,
                     "pos": [{
                         "x": property_content_data[item].x,
                         "y": property_content_data[item].y,
@@ -243,9 +261,6 @@ def view_models(id):
                     }]
                 }
             )
-
-    print(consolidated_list)
-
 
     return render_template(
         'ldd/ldd.html.j2',
