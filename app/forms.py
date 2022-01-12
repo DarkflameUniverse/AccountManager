@@ -141,7 +141,10 @@ class SendMailForm(FlaskForm):
     recipient = SelectField(
         'Recipient: ',
         coerce=str,
-        choices=[("0","All Characters")],
+        choices=[
+            ("",""),
+            ("0","All Characters"),
+        ],
         validators=[validators.DataRequired()]
     )
 

@@ -65,14 +65,16 @@ def send():
         form.recipient.choices.append((character.id, character.name))
 
     items = query_cdclient(
-        'Select * from Objects where type = ?',
+        'Select id, name, displayName from Objects where type = ?',
         ["Loot"]
     )
 
     for item in items:
         form.attachment.choices.append(
-            (item[0],
-            (item[7] if (item[7] != "None" and item[7] !="" and item[7] != None) else item[1]))
+            (
+                item[0],
+                f'({item[0]}) {(item[2] if (item[2] != "None" and item[2] !="" and item[2] != None) else item[1])}'
+            )
         )
 
 
