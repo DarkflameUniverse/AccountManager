@@ -70,10 +70,13 @@ def send():
     )
 
     for item in items:
+        name = translate_from_locale(f'Objects_{item[0]}_name')
+        if name == f'Objects_{item[0]}_name':
+            name = (item[2] if (item[2] != "None" and item[2] !="" and item[2] != None) else item[1])
         form.attachment.choices.append(
             (
                 item[0],
-                f'({item[0]}) {(item[2] if (item[2] != "None" and item[2] !="" and item[2] != None) else item[1])}'
+                f'({item[0]}) {name}'
             )
         )
 
