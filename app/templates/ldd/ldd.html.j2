@@ -1041,7 +1041,7 @@
       {% endif %}
     {% endfor %}
   ]
-  if (lxfml_file_list.length > 0) {
+  if (lxfml_file_list.length < 0) {
   let ldddburl = FindDBURL()
 
     if (ldddburl) {
@@ -1077,44 +1077,38 @@
   let obj_file_list = [
     {% for model in content %}
       {% if model.lot != 14 %}
-        [
-          "{{url_for('properties.get_model', id=model.id, file_format='obj')}}",
-          "{{url_for('properties.get_model', id=model.id, file_format='mtl')}}",
-          {{ model.x }},
-          {{ model.y }},
-          {{ model.z }},
-          {{ model.rw }},
-          {{ model.rx }},
-          {{ model.ry }},
-          {{ model.rz }},
-        ]{{ ", " if not loop.last else "" }}
+        {{ model }}{{ ", " if not loop.last else "" }}
       {% endif %}
     {% endfor %}
   ]
 
   for (let i = 0; i < obj_file_list.length; i++) {
     let mtlLoader = new MTLLoader();
-    mtlLoader.load( obj_file_list[i][1], function( materials ) {
+    mtlLoader.load( obj_file_list[i].mtl, function( materials ) {
 
         materials.preload();
         let objLoader = new OBJLoader();
         objLoader.setMaterials( materials );
 
-        objLoader.load( obj_file_list[i][0], function ( object ) {
-
-            object.position.x = obj_file_list[i][2];
-            object.position.y = obj_file_list[i][3];
-            object.position.z = obj_file_list[i][4];
+        objLoader.load( obj_file_list[i].obj, function ( object ) {
+          console.log(obj_file_list[i].pos)
+          for (let j = 0; j < obj_file_list[i].pos.length; j++) {
+            console.log(obj_file_list[i].pos[j])
+            var newModel = object.clone();
+            newModel.position.x = obj_file_list[i].pos[j].x;
+            newModel.position.y = obj_file_list[i].pos[j].y;
+            newModel.position.z = obj_file_list[i].pos[j].z;
 
             let quaternion = new THREE.Quaternion(
-              obj_file_list[i][6],
-              obj_file_list[i][7],
-              obj_file_list[i][8],
-              obj_file_list[i][5]
+              obj_file_list[i].pos[j].rx,
+              obj_file_list[i].pos[j].ry,
+              obj_file_list[i].pos[j].rz,
+              obj_file_list[i].pos[j].rw
             );
-            object.rotation.setFromQuaternion(quaternion)
+            newModel.rotation.setFromQuaternion(quaternion)
 
-            scene.add( object );
+            scene.add( newModel );
+          };
         }, onProgress, onError );
     });
   }

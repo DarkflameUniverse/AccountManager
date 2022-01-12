@@ -204,13 +204,52 @@ property_center = {
 @property_blueprint.route('/view_models/<id>', methods=['GET'])
 @login_required
 def view_models(id):
-    property_content_data = PropertyContent.query.filter(PropertyContent.property_id==id).all()
+    property_content_data = PropertyContent.query.filter(
+        PropertyContent.property_id==id
+    ).order_by(PropertyContent.lot).all()
 
-    # TODO: Restrict somehow
+    consolidated_list = []
+
+    for item in range(len(property_content_data)):
+        if any((d["lot"] != 14 and d["lot"] == property_content_data[item].lot) for d in consolidated_list):
+            # exiting lot, add rotations
+            lot_index = next((index for (index, d) in enumerate(consolidated_list) if d["lot"] == property_content_data[item].lot), None)
+            consolidated_list[lot_index]["pos"].append(
+                {
+                    "x": property_content_data[item].x,
+                    "y": property_content_data[item].y,
+                    "z": property_content_data[item].z,
+                    "rx": property_content_data[item].rx,
+                    "ry": property_content_data[item].ry,
+                    "rz": property_content_data[item].rz,
+                    "rw": property_content_data[item].rw
+                }
+            )
+        else:
+            # add new lot
+            consolidated_list.append(
+                {
+                    "obj": url_for('properties.get_model', id=property_content_data[item].id, file_format='obj'),
+                    "mtl": url_for('properties.get_model', id=property_content_data[item].id, file_format='mtl'),
+                    "lot": property_content_data[item].lot,
+                    "pos": [{
+                        "x": property_content_data[item].x,
+                        "y": property_content_data[item].y,
+                        "z": property_content_data[item].z,
+                        "rx": property_content_data[item].rx,
+                        "ry": property_content_data[item].ry,
+                        "rz": property_content_data[item].rz,
+                        "rw": property_content_data[item].rw
+                    }]
+                }
+            )
+
+    print(consolidated_list)
+
 
     return render_template(
         'ldd/ldd.html.j2',
-        content=property_content_data,
+        content=consolidated_list,
         center=property_center[
             Property.query.filter(Property.id==id).first().zone_id
         ]
