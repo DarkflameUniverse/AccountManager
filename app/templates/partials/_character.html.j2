@@ -70,6 +70,19 @@
         </div>
       </div>
       <br/>
+      {% if not character.needs_rename %}
+        <a role="button" class="btn btn-danger btn btn-block"
+          href='{{url_for('characters.approve_name', id=character.id, action="rename")}}'>
+          Needs Rename
+        </a>
+      {% endif %}
+      {% if character.pending_name or character.needs_rename %}
+        <a role="button" class="btn btn-success btn btn-block"
+          href='{{url_for('characters.approve_name', id=character.id, action="approve")}}'>
+          Approve Name
+        </a>
+      {% endif %}
+
       <a role="button" class="btn btn-primary btn-block"
         href='{{ url_for('characters.restrict', id=character.id, bit=4) }}'>
         {% if character.permission_map|check_perm_map(4) %}Unrestrict{% else %}Restrict{% endif %} Trade

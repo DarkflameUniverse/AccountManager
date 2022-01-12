@@ -14,7 +14,7 @@ from flask_user import login_required, current_user
 import json
 from datatables import ColumnDT, DataTables
 import time
-from app.models import Property, db, UGC, CharacterInfo, PropertyContent
+from app.models import Property, db, UGC, CharacterInfo, PropertyContent, Account
 from app.schemas import PropertySchema
 from app import gm_level
 from app.luclient import query_cdclient
@@ -48,18 +48,44 @@ def approve(id):
     if property_data.mod_approved:
         property_data.rejection_reason = ""
 
-    flash(
-        f"""Approved Property
-        {property_data.name if property_data.name else query_cdclient(
-            'select DisplayDescription from ZoneTable where zoneID = ?',
-            [property_data.zone_id],
-            one=True
-        )[0]}
-        from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}""",
-        "success"
-    )
+    if property_data.mod_approved:
+        flash(
+            f"""Approved Property
+            {property_data.name if property_data.name else query_cdclient(
+                'select DisplayDescription from ZoneTable where zoneID = ?',
+                [property_data.zone_id],
+                one=True
+            )[0]}
+            from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}""",
+            "success"
+        )
+    else:
+        flash(
+            f"""Unapproved Property
+            {property_data.name if property_data.name else query_cdclient(
+                'select DisplayDescription from ZoneTable where zoneID = ?',
+                [property_data.zone_id],
+                one=True
+            )[0]}
+            from {CharacterInfo.query.filter(CharacterInfo.id==property_data.owner_id).first().name}""",
+            "danger"
+        )
+
     property_data.save()
-    return redirect(request.referrer if request.referrer else url_for("main.index"))
+
+    go_to = ""
+
+    if request.referrer:
+        if "view_models" in request.referrer:
+            go_to = url_for('properties.view', id=id)
+        else:
+            go_to = request.referrer
+    else:
+        go_to = url_for('main.index')
+
+
+
+    return redirect(go_to)
 
 
 @property_blueprint.route('/view/<id>', methods=['GET'])
@@ -86,7 +112,7 @@ def view(id):
 def get(status="all"):
     columns = [
         ColumnDT(Property.id),                  # 0
-        ColumnDT(Property.owner_id),            # 1
+        ColumnDT(CharacterInfo.name),           # 1
         ColumnDT(Property.template_id),         # 2
         ColumnDT(Property.clone_id),            # 3
         ColumnDT(Property.name),                # 4
@@ -98,15 +124,16 @@ def get(status="all"):
         ColumnDT(Property.rejection_reason),    # 10
         ColumnDT(Property.reputation),          # 11
         ColumnDT(Property.zone_id),             # 12
+        ColumnDT(Account.username)              # 13
     ]
 
     query = None
     if status=="all":
-        query = db.session.query().select_from(Property)
+        query = db.session.query().select_from(Property).join(CharacterInfo, CharacterInfo.id==Property.owner_id).join(Account)
     elif status=="approved":
-        query = db.session.query().select_from(Property).filter(Property.mod_approved==True)
+        query = db.session.query().select_from(Property).join(CharacterInfo, CharacterInfo.id==Property.owner_id).join(Account).filter(Property.mod_approved==True)
     elif status=="unapproved":
-        query = db.session.query().select_from(Property).filter(Property.mod_approved==False)
+        query = db.session.query().select_from(Property).join(CharacterInfo, CharacterInfo.id==Property.owner_id).join(Account).filter(Property.mod_approved==False)
     else:
         raise Exception("Not a valid filter")
 
@@ -143,8 +170,8 @@ def get(status="all"):
 
         property_data["1"] = f"""
             <a role="button" class="btn btn-primary btn btn-block"
-                href='{url_for('characters.view', id=property_data["1"])}'>
-                {CharacterInfo.query.filter(CharacterInfo.id==property_data['1']).first().name}
+                href='{url_for('characters.view', id=CharacterInfo.query.filter(CharacterInfo.name==property_data['1']).first().id)}'>
+                {property_data["1"]}
             </a>
         """
 
@@ -261,13 +288,12 @@ def view_models(id):
                     }]
                 }
             )
-
+    property_data = Property.query.filter(Property.id==id).first()
     return render_template(
         'ldd/ldd.html.j2',
+        property_data=property_data,
         content=consolidated_list,
-        center=property_center[
-            Property.query.filter(Property.id==id).first().zone_id
-        ]
+        center=property_center[property_data.zone_id]
     )
 
 @property_blueprint.route('/get_model/<id>/<file_format>', methods=['GET'])

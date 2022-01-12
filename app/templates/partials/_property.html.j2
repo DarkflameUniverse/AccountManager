@@ -90,5 +90,12 @@
         </div>
       </div>
     {% endif %}
+    {% if current_user.gm_level > 2 %}
+      <br/>
+      <a role="button" class="btn btn-{% if property.mod_approved %}danger{% else %}success{% endif %} btn-block"
+        href='{{url_for('properties.approve', id=property.id)}}'>
+        {% if property.mod_approved %} Unapprove {% else %} Approve {% endif %}
+      </a>
+    {% endif %}
   </div>
 </div>

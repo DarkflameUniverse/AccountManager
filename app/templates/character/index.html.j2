@@ -42,6 +42,10 @@
             "processing": true,
             "serverSide": true,
             "ajax": "{{ url_for('characters.get', status='all') }}",
+            "columnDefs": [
+              { "searchable": false, "targets": [0,5] },
+              { "orderable": false, "targets": [0] }
+            ]
           });
         });
   </script>

@@ -104,7 +104,7 @@ def restrict(id, bit):
 def get(status):
     columns = [
         ColumnDT(CharacterInfo.id),                 # 0
-        ColumnDT(CharacterInfo.account_id),         # 1
+        ColumnDT(Account.username),                 # 1
         ColumnDT(CharacterInfo.name),               # 2
         ColumnDT(CharacterInfo.pending_name),       # 3
         ColumnDT(CharacterInfo.needs_rename),       # 4
@@ -114,11 +114,11 @@ def get(status):
 
     query = None
     if status=="all":
-        query = db.session.query().select_from(CharacterInfo)
+        query = db.session.query().select_from(CharacterInfo).join(Account)
     elif status=="approved":
-        query = db.session.query().select_from(CharacterInfo).filter((CharacterInfo.pending_name == "") & (CharacterInfo.needs_rename == False))
+        query = db.session.query().select_from(CharacterInfo).join(Account).filter((CharacterInfo.pending_name == "") & (CharacterInfo.needs_rename == False))
     elif status=="unapproved":
-        query = db.session.query().select_from(CharacterInfo).filter((CharacterInfo.pending_name != "") | (CharacterInfo.needs_rename == True))
+        query = db.session.query().select_from(CharacterInfo).join(Account).filter((CharacterInfo.pending_name != "") | (CharacterInfo.needs_rename == True))
     else:
         raise Exception("Not a valid filter")
 
@@ -130,6 +130,7 @@ def get(status):
     for character in data["data"]:
         id = character["0"]
         character["0"] = f"""
+            <div class="d-none">{id}</div>
             <a role="button" class="btn btn-primary btn btn-block"
                 href='{url_for('characters.view', id=id)}'>
                 View
@@ -154,8 +155,8 @@ def get(status):
 
         character["1"] = f"""
             <a role="button" class="btn btn-primary btn btn-block"
-                href='{url_for('accounts.view', id=character["1"])}'>
-                View {Account.query.filter(Account.id==character['1']).first().username}
+                href='{url_for('accounts.view', id=Account.query.filter(Account.username==character["1"]).first().id)}'>
+                View {character["1"]}
             </a>
         """
 

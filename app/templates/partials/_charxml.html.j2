@@ -110,29 +110,7 @@
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "0" %}
                 {% for inv_item in item.i %}
-                  <div class="inventory-item">
-                    <img
-                      src="{{url_for('luclient.get_icon_lot', id=inv_item.attr_l)}}"
-                      alt="{{ inv_item.attr_l|get_lot_name }}"
-                      class="border p-1 border-primary rounded m-1"
-                      width="64"
-                      height="64"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      title="{{ inv_item.attr_l|get_lot_name }}<br/>
-                      Description: {{ inv_item.attr_l|get_lot_desc }}"
-                    >
-                    {% if inv_item.attr_c != "1" %}
-                      <span class="inventory-count text-bold">
-                        {{ inv_item.attr_c }}
-                      </span>
-                    {% endif %}
-                    {% if inv_item.attr_b == "true" %}
-                      <span class="inventory-lock">
-                       <i class='fas fa-lock'></i>
-                      </span>
-                    {% endif %}
-                  </div>
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -142,29 +120,7 @@
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "1" %}
                 {% for inv_item in item.i %}
-                  <div class="inventory-item">
-                    <img
-                      src="{{url_for('luclient.get_icon_lot', id=inv_item.attr_l)}}"
-                      alt="{{ inv_item.attr_l|get_lot_name }}"
-                      class="border p-1 m-1 border-primary rounded m-1"
-                      width="64"
-                      height="64"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      title="{{ inv_item.attr_l|get_lot_name }}<br/>
-                      Description: {{ inv_item.attr_l|get_lot_desc }}"
-                    >
-                    {% if inv_item.attr_c != "1" %}
-                      <span class="inventory-count text-bold">
-                        {{ inv_item.attr_c }}
-                      </span>
-                    {% endif %}
-                    {% if inv_item.attr_b == "true" %}
-                      <span class="inventory-lock">
-                       <i class='fas fa-lock'></i>
-                      </span>
-                    {% endif %}
-                  </div>
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -174,24 +130,7 @@
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "2" %}
                 {% for inv_item in item.i %}
-                  <div class="inventory-item">
-                    <img
-                      src="{{url_for('luclient.get_icon_lot', id=inv_item.attr_l)}}"
-                      alt="{{ inv_item.attr_l|get_lot_name }}"
-                      class="border p-1 m-1 border-primary rounded m-1"
-                      width="64"
-                      height="64"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      title="{{ inv_item.attr_l|get_lot_name }}<br/>
-                      Description: {{ inv_item.attr_l|get_lot_desc }}"
-                    >
-                    {% if inv_item.attr_c != "1" %}
-                      <span class="inventory-count text-bold">
-                        {{ inv_item.attr_c }}
-                      </span>
-                    {% endif %}
-                  </div>
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -201,24 +140,7 @@
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "5" %}
                 {% for inv_item in item.i %}
-                  <div class="inventory-item">
-                    <img
-                      src="{{url_for('luclient.get_icon_lot', id=inv_item.attr_l)}}"
-                      alt="{{ inv_item.attr_l|get_lot_name }}"
-                      class="border p-1 m-1 border-primary rounded m-1"
-                      width="64"
-                      height="64"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      title="{{ inv_item.attr_l|get_lot_name }}<br/>
-                      Description: {{ inv_item.attr_l|get_lot_desc }}"
-                    >
-                    {% if inv_item.attr_c != "1" %}
-                      <span class="inventory-count text-bold">
-                        {{ inv_item.attr_c }}
-                      </span>
-                    {% endif %}
-                  </div>
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -228,24 +150,7 @@
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "7" %}
                 {% for inv_item in item.i %}
-                  <div class="inventory-item">
-                    <img
-                      src="{{url_for('luclient.get_icon_lot', id=inv_item.attr_l)}}"
-                      alt="{{ inv_item.attr_l|get_lot_name }}"
-                      class="border p-1 m-1 border-primary rounded m-1"
-                      width="64"
-                      height="64"
-                      data-html="true"
-                      data-toggle="tooltip"
-                      title="{{ inv_item.attr_l|get_lot_name }}<br/>
-                      Description: {{ inv_item.attr_l|get_lot_desc }}"
-                    >
-                    {% if inv_item.attr_c != "1" %}
-                      <span class="inventory-count text-bold">
-                        {{ inv_item.attr_c }}
-                      </span>
-                    {% endif %}
-                  </div>
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}
               {% endif %}
             {% endfor %}
@@ -272,57 +177,7 @@
       </div>
       <div class="modal-body">
         {% for zone in character_json.obj.char.zs.s %}
-          <div class="row">
-            <div class="col text-center">
-              {{ zone.attr_map|get_zone_name }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col text-right">
-              Achievements Collected:
-            </div>
-            <div class="col">
-              {{ zone.attr_ac }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col text-right">
-              Bricks Collected:
-            </div>
-            <div class="col">
-              {{ zone.attr_bc }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col text-right">
-              Coins Collected:
-            </div>
-            <div class="col">
-              {{ zone.attr_cc }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col text-right">
-              Enemies Smashed:
-            </div>
-            <div class="col">
-              {{ zone.attr_es }}
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col text-right">
-              Quick Builds Collected:
-            </div>
-            <div class="col">
-              {{ zone.attr_qbc }}
-            </div>
-          </div>
-
+          {% include 'partials/charxml/_zone_stats.html.j2' %}
           {{ '<hr class="bg-primary"/>' if not loop.last else "" }}
         {% endfor %}
       </div>
@@ -345,248 +200,7 @@
         </button>
       </div>
       <div class="modal-body">
-      {% set stats = character_json.obj.char.attr_stt.split(';') %}
-        <div class="row">
-          <div class="col text-right">
-              Currency Collected:
-          </div>
-          <div class="col">
-              {{ stats[0] }}
-          </div>
-        </div>
-        <div class="row">
-          <div class="col text-right">
-              Bricks Collected:
-          </div>
-          <div class="col">
-              {{ stats[1] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Smashables Smashed:
-          </div>
-          <div class="col">
-              {{ stats[2] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Quick Builds Completed:
-          </div>
-          <div class="col">
-              {{ stats[3] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Enemies Smashed:
-          </div>
-          <div class="col">
-              {{ stats[4] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Rockets Used:
-          </div>
-          <div class="col">
-              {{ stats[5] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Missions Completed:
-          </div>
-          <div class="col">
-              {{ stats[6] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Pets Tamed:
-          </div>
-          <div class="col">
-              {{ stats[7] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Imagination Power Ups Collected:
-          </div>
-          <div class="col">
-              {{ stats[8] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Life Power Ups Collected:
-          </div>
-          <div class="col">
-              {{ stats[9] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Armor Power Ups Collected:
-          </div>
-          <div class="col">
-              {{ stats[10] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Meters Traveled:
-          </div>
-          <div class="col">
-              {{ stats[11] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Times Smashed:
-          </div>
-          <div class="col">
-              {{ stats[12] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Total Damage Taken:
-          </div>
-          <div class="col">
-              {{ stats[13] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Total Damage Healed:
-          </div>
-          <div class="col">
-              {{ stats[14] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Total Armor Repaired:
-          </div>
-          <div class="col">
-              {{ stats[15] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Total Imagination Restored:
-          </div>
-          <div class="col">
-              {{ stats[16] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Total Imagination Used:
-          </div>
-          <div class="col">
-              {{ stats[17] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Distance Driven:
-          </div>
-          <div class="col">
-              {{ stats[18] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Time Airborne in Car:
-          </div>
-          <div class="col">
-              {{ stats[19] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Racing Imagination Power Ups Collected:
-          </div>
-          <div class="col">
-              {{ stats[20] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Racing Imagination Crates Smashed:
-          </div>
-          <div class="col">
-              {{ stats[21] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Racing Car Boosts Activated:
-          </div>
-          <div class="col">
-              {{ stats[22] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Racing Times Wrecked:
-          </div>
-          <div class="col">
-              {{ stats[23] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Racing Smashables Smashed:
-          </div>
-          <div class="col">
-              {{ stats[24] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              Races Finished:
-          </div>
-          <div class="col">
-              {{ stats[25] }}
-          </div>
-        </div>
-
-        <div class="row">
-          <div class="col text-right">
-              First Place Race Finishes:
-          </div>
-          <div class="col">
-              {{ stats[26] }}
-          </div>
-        </div>
+        {% include 'partials/charxml/_char_stats.html.j2' %}
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
