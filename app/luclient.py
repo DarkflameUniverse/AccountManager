@@ -230,40 +230,40 @@ def register_luclient_jinja_helpers(app):
                 desc = None
         return desc
 
+    @app.template_filter('get_item_set')
+    def check_if_in_set(lot_id):
+        item_set = query_cdclient(
+            'select * from ItemSets where itemIDs like ? or itemIDs like ? or itemIDs like ?',
+            [f'{lot_id}%', f'%, {lot_id}%', f'%,{lot_id}%'],
+            one=True
+        )
+        if item_set in ("", None):
+            return None
+        else:
+            return item_set
+
     @app.template_filter('get_lot_stats')
     def get_lot_stats(lot_id):
         stats = query_cdclient(
-            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI FROM SkillBehavior WHERE skillID IN (\
+            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI, behaviorID, skillIcon FROM SkillBehavior WHERE skillID IN (\
                 SELECT skillID FROM ObjectSkills WHERE objectTemplate=?\
-                ) AND (\
-                    imBonusUI NOT NULL OR armorBonusUI NOT NULL OR lifeBonusUI NOT NULL or damageUI NOT NULL\
                 )',
             [lot_id]
         )
 
-        if len(stats) > 1:
-            consolidated_stats = {"im": 0,"life": 0,"armor": 0, "damage": 0}
-            for stat in stats:
-                if stat[0]:
-                    consolidated_stats["im"] += stat[0]
-                if stat[1]:
-                    consolidated_stats["life"] += stat[1]
-                if stat[2]:
-                    consolidated_stats["armor"] += stat[2]
-                if stat[3]:
-                    consolidated_stats["damage"] += stat[3]
-            stats = consolidated_stats
-        elif len(stats) == 1:
-            stats = {
-                "im": stats[0][0] if stats[0][0] else 0,
-                "life": stats[0][1] if stats[0][1] else 0,
-                "armor": stats[0][2] if stats[0][2] else 0,
-                "damage": stats[0][3] if stats[0][3] else 0
-            }
-        else:
-            stats = None
-        return stats
+        return consolidate_stats(stats)
 
+
+    @app.template_filter('get_set_stats')
+    def get_set_stats(lot_id):
+        stats = query_cdclient(
+            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI, behaviorID, skillIcon FROM SkillBehavior WHERE skillID IN (\
+                SELECT skillID FROM ItemSetSkills WHERE SkillSetID=?\
+                )',
+            [lot_id]
+        )
+
+        return consolidate_stats(stats)
 
     @app.template_filter('query_cdclient')
     def jinja_query_cdclient(query, items):
@@ -277,3 +277,37 @@ def register_luclient_jinja_helpers(app):
     @app.template_filter('lu_translate')
     def lu_translate(to_translate):
         return translate_from_locale(to_translate)
+
+
+def consolidate_stats(stats):
+
+    if len(stats) > 1:
+        consolidated_stats = {"im": 0,"life": 0,"armor": 0, "damage": 0, "behavior": [], "icon": []}
+        for stat in stats:
+            if stat[0]:
+                consolidated_stats["im"] += stat[0]
+            if stat[1]:
+                consolidated_stats["life"] += stat[1]
+            if stat[2]:
+                consolidated_stats["armor"] += stat[2]
+            if stat[3]:
+                consolidated_stats["damage"] += stat[3]
+            if stat[4]:
+                consolidated_stats["behavior"].append(stat[4])
+            if stat[5]:
+                consolidated_stats["icon"].append(stat[5])
+
+        stats = consolidated_stats
+    elif len(stats) == 1:
+        stats = {
+            "im": stats[0][0] if stats[0][0] else 0,
+            "life": stats[0][1] if stats[0][1] else 0,
+            "armor": stats[0][2] if stats[0][2] else 0,
+            "damage": stats[0][3] if stats[0][3] else 0,
+            "behavior": [stats[0][4]] if stats[0][4] else None,
+            "icon": [stats[0][5]] if stats[0][5] else None,
+        }
+    else:
+        stats = None
+
+    return stats
