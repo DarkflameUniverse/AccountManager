@@ -96,11 +96,11 @@ def get(status):
         if report["3"] == "0":
             report["3"] = "None"
         else:
-            character = CharacterInfo.query.filter(CharacterInfo.id == int(report["3"])).first()
+            character = CharacterInfo.query.filter(CharacterInfo.id == int(report["3"]) & 0xFFFFFFFF).first()
             if character:
                 report["3"] = f"""
                     <a role="button" class="btn btn-primary btn btn-block"
-                        href='{url_for('characters.view', id=id)}'>
+                        href='{url_for('characters.view', id=(int(report["3"]) & 0xFFFFFFFF))}'>
                         {character.name}
                     </a>
                 """

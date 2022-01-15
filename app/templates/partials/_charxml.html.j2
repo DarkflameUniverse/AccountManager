@@ -98,9 +98,10 @@
         <nav>
           <div class="nav nav-tabs" id="inv-tab" role="tablist">
             <a class="nav-item nav-link active" id="nav-items-tab" data-toggle="tab" href="#nav-items" role="tab" aria-controls="nav-items" aria-selected="true">Items</a>
-            <a class="nav-item nav-link" id="nav-vault-tab" data-toggle="tab" href="#nav-vault" role="tab" aria-controls="nav-vault" aria-selected="false">Vault</a>
+            <a class="nav-item nav-link" id="nav-vault-tab" data-toggle="tab" href="#nav-vault" role="tab" aria-controls="nav-vault" aria-selected="false">Vault Items</a>
             <a class="nav-item nav-link" id="nav-bricks-tab" data-toggle="tab" href="#nav-bricks" role="tab" aria-controls="nav-bricks" aria-selected="false">Bricks</a>
             <a class="nav-item nav-link" id="nav-models-tab" data-toggle="tab" href="#nav-models" role="tab" aria-controls="nav-models" aria-selected="false">Models</a>
+            <a class="nav-item nav-link" id="nav-vault-models-tab" data-toggle="tab" href="#nav-vault-models" role="tab" aria-controls="nav-vault-models" aria-selected="false">Vault Models</a>
             <a class="nav-item nav-link" id="nav-behaviors-tab" data-toggle="tab" href="#nav-behaviors" role="tab" aria-controls="nav-behaviors" aria-selected="false">Behaviors</a>
           </div>
         </nav>
@@ -119,6 +120,16 @@
             {# Inv ID 1 - Index: 1 #}
             {% for item in character_json.obj.inv.holdings.in %}
               {% if item.attr_t == "1" %}
+                {% for inv_item in item.i %}
+                  {% include 'partials/charxml/_inv_grid.html.j2' %}
+                {% endfor %}
+              {% endif %}
+            {% endfor %}
+          </div>
+          <div class="tab-pane fade" id="nav-vault-models" role="tabpanel" aria-labelledby="nav-vault-models-tab">
+            {# Inv ID 14 - Index: 10 #}
+            {% for item in character_json.obj.inv.holdings.in %}
+              {% if item.attr_t == "14" %}
                 {% for inv_item in item.i %}
                   {% include 'partials/charxml/_inv_grid.html.j2' %}
                 {% endfor %}

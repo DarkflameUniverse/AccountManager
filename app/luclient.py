@@ -6,6 +6,7 @@ from flask import (
     url_for
 )
 from flask_user import login_required
+from app.models import CharacterInfo
 import glob
 import os
 from wand import image
@@ -216,6 +217,15 @@ def register_luclient_jinja_helpers(app):
             ((int(lzid) >> 16) & ((1 << 16) - 1)),
             ((int(lzid) >> 32) & ((1 << 30) - 1))
         ]
+
+    @app.template_filter('parse_other_player_id')
+    def parse_other_player_id(other_player_id):
+        char_id = (int(other_player_id) & 0xFFFFFFFF)
+        character = CharacterInfo.query.filter(CharacterInfo.id == char_id).first()
+        if character:
+            return[character.id, character.name]
+        else:
+            return None
 
     @app.template_filter('get_lot_name')
     def get_lot_name(lot_id):

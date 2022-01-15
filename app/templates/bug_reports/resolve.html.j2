@@ -38,7 +38,15 @@
             Other Player:
           </div>
           <div class="col">
-            {{ report.other_player_id }}
+            {% set other_char = report.other_player_id|parse_other_player_id %}
+            {% if other_char %}
+              <a role="button" class="btn btn-primary btn btn-block"
+                  href='{{url_for('characters.view', id=other_char[0])}}'>
+                  {{other_char[1]}}
+              </a>
+            {% else %}
+              None
+            {% endif %}
           </div>
         </div>
         <br/>
