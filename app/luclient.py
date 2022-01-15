@@ -197,6 +197,18 @@ def register_luclient_jinja_helpers(app):
     def get_zone_name(zone_id):
         return translate_from_locale(f'ZoneTable_{zone_id}_DisplayDescription')
 
+    @app.template_filter('get_skill_desc')
+    def get_skill_desc(skill_id):
+        return translate_from_locale(f'SkillBehavior_{skill_id}_descriptionUI').replace(
+                "%(DamageCombo)", "Damage Combo: "
+            ).replace(
+                "%(AltCombo)", "<br/>Skeleton Combo: "
+            ).replace(
+                "%(Description)", "<br/>"
+            ).replace(
+                "%(ChargeUp)", "<br/>Charge-up: "
+            )
+
     @app.template_filter('parse_lzid')
     def parse_lzid(lzid):
         return[
@@ -245,7 +257,7 @@ def register_luclient_jinja_helpers(app):
     @app.template_filter('get_lot_stats')
     def get_lot_stats(lot_id):
         stats = query_cdclient(
-            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI, behaviorID, skillIcon FROM SkillBehavior WHERE skillID IN (\
+            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, skillID, skillIcon FROM SkillBehavior WHERE skillID IN (\
                 SELECT skillID FROM ObjectSkills WHERE objectTemplate=?\
                 )',
             [lot_id]
@@ -257,7 +269,7 @@ def register_luclient_jinja_helpers(app):
     @app.template_filter('get_set_stats')
     def get_set_stats(lot_id):
         stats = query_cdclient(
-            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, damageUI, behaviorID, skillIcon FROM SkillBehavior WHERE skillID IN (\
+            'SELECT imBonusUI, lifeBonusUI, armorBonusUI, skillID, skillIcon FROM SkillBehavior WHERE skillID IN (\
                 SELECT skillID FROM ItemSetSkills WHERE SkillSetID=?\
                 )',
             [lot_id]
@@ -282,7 +294,7 @@ def register_luclient_jinja_helpers(app):
 def consolidate_stats(stats):
 
     if len(stats) > 1:
-        consolidated_stats = {"im": 0,"life": 0,"armor": 0, "damage": 0, "behavior": [], "icon": []}
+        consolidated_stats = {"im": 0,"life": 0,"armor": 0, "skill": []}
         for stat in stats:
             if stat[0]:
                 consolidated_stats["im"] += stat[0]
@@ -291,11 +303,8 @@ def consolidate_stats(stats):
             if stat[2]:
                 consolidated_stats["armor"] += stat[2]
             if stat[3]:
-                consolidated_stats["damage"] += stat[3]
-            if stat[4]:
-                consolidated_stats["behavior"].append(stat[4])
-            if stat[5]:
-                consolidated_stats["icon"].append(stat[5])
+                consolidated_stats["skill"].append([stat[3],stat[4]])
+
 
         stats = consolidated_stats
     elif len(stats) == 1:
@@ -303,11 +312,8 @@ def consolidate_stats(stats):
             "im": stats[0][0] if stats[0][0] else 0,
             "life": stats[0][1] if stats[0][1] else 0,
             "armor": stats[0][2] if stats[0][2] else 0,
-            "damage": stats[0][3] if stats[0][3] else 0,
-            "behavior": [stats[0][4]] if stats[0][4] else None,
-            "icon": [stats[0][5]] if stats[0][5] else None,
+            "skill": [[stats[0][3], stats[0][4]]] if stats[0][3] else None,
         }
     else:
         stats = None
-
     return stats

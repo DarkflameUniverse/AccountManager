@@ -66,11 +66,17 @@ def view(id):
             attr_prefix="attr_"
         )
 
+    # print json for reference
+    # with open("errorchar.json", "a") as file:
+    #     file.write(
+    #         json.dumps(character_json, indent=4)
+    #     )
+
     # stupid fix for jinja parsing
     character_json["obj"]["inv"]["holdings"] = character_json["obj"]["inv"].pop("items")
     # sort by items slot index
     for inv in character_json["obj"]["inv"]["holdings"]["in"]:
-        if "i" in inv.keys():
+        if "i" in inv.keys() and type(inv["i"]) == list:
             inv["i"] = sorted(inv["i"], key = lambda i: int(i['attr_s']))
 
 

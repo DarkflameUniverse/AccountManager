@@ -6,6 +6,8 @@
 
 {% if item_set and item_set[0 != 49]%}
   <br/>
+  --------------------------------
+  <br/>
   {{ ("ItemSets_" ~ item_set[0] ~ "_kitName")|lu_translate }}: Rank {{ item_set[4] }}<br/>
   {% if item_set[5] %}
     <img src='/luclient/get_icon_iconid/{{item_set[5]}}'
@@ -15,41 +17,42 @@
     <br/>
     Multi-Item Bonus:<br/>
     {% if item_set[6] %}
-      2 Items:
+      <b>2 Items:</b><br/>
       {% with stat = item_set[6]|get_set_stats %}
         {% include 'partials/charxml/_stats.html.j2' %}
       {% endwith %}
-      <br/>
+      <br/><br/>
     {% endif %}
     {% if item_set[7] %}
-      3 Items:
+      <b>3 Items:</b><br/>
       {% with stat = item_set[7]|get_set_stats %}
         {% include 'partials/charxml/_stats.html.j2' %}
       {% endwith %}
-      <br/>
+      <br/><br/>
     {% endif %}
     {% if item_set[8] %}
-      4 Items:
+      <b>4 Items:</b><br/>
       {% with stat = item_set[8]|get_set_stats %}
         {% include 'partials/charxml/_stats.html.j2' %}
       {% endwith %}
-      <br/>
+      <br/><br/>
     {% endif %}
     {% if item_set[9] %}
-      5 Items:
+      <b>5 Items:</b><br/>
       {% with stat = item_set[9]|get_set_stats %}
         {% include 'partials/charxml/_stats.html.j2' %}
       {% endwith %}
-      <br/>
+      <br/><br/>
     {% endif %}
     {% if item_set[10] %}
-      6 Items:
+      <b>6 Items:</b><br/>
       {% with stat = item_set[10]|get_set_stats %}
         {% include 'partials/charxml/_stats.html.j2' %}
       {% endwith %}
-      <br/>
+      <br/><br/>
     {% endif %}
   {% endif %}
+  --------------------------------
 {% endif %}
 
 {% if desc %}
