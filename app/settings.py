@@ -1,7 +1,7 @@
 # Settings common to all environments (development|staging|production)
 
 # Application settings
-APP_NAME = "DLU Dashboard"
+APP_NAME = "Nexus Dashboard"
 APP_SYSTEM_ERROR_SUBJECT_LINE = APP_NAME + " system error"
 
 # Flask settings

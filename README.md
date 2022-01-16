@@ -1,4 +1,6 @@
-# Darkflame Universe Account Manager v2
+# Nexus Dashboard
+
+**This is a WIP: For Advanced Users**
 
 <p align="center">
   <img src="app/static/logo/logo.png" alt="Sublime's custom image"/>
