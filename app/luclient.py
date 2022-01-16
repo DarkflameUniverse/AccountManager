@@ -239,6 +239,23 @@ def register_luclient_jinja_helpers(app):
             name = intermed[7] if (intermed[7] != "None" and intermed[7] !="" and intermed[7] != None) else intermed[1]
         return name
 
+    @app.template_filter('get_lot_rarity')
+    def get_lot_rarity(lot_id):
+
+        render_component_id = query_cdclient(
+            'select component_id from ComponentsRegistry where component_type = 2 and id = ?',
+            [lot_id],
+            one=True
+        )[0]
+
+        rarity = query_cdclient('select rarity from ItemComponent where id = ?',
+            [render_component_id],
+            one=True
+        )
+        if rarity:
+            rarity = rarity[0]
+        return rarity
+
     @app.template_filter('get_lot_desc')
     def get_lot_desc(lot_id):
         desc = translate_from_locale(f'Objects_{lot_id}_description')

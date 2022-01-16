@@ -328,7 +328,11 @@ class CharacterInfo(db.Model):
 
 class CharacterXML(db.Model):
     __tablename__ = 'charxml'
-    id = db.Column(mysql.BIGINT, primary_key=True)
+    id = db.Column(
+        mysql.BIGINT,
+        primary_key=True,
+    )
+
     xml_data = db.Column(
         db.Text(4294000000),
         nullable=False
@@ -974,3 +978,33 @@ class Server(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+
+class ItemReports(db.Model):
+    __tablename__ = 'item_reports'
+
+    item = db.Column(
+        db.Integer(),
+        primary_key=True,
+        nullable=False
+    )
+
+    count = db.Column(
+        db.Integer(),
+        nullable=False
+    )
+
+    date = db.Column(
+        db.Date(),
+        primary_key=False,
+    )
+
+    def save(self):
+        db.session.add(self)
+        db.session.commit()
+        db.session.refresh(self)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+

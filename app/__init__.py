@@ -9,6 +9,7 @@ from app.schemas import ma
 from app.forms import CustomUserManager
 from flask_user import user_registered, current_user
 from flask_wtf.csrf import CSRFProtect
+from flask_apscheduler import APScheduler
 from app.luclient import query_cdclient, register_luclient_jinja_helpers
 
 from app.commands import init_db, init_accounts
@@ -16,6 +17,7 @@ from app.models import Account, AccountInvitation
 
 # Instantiate Flask extensions
 csrf_protect = CSRFProtect()
+scheduler = APScheduler()
 # db and migrate is instantiated in models.py
 
 
@@ -55,7 +57,6 @@ def create_app():
         if cdclient is not None:
             cdclient.close()
 
-
     # add the commands to flask cli
     app.cli.add_command(init_db)
     app.cli.add_command(init_accounts)
@@ -76,8 +77,13 @@ def register_extensions(app):
     """
     db.init_app(app)
     migrate.init_app(app, db)
-    csrf_protect.init_app(app)
     ma.init_app(app)
+
+    scheduler.init_app(app)
+    scheduler.start()
+
+    csrf_protect.init_app(app)
+
     user_manager = CustomUserManager(
         app, db, Account, UserInvitationClass=AccountInvitation
     )
@@ -115,6 +121,8 @@ def register_blueprints(app):
     app.register_blueprint(mail_blueprint, url_prefix='/mail')
     from .luclient import luclient_blueprint
     app.register_blueprint(luclient_blueprint, url_prefix='/luclient')
+    from .reports import reports_blueprint
+    app.register_blueprint(reports_blueprint, url_prefix='/reports')
 
 
 
