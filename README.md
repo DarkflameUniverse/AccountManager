@@ -30,6 +30,12 @@ PRIVACY_POLICY = 'policy/Privacy Policy.pdf'
 # Path to the terms of use users have to agree to
 TERMS_OF_USE = 'policy/Terms of Use.pdf'
 ```
+* Create SSL certificates
+```sh
+# Run the openssl command
+openssl req -x509 -newkey rsa:4096 -nodes -out cert.pem -keyout key.pem -days 365
+```
+
 * Run the application
 ```sh
 # Run the python application, with a given port number
